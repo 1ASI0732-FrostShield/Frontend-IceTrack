@@ -1,14 +1,40 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
-import i18n from "@/i18n.js";
-import PrimeVue from 'primevue/config';
-import Material from '@primeuix/themes/material'
-import router from "@/router.js";
+import router from './router.js'
+import i18n from './i18n.js'
+
+import PrimeVue from 'primevue/config'
+import Aura from '@primeuix/themes/aura'
+import { definePreset } from '@primeuix/themes'
+import 'primeicons/primeicons.css'
+
+const AuraBlue = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50: '{blue.50}',
+            100: '{blue.100}',
+            200: '{blue.200}',
+            300: '{blue.300}',
+            400: '{blue.400}',
+            500: '{blue.500}',
+            600: '{blue.600}',
+            700: '{blue.700}',
+            800: '{blue.800}',
+            900: '{blue.900}',
+            950: '{blue.950}'
+        }
+    }
+})
 
 createApp(App)
     .use(i18n)
-    .use(PrimeVue , { theme: { preset: Material}, ripple: true})
+    .use(PrimeVue, {
+        ripple: true,
+        theme: {
+            preset: AuraBlue,
+            options: { darkModeSelector: false }
+        }
+    })
     .use(router)
     .mount('#app')
