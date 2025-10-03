@@ -1,8 +1,5 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
-import Button from 'primevue/button'
-import Avatar from 'primevue/avatar'
-import Divider from 'primevue/divider'
 
 const { locale, t } = useI18n()
 function setLang(lang) { locale.value = lang }
@@ -18,10 +15,10 @@ function setLang(lang) { locale.value = lang }
     <div class="spacer"></div>
 
     <div class="actions">
-      <Button text @click="setLang('es')" label="ES" />
-      <Button text @click="setLang('en')" label="EN" />
-      <Divider layout="vertical" />
-      <Avatar icon="pi pi-user" shape="circle" />
+      <pv-button text @click="setLang('es')" label="ES" />
+      <pv-button text @click="setLang('en')" label="EN" />
+      <pv-divider layout="vertical" />
+      <pv-avatar icon="pi pi-user" shape="circle" />
     </div>
   </header>
 </template>

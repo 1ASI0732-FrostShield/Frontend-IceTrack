@@ -1,4 +1,3 @@
-<!-- src/shared/presentation/components/layout.vue -->
 <script setup>
 import Header from './header.component.vue'
 import Sidebar from './sidebar.component.vue'

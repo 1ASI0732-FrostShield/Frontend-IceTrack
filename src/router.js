@@ -1,4 +1,3 @@
-// src/router.js
 import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
 
@@ -9,34 +8,34 @@ const Layout = () => import('@/shared/presentation/components/layout.vue')
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
 
 // Dashboard
-const DashboardPage = () => import('@/contexts/dashboard/presentation/pages/dashboard.page.vue')
+const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue')
 
 // Assets Management
-const SitesListPage = () => import('@/contexts/assets-management/presentation/pages/sites-list.page.vue')
-const SiteDetailPage = () => import('@/contexts/assets-management/presentation/pages/site-detail.page.vue')
-const EquipmentsListPage = () => import('@/contexts/assets-management/presentation/pages/equipments-list.page.vue')
+const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')
+const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue')
+const EquipmentsListPage = () => import('@/assets-management/presentation/views/equipments-list.vue')
 
 // Monitoring
-const EquipmentDetailPage = () => import('@/contexts/monitoring/presentation/pages/equipment-detail.page.vue')
-const AlertsListPage = () => import('@/contexts/monitoring/presentation/pages/alerts-list.page.vue')
+const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
+const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
 
 // Service
-const ServiceRequestsPage = () => import('@/contexts/service/presentation/pages/service-requests.page.vue')
-const ServiceRequestNewPage = () => import('@/contexts/service/presentation/pages/service-request-new.page.vue')
-const ServiceRequestDetailPage = () => import('@/contexts/service/presentation/pages/service-request-detail.page.vue')
+const ServiceRequestsPage = () => import('@/service-request/presentation/views/service-requests.vue')
+const ServiceRequestNewPage = () => import('@/service-request/presentation/views/service-request-new.vue')
+const ServiceRequestDetailPage = () => import('@/service-request/presentation/views/service-request-detail.vue')
 
 // Reporting
-const ReportsListPage = () => import('@/contexts/reporting/presentation/pages/reports-list.page.vue')
-const ReportDetailPage = () => import('@/contexts/reporting/presentation/pages/report-detail.page.vue')
+const ReportsListPage = () => import('@/reporting/presentation/views/reports-list.vue')
+const ReportDetailPage = () => import('@/reporting/presentation/views/report-detail.vue')
 
 // IAM
-const AdminUsersPage = () => import('@/contexts/iam/presentation/pages/admin-users.page.vue')
-const AdminSettingsPage = () => import('@/contexts/iam/presentation/pages/admin-settings.page.vue')
-const LoginPage = () => import('@/contexts/iam/presentation/pages/login.page.vue')
-const RegisterPage = () => import('@/contexts/iam/presentation/pages/register.page.vue')
+const AdminUsersPage = () => import('@/iam/presentation/views/admin-users.vue')
+const AdminSettingsPage = () => import('@/iam/presentation/views/admin-settings.vue')
+const LoginPage = () => import('@/iam/presentation/views/login.vue')
+const RegisterPage = () => import('@/iam/presentation/views/register.vue')
 
 // Communication
-const NotificationsPage = () => import('@/contexts/communication/presentation/pages/notifications.page.vue')
+const NotificationsPage = () => import('@/communication/presentation/views/notifications.vue')
 
 const routes = [
     { path: '/auth/login', name: 'auth-login', component: LoginPage, meta: { titleKey: 'auth.login.title' } },
@@ -60,10 +59,10 @@ const routes = [
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
 
-            // service
+            // service-request
             { path: 'services', name: 'services', component: ServiceRequestsPage, meta: { titleKey: 'services.requests.title' } },
-            { path: 'services/new', name: 'service-new', component: ServiceRequestNewPage, meta: { titleKey: 'services.requests.new' } },
-            { path: 'services/:requestId', name: 'service-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' } },
+            { path: 'services/new', name: 'service-request-new', component: ServiceRequestNewPage, meta: { titleKey: 'services.requests.new' } },
+            { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' } },
 
             // reporting
             { path: 'reports', name: 'reports', component: ReportsListPage, meta: { titleKey: 'reports.list.title' } },

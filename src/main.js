@@ -8,6 +8,7 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import { definePreset } from '@primeuix/themes'
 import 'primeicons/primeicons.css'
+import {Avatar, Button, Divider, SelectButton, PanelMenu} from "primevue";
 
 const AuraBlue = definePreset(Aura, {
     semantic: {
@@ -36,5 +37,10 @@ createApp(App)
             options: { darkModeSelector: false }
         }
     })
+    .component('pv-select-button', SelectButton)
+    .component('pv-avatar', Avatar)
+    .component('pv-button', Button)
+    .component('pv-divider', Divider)
+    .component('pv-panel-menu', PanelMenu)
     .use(router)
     .mount('#app')

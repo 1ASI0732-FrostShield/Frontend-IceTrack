@@ -10,8 +10,8 @@ const { t } = useI18n()
 
     <!-- Navegación dentro del contexto Service -->
     <div class="flex gap-2">
-      <RouterLink :to="{ name: 'service-new' }"><Button :label="t('services.requests.new')" /></RouterLink>
-      <RouterLink :to="{ name: 'service-detail', params: { requestId: '1' } }">
+      <RouterLink :to="{ name: 'service-request-new' }"><Button :label="t('services.requests.new')" /></RouterLink>
+      <RouterLink :to="{ name: 'service-request-detail', params: { requestId: '1' } }">
         <Button :label="t('services.requests.detail')" />
       </RouterLink>
     </div>
