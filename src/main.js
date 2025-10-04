@@ -1,46 +1,57 @@
-import './assets/main.css'
 import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router.js'
-import i18n from './i18n.js'
+import './style.css'
+import App from './app.vue'
+import i18n from "./i18n.js";
+import PrimeVue from 'primevue/config';
+import Material from '@primeuix/themes/material';
+import 'primeflex/primeflex.css';
+import 'primeicons/primeicons.css';
+import {
+    Button,
+    Card,
+    Checkbox,
+    Column,
+    ConfirmationService,
+    ConfirmDialog, DataTable, Dialog,
+    DialogService, Drawer, FileUpload, FloatLabel, IconField, InputIcon, InputNumber, InputText, Menu,
+    Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
+    ToastService, Toolbar, Tooltip
+} from "primevue";
+import router from "./router.js";
+import pinia from "./pinia.js";
 
-import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
-import { definePreset } from '@primeuix/themes'
-import 'primeicons/primeicons.css'
-import {Avatar, Button, Divider, SelectButton, PanelMenu} from "primevue";
 
-const AuraBlue = definePreset(Aura, {
-    semantic: {
-        primary: {
-            50: '{blue.50}',
-            100: '{blue.100}',
-            200: '{blue.200}',
-            300: '{blue.300}',
-            400: '{blue.400}',
-            500: '{blue.500}',
-            600: '{blue.600}',
-            700: '{blue.700}',
-            800: '{blue.800}',
-            900: '{blue.900}',
-            950: '{blue.950}'
-        }
-    }
-})
-
+// noinspection JSCheckFunctionSignatures
 createApp(App)
     .use(i18n)
-    .use(PrimeVue, {
-        ripple: true,
-        theme: {
-            preset: AuraBlue,
-            options: { darkModeSelector: false }
-        }
-    })
-    .component('pv-select-button', SelectButton)
-    .component('pv-avatar', Avatar)
+    .use(PrimeVue, { theme: { preset: Material}, ripple: true })
+    .use(ConfirmationService)
+    .use(DialogService)
+    .use(ToastService)
     .component('pv-button', Button)
-    .component('pv-divider', Divider)
-    .component('pv-panel-menu', PanelMenu)
+    .component('pv-card', Card)
+    .component('pv-column', Column)
+    .component('pv-confirm-dialog', ConfirmDialog)
+    .component('pv-checkbox', Checkbox)
+    .component('pv-data-table', DataTable)
+    .component('pv-dialog', Dialog)
+    .component('pv-select', Select)
+    .component('pv-select-button', SelectButton)
+    .component('pv-file-upload', FileUpload)
+    .component('pv-float-label', FloatLabel)
+    .component('pv-icon-field', IconField)
+    .component('pv-input-icon', InputIcon)
+    .component('pv-input-text', InputText)
+    .component('pv-input-number', InputNumber)
+    .component('pv-menu', Menu)
+    .component('pv-rating', Rating)
+    .component('pv-row', Row)
+    .component('pv-drawer', Drawer)
+    .component('pv-tag', Tag)
+    .component('pv-textarea', Textarea)
+    .component('pv-toolbar', Toolbar)
+    .component('pv-toast', Toast)
+    .directive('tooltip', Tooltip)
     .use(router)
+    .use(pinia)
     .mount('#app')
