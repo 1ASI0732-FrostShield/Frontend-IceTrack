@@ -5,11 +5,15 @@ import router from './router.js'
 import pinia from "./pinia.js";
 import i18n from './i18n.js'
 import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
+
+import Material from '@primeuix/themes/material'
 import { definePreset } from '@primeuix/themes'
+
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
-import {Avatar,
+
+import {
+    Avatar,
     Button,
     Card,
     Checkbox,
@@ -19,9 +23,10 @@ import {Avatar,
     DialogService, Drawer, Divider, FileUpload, FloatLabel,
     IconField, InputIcon, InputNumber, InputText, Menu,
     Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
-    ToastService, Toolbar, Tooltip, PanelMenu} from "primevue";
+    ToastService, Toolbar, Tooltip, PanelMenu
+} from "primevue";
 
-const AuraBlue = definePreset(Aura, {
+const MaterialBlue = definePreset(Material, {
     semantic: {
         primary: {
             50: '{blue.50}',
@@ -44,7 +49,7 @@ createApp(App)
     .use(PrimeVue, {
         ripple: true,
         theme: {
-            preset: AuraBlue,
+            preset: MaterialBlue,
             options: { darkModeSelector: false }
         }
     })
