@@ -35,7 +35,8 @@
   "alerts": {
     "list": { "title": "Alerts" },
     "types": { "highTemperature": "High temperature", "powerLoss": "Power loss", "sensorOffline": "Sensor offline" },
-    "actions": { "ack": "Acknowledge", "resolve": "Resolve" }
+    "actions": { "ack": "Acknowledge", "resolve": "Resolve" },
+    "fields": { "createdAt": "Created at", "equipment": "Equipment", "site": "Site", "type": "Type", "severity": "Severity", "status": "Status", "actions": "Actions" }
   },
   "reports": {
     "list": { "title": "Reports" },
