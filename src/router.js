@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
 
+import serviceRequestsRoutes from "@/service-request/presentation/service-requests-routes.js";
+
 // Layout compartido
 const Layout = () => import('@/shared/presentation/components/layout.vue')
 
@@ -18,11 +20,6 @@ const EquipmentsListPage = () => import('@/assets-management/presentation/views/
 // Monitoring
 const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
 const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
-
-// Service
-const ServiceRequestsPage = () => import('@/service-request/presentation/views/service-requests.vue')
-const ServiceRequestNewPage = () => import('@/service-request/presentation/views/service-request-new.vue')
-const ServiceRequestDetailPage = () => import('@/service-request/presentation/views/service-request-detail.vue')
 
 // Reporting
 const ReportsListPage = () => import('@/reporting/presentation/views/reports-list.vue')
@@ -59,10 +56,8 @@ const routes = [
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
 
-            // service-request
-            { path: 'services', name: 'services', component: ServiceRequestsPage, meta: { titleKey: 'services.requests.title' } },
-            { path: 'services/new', name: 'service-request-new', component: ServiceRequestNewPage, meta: { titleKey: 'services.requests.new' } },
-            { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' } },
+            // service-requests (Integración del Bounded Context)
+            ...serviceRequestsRoutes,
 
             // reporting
             { path: 'reports', name: 'reports', component: ReportsListPage, meta: { titleKey: 'reports.list.title' } },
