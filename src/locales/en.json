@@ -6,7 +6,13 @@
     "save": "Save",
     "search": "Search",
     "status": { "open": "Open", "assigned": "Assigned", "inProgress": "In progress", "resolved": "Resolved", "closed": "Closed" },
-    "severity": { "info": "Info", "warning": "Warning", "critical": "Critical" }
+    "severity": { "info": "Info", "warning": "Warning", "critical": "Critical" },
+
+    "filter-by": "Filter by",
+    "all": "All",
+    "submit-request": "Submit Request",
+    "cancel-tooltip": "Cancel Request",
+    "error-occurred": "An error occurred"
   },
   "nav": { "dashboard": "Dashboard", "sites": "Sites", "equipments": "Equipments", "services": "Services", "alerts": "Alerts", "reports": "Reports", "admin": "Admin", "help": "Help" },
   "auth": {
@@ -20,18 +26,50 @@
     "charts": { "temperatureTrend": "Temperature trend", "energyUsage": "Energy usage" }
   },
   "sites": {
-    "list": { "title": "Sites", "empty": "No sites yet." },
-    "detail": { "title": "Site detail", "contact": "Contact", "address": "Address" }
+    "list": { "title": "Sites", "empty": "No sites yet.", "id": "Id", "name": "Name", "address": "Address" },
+    "detail": { "title": "Site detail", "latitude": "Latitude", "longitude": "Longitude", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
   },
   "equipments": {
-    "list": { "title": "Equipments" },
-    "detail": { "title": "Equipment detail", "temperature": "Temperature", "lastService": "Last service" },
-    "controls": { "powerOn": "Power on", "powerOff": "Power off", "setTemperature": "Set temperature" }
+    "list": { "title": "Equipments", "id": "Id", "model": "Model", "serial": "Serial", "status": "Status" },
+    "detail": { "title": "Equipment detail", "installedAt": "Installed", "lastSeenAt": "last Seen", "setpointC": "Set Point °C", "createdAt": "Created", "updatedAt": "Updated" },
+    "controls": { "powerOn": "Power on", "powerOff": "Power off", "setTemperature": "Set temperature", "online": "Online" }
   },
+
   "services": {
-    "requests": { "title": "Service requests", "new": "New request", "detail": "Request detail" },
-    "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done" }
+    "requests": {
+      "id": "ID",
+      "title": "Service requests",
+      "new": "New request",
+      "detail": "Request detail",
+
+      "my-requests": "My Service Requests",
+      "new-request-title": "Create New Request",
+      "success-message": "Request created successfully! We will contact you soon.",
+      "date": "Date",
+      "equipment": "Equipment",
+      "site": "Site",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions",
+      "track": "Track",
+      "track-tooltip": "View current status and assigned technician",
+      "view-report": "View Report",
+      "report-tooltip": "Download completed service report",
+      "confirm-cancel": "Are you sure you want to cancel Request {id}?",
+      "cancel-header": "Confirm Cancellation",
+      "request-type": "Request Type",
+      "priority": "Priority",
+      "problem-description": "Problem Description"
+    },
+    "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done", "pending": "Pending", "canceled": "Canceled" }
   },
+  "service-requests": {
+    "types": {
+      "corrective": "Corrective",
+      "preventive": "Preventive"
+    }
+  },
+
   "alerts": {
     "list": { "title": "Alerts" },
     "types": { "highTemperature": "High temperature", "powerLoss": "Power loss", "sensorOffline": "Sensor offline" },
