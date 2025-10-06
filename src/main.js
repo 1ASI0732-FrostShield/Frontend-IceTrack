@@ -18,6 +18,7 @@ import {
     Card,
     Checkbox,
     Column,
+    Dropdown,
     ConfirmationService,
     ConfirmDialog, DataTable, Dialog,
     DialogService, Drawer, Divider, FileUpload, FloatLabel,
@@ -66,6 +67,7 @@ createApp(App)
     .component('pv-dialog', Dialog)
     .component('pv-divider', Divider)
     .component('pv-select', Select)
+    .component('pv-dropdown', Dropdown)
     .component('pv-select-button', SelectButton)
     .component('pv-file-upload', FileUpload)
     .component('pv-float-label', FloatLabel)
