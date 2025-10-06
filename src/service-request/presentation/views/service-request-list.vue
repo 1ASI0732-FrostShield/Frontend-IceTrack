@@ -38,7 +38,6 @@ const filteredRequests = computed(() => {
 });
 
 
-
 // --- ESTILOS Y ACCIONES ---
 
 const statusSeverity = (status) => {
@@ -54,16 +53,19 @@ const statusSeverity = (status) => {
 };
 
 const statusTranslation = (status) => {
-  const statusMap = {
-    'pending': 'Pendiente',
-    'assigned': 'Asignado',
-    'scheduled': 'Programado',
-    'inProgress': 'En Progreso',
-    'done': 'Completado',
-    'canceled': 'Cancelado'
-  };
-  return statusMap[status] || status;
+  if (!status) {
+    return t('common.all');
+  }
+  return t(`services.status.${status}`);
 }
+
+const typeTranslation = (type) => {
+  if (!type) {
+    return t('common.all');
+  }
+  return t(`service-requests.types.${type}`);
+}
+
 
 const navigateToNew = () => {
   router.push({ name: 'service-requests-new' });
@@ -71,7 +73,7 @@ const navigateToNew = () => {
 
 const openTrackDrawer = (request) => {
   console.log(`Abriendo seguimiento para SR ID: ${request.id}`);
-  alert(`Seguimiento de ${request.id}: Estado actual: ${statusTranslation(request.status)}. Técnico: ${request.technicianName || 'Pendiente'}`);
+  alert(`Seguimiento de ${request.id}: Estado actual: ${statusTranslation(request.status)}. Técnico: ${request.technicianName || t('services.status.pending')}`);
 };
 
 const openReport = (request) => {
@@ -83,8 +85,8 @@ const openReport = (request) => {
 
 const confirmCancel = (request) => {
   confirm.require({
-    message: t('service-requests.confirm-cancel', { id: request.id }),
-    header: t('service-requests.cancel-header'),
+    message: t('services.requests.confirm-cancel', { id: request.id }),
+    header: t('services.requests.cancel-header'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       cancelRequest(request.id);
@@ -96,9 +98,9 @@ const confirmCancel = (request) => {
 <template>
   <div class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
-      <h1 class="text-3xl font-bold">{{ t('service-requests.my-requests') }}</h1>
+      <h1 class="text-3xl font-bold">{{ t('services.requests.my-requests') }}</h1>
       <pv-button
-          :label="t('service-requests.new-request')"
+          :label="t('services.requests.new')"
           icon="pi pi-plus"
           severity="success"
           @click="navigateToNew"
@@ -107,6 +109,7 @@ const confirmCancel = (request) => {
 
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
       <span class="text-sm font-semibold">{{ t('common.filter-by') }}:</span>
+
       <pv-select-button
           v-model="filters.status"
           :options="['', 'pending', 'assigned', 'inProgress', 'done']"
@@ -126,7 +129,7 @@ const confirmCancel = (request) => {
           class="ml-3"
       >
         <template #option="slotProps">
-          {{ slotProps.option === 'corrective' ? 'Correctivo' : 'Preventivo' }}
+          {{ typeTranslation(slotProps.option) }}
         </template>
       </pv-select-button>
     </div>
@@ -139,46 +142,47 @@ const confirmCancel = (request) => {
         paginator
         table-style="min-width: 50rem">
 
-      <pv-column field="id" :header="t('service-requests.id')" sortable style="width: 100px;"/>
-      <pv-column field="createdAt" :header="t('service-requests.date')" sortable>
+      <pv-column field="id" :header="t('services.requests.id')" sortable style="width: 100px;"/>
+
+      <pv-column field="createdAt" :header="t('services.requests.date')" sortable>
         <template #body="slotProps">
           {{ new Date(slotProps.data.createdAt).toLocaleDateString() }}
         </template>
       </pv-column>
-      <pv-column field="equipmentName" :header="t('service-requests.equipment')" sortable/>
-      <pv-column field="siteName" :header="t('service-requests.site')" sortable/>
+      <pv-column field="equipmentName" :header="t('services.requests.equipment')" sortable/>
+      <pv-column field="siteName" :header="t('services.requests.site')" sortable/>
 
-      <pv-column field="type" :header="t('service-requests.type')">
+      <pv-column field="type" :header="t('services.requests.type')">
         <template #body="slotProps">
-          <pv-tag :value="slotProps.data.type === 'corrective' ? 'Correctivo' : 'Preventivo'"
+          <pv-tag :value="typeTranslation(slotProps.data.type)"
                   :severity="slotProps.data.type === 'corrective' ? 'danger' : 'warning'" />
         </template>
       </pv-column>
 
-      <pv-column field="status" :header="t('service-requests.status')" sortable>
+      <pv-column field="status" :header="t('services.requests.status')">
         <template #body="slotProps">
           <pv-tag :value="statusTranslation(slotProps.data.status)"
                   :severity="statusSeverity(slotProps.data.status)" />
         </template>
       </pv-column>
 
-      <pv-column :header="t('service-requests.actions')">
+      <pv-column :header="t('services.requests.actions')">
         <template #body="slotProps">
           <pv-button
               icon="pi pi-search"
-              :label="t('service-requests.track')"
+              :label="t('services.requests.track')"
               text rounded
               severity="info"
-              v-tooltip.top="t('service-requests.track-tooltip')"
+              v-tooltip.top="t('services.requests.track-tooltip')"
               @click="openTrackDrawer(slotProps.data)"
           />
           <pv-button
               v-if="slotProps.data.status === 'done'"
               icon="pi pi-file-pdf"
-              :label="t('service-requests.view-report')"
+              :label="t('services.requests.view-report')"
               text rounded
               severity="help"
-              v-tooltip.top="t('service-requests.report-tooltip')"
+              v-tooltip.top="t('services.requests.report-tooltip')"
               @click="openReport(slotProps.data)"
           />
           <pv-button
@@ -195,7 +199,7 @@ const confirmCancel = (request) => {
     </pv-data-table>
 
     <div v-if="errors.length" class="text-red-500 mt-3">
-      {{ t('errors.occurred') }}: {{ errors.map(e => e.message).join(', ') }}
+      {{ t('common.error-occurred') }}: {{ errors.map(e => e.message).join(', ') }}
     </div>
     <pv-confirm-dialog/>
   </div>
