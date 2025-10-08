@@ -13,7 +13,7 @@ const items = computed(() => [
   { label: t('nav.equipments'), icon: 'pi pi-server', command: () => router.push({ name: 'equipments' }) },
   { label: t('nav.services'), icon: 'pi pi-briefcase', command: () => router.push({ name: 'service-requests-list' }) },
   { label: t('nav.alerts'), icon: 'pi pi-bell', command: () => router.push({ name: 'alerts' }) },
-  { label: t('nav.reports'), icon: 'pi pi-chart-line', command: () => router.push({ name: 'reports' }) },
+  { label: t('nav.reports'), icon: 'pi pi-chart-line', command: () => router.push({ name: 'reporting-report' }) },
   { label: t('nav.admin'), icon: 'pi pi-cog', command: () => router.push({ name: 'admin-users' }) },
 ])
 </script>
