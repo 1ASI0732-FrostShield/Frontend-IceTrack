@@ -76,10 +76,29 @@
     "actions": { "ack": "Reconocer", "resolve": "Resolver" }
   },
   "reports": {
-    "list": { "title": "Reportes" },
-    "detail": { "title": "Detalle de reporte" },
-    "types": { "performance": "Rendimiento", "service": "Servicio" },
-    "actions": { "downloadPdf": "Descargar PDF" }
+    "list": {
+      "title": "Reportes Generados",
+      "new": "Nuevo Reporte",
+      "name": "Nombre",
+      "type": "Tipo",
+      "date": "Fecha",
+      "status": "Estado",
+      "actions": "Acciones",
+      "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
+      "delete-header": "Confirmar eliminación",
+      "statusType": {
+        "done": "Listo",
+        "inProgress": "En progreso"
+      },
+        "detail": {
+            "title": "Detalle del Reporte"
+        }
+    },
+    "types": {
+      "equipmentHistory": "Historial del Equipo",
+      "energyConsumption": "Consumo de Energía",
+      "Service": "Servicio"
+    }
   },
   "admin": { "users": { "title": "Usuarios", "invite": "Invitar usuario" }, "settings": { "title": "Configuración", "language": "Idioma" } },
   "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },

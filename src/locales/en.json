@@ -76,10 +76,29 @@
     "actions": { "ack": "Acknowledge", "resolve": "Resolve" }
   },
   "reports": {
-    "list": { "title": "Reports" },
-    "detail": { "title": "Report detail" },
-    "types": { "performance": "Performance", "service": "Service" },
-    "actions": { "downloadPdf": "Download PDF" }
+    "list": {
+      "title": "Generated Reports",
+      "new": "New Report",
+      "name": "Name",
+      "type": "Type",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions",
+      "confirm-delete": "Do you want to delete the report \"{name}\"?",
+      "delete-header": "Confirm deletion",
+      "statusType": {
+        "done": "Done",
+        "inProgress": "In Progress"
+      },
+      "detail": {
+        "title": "Report Detail"
+      }
+    },
+    "types": {
+      "equipmentHistory": "Equipment History",
+      "energyConsumption": "Energy Consumption",
+      "Service": "Service"
+    }
   },
   "admin": { "users": { "title": "Users", "invite": "Invite user" }, "settings": { "title": "Settings", "language": "Language" } },
   "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
