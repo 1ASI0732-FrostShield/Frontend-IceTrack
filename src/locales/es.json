@@ -20,23 +20,45 @@
     "charts": { "temperatureTrend": "Tendencia de temperatura", "energyUsage": "Uso de energía" }
   },
   "sites": {
-    "list": { "title": "Sitios", "empty": "Aún no hay sitios." },
-    "detail": { "title": "Detalle del sitio", "contact": "Contacto", "address": "Dirección" }
+    "list": { "title": "Sitios", "empty": "Aún no hay sitios.", "id": "Id", "name": "Nombre", "address": "Dirección" },
+    "detail": {"title": "Detalle del sitio", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
   },
   "equipments": {
-    "list": { "title": "Equipos" },
-    "detail": { "title": "Detalle del equipo", "temperature": "Temperatura", "lastService": "Último servicio" },
-    "controls": { "powerOn": "Encender", "powerOff": "Apagar", "setTemperature": "Ajustar temperatura" }
+    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
+    "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
+    "controls": { "info": "Informacion", "setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
   },
   "services": {
     "requests": { "title": "Solicitudes de servicio", "new": "Nueva solicitud", "detail": "Detalle de solicitud" },
     "status": { "scheduled": "Programada", "assigned": "Asignada", "inProgress": "En progreso", "done": "Completada" }
   },
   "alerts": {
-    "list": { "title": "Alertas" },
-    "types": { "highTemperature": "Alta temperatura", "powerLoss": "Corte de energía", "sensorOffline": "Sensor sin conexión" },
-    "actions": { "ack": "Reconocer", "resolve": "Resolver" },
-    "fields": { "createdAt": "Fecha de creación", "equipment": "Equipo", "site": "Sitio", "type": "Tipo", "severity": "Severidad", "status": "Estado", "actions": "Acciones" }
+    "list": {
+      "title": "Alertas",
+      "type": "Tipo",
+      "equipment": "Equipo",
+      "site": "Sitio",
+      "tenant": "Tenant",
+      "timestamp": "Fecha",
+      "actions": "Acciones",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta",
+      "viewEquipment": "Ver equipo",
+      "clear": "Limpiar"
+    },
+    "types": {
+      "highTemperature": "Alta temperatura",
+      "powerLoss": "Pérdida de energía",
+      "sensorOffline": "Sensor desconectado"
+    },
+    "placeholders": {
+      "selectType": "Seleccionar tipo",
+      "selectEquipment": "Seleccionar equipo"
+    }
+  },
+
+  "errors": {
+    "occurred": "Ocurrió un error"
   },
   "reports": {
     "list": { "title": "Reportes" },
