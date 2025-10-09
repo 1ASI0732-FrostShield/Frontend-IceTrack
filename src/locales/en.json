@@ -20,23 +20,45 @@
     "charts": { "temperatureTrend": "Temperature trend", "energyUsage": "Energy usage" }
   },
   "sites": {
-    "list": { "title": "Sites", "empty": "No sites yet." },
-    "detail": { "title": "Site detail", "contact": "Contact", "address": "Address" }
+    "list": { "title": "Sites", "empty": "No sites yet.", "id": "Id", "name": "Name", "address": "Address" },
+    "detail": { "title": "Site detail", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
   },
   "equipments": {
-    "list": { "title": "Equipments" },
-    "detail": { "title": "Equipment detail", "temperature": "Temperature", "lastService": "Last service" },
-    "controls": { "powerOn": "Power on", "powerOff": "Power off", "setTemperature": "Set temperature" }
+    "list": { "title": "Equipments", "id": "Id", "model": "Model", "type": "Type", "serial": "Serial", "status": "Status" },
+    "detail": { "title": "Equipment detail", "siteId": "Site Id", "installedAt": "Installed", "lastSeenAt": "last Seen", "createdAt": "Created", "updatedAt": "Updated" },
+    "controls": { "info": "Information", "more": "More", "setpointC": "Set Point °C", "name": "Name", "manufacturer": "Manufacturer", "online": "Online" }
   },
   "services": {
     "requests": { "title": "Service requests", "new": "New request", "detail": "Request detail" },
     "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done" }
   },
   "alerts": {
-    "list": { "title": "Alerts" },
-    "types": { "highTemperature": "High temperature", "powerLoss": "Power loss", "sensorOffline": "Sensor offline" },
-    "actions": { "ack": "Acknowledge", "resolve": "Resolve" },
-    "fields": { "createdAt": "Created at", "equipment": "Equipment", "site": "Site", "type": "Type", "severity": "Severity", "status": "Status", "actions": "Actions" }
+    "list": {
+      "title": "Alerts",
+      "type": "Type",
+      "equipment": "Equipment",
+      "site": "Site",
+      "tenant": "Tenant",
+      "timestamp": "Date",
+      "actions": "Actions",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "viewEquipment": "View Equipment",
+      "clear": "Clear"
+    },
+    "types": {
+      "highTemperature": "High Temperature",
+      "powerLoss": "Power Loss",
+      "sensorOffline": "Sensor Offline"
+    },
+    "placeholders": {
+      "selectType": "Select type",
+      "selectEquipment": "Select equipment"
+    }
+  },
+
+  "errors": {
+    "occurred": "An error occurred"
   },
   "reports": {
     "list": { "title": "Reports" },
