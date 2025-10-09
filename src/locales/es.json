@@ -21,12 +21,12 @@
   },
   "sites": {
     "list": { "title": "Sitios", "empty": "Aún no hay sitios.", "id": "Id", "name": "Nombre", "address": "Dirección" },
-    "detail": {"title": "Detalle del sitio", "latitude": "Latitud", "longitude": "Longitud", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
+    "detail": {"title": "Detalle del sitio", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
   },
   "equipments": {
-    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "serial": "Serie", "status": "Estado" },
-    "detail": {"title": "Detalle del equipo", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "setpointC": "Punto de ajuste °C", "createdAt": "Creado", "updatedAt": "Actualizado" },
-    "controls": {"powerOn": "Encender", "powerOff": "Apagar", "setTemperature": "Configurar temperatura", "online": "En línea" }
+    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
+    "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
+    "controls": { "info": "Informacion", "setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
   },
   "services": {
     "requests": { "title": "Solicitudes de servicio", "new": "Nueva solicitud", "detail": "Detalle de solicitud" },
