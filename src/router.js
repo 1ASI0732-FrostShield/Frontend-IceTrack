@@ -10,14 +10,14 @@ const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vu
 // Dashboard
 const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue')
 
-// assets-management
-{ path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title' } },
-{ path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title' } },
+// Assets Management
+const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')
+const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue')
 
-// monitoring
-{ path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
-{ path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
-{ path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
+// Monitoring
+const EquipmentsListPage = () => import('@/monitoring/presentation/views/equipment-list.vue')
+const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
+const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
 
 // Service
 const ServiceRequestsPage = () => import('@/service-request/presentation/views/service-requests.vue')
@@ -53,9 +53,9 @@ const routes = [
             // assets-management
             { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title' } },
             { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title' } },
-            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
 
             // monitoring
+            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
 
