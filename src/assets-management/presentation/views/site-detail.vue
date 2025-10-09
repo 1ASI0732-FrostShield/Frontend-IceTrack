@@ -1,10 +1,17 @@
 <script setup>
 
-import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import {onMounted} from "vue";
+import {useI18n} from "vue-i18n";
+import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 
-const { t } = useI18n()
-const route = useRoute()
+const {t} = useI18n();
+const store = useAssetsManagementStore();
+const { sites, sitesLoaded, errors, fetchSites } = store;
+
+onMounted(() => {
+  if (!sitesLoaded) fetchSites();
+  console.log(sites);
+});
 
 </script>
 
@@ -17,6 +24,7 @@ const route = useRoute()
 
         <pv-data-table
             :value="sites"
+            :loading="!sitesLoaded"
             striped-rows
             table-style="min-width: 80rem"
             paginator
@@ -25,50 +33,37 @@ const route = useRoute()
         >
 
           <!-- Id -->
-          <pv-column field="id" :header="t('sites.list.id')" sortable />
-
-          <!-- Latitude -->
-          <pv-column field="latitude" :header="t('sites.detail.latitude')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
-          </pv-column>
-
-          <!-- Longitude -->
-          <pv-column field="longitude" :header="t('sites.detail.longitude')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
-          </pv-column>
+          <pv-column field="tenantId" :header="t('sites.list.id')" sortable />
 
           <!-- Contact Name -->
           <pv-column field="contactName" :header="t('sites.detail.contactName')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
           </pv-column>
 
           <!-- Contact Phone -->
           <pv-column field="contactPhone" :header="t('sites.detail.contactPhone')">
             <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
+              <span
+                  :style="{
+                  fontWeight: 'bold'
+                }"
+              >
+                {{ slotProps.data.contactPhone }}
+              </span>
             </template>
           </pv-column>
 
           <!-- Created At -->
           <pv-column field="createdAt" :header="t('sites.detail.createdAt')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
           </pv-column>
 
           <!-- Updated At -->
           <pv-column field="updatedAt" :header="t('sites.detail.updatedAt')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
           </pv-column>
         </pv-data-table>
+
+        <div v-if="errors.length" class="text-red-500 mt-3">
+          {{ t('errors.occurred') }}: {{ errors.map(e => e.message).join(', ') }}
+        </div>
       </div>
 
       <RouterLink :to="{ name: 'sites' }">
