@@ -1,177 +1,178 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
+import { RouterLink } from "vue-router";
+import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 
-const { t } = useI18n()
-const alerts = ref([])
+const { t } = useI18n();
+const store = useMonitoringStore();
+const { alerts, alertsLoaded, errors } = storeToRefs(store);
+const { fetchAlerts } = store;
 
-onMounted(async () => {
-  try {
-    const res = await fetch('http://localhost:3000/alerts')
-    alerts.value = await res.json()
-  } catch (err) {
-    console.error(err)
-  }
-})
+const selectedType = ref(null);
+const selectedEquipment = ref(null);
+const dateFrom = ref(null);
+const dateTo = ref(null);
 
-const severityOptions = [
-  { label: 'Crítica', value: 'critical' },
-  { label: 'Advertencia', value: 'warning' },
-  { label: 'Info', value: 'info' }
-]
-const statusOptions = [
-  { label: 'Abierta', value: 'open' },
-  { label: 'Resuelta', value: 'resolved' },
-  { label: 'Cerrada', value: 'closed' },
-  { label: 'Ack', value: 'acknowledged' }
-]
-const siteOptions = [
-  { label: 'Sitio 1', value: 's1' },
-  { label: 'Sitio 2', value: 's2' },
-  { label: 'Sitio 3', value: 's3' }
-]
-const equipmentOptions = [
-  { label: 'Equipo 1', value: 'e1' },
-  { label: 'Equipo 2', value: 'e2' },
-  { label: 'Equipo 3', value: 'e3' },
-  { label: 'Equipo 4', value: 'e4' }
-]
-const dateOptions = [
-  { label: 'Hoy', value: 'today' },
-  { label: 'Últimos 7 días', value: 'week' },
-  { label: 'Último mes', value: 'month' }
-]
+const typeOptions = computed(() => [
+  { label: t("alerts.types.highTemperature"), value: "highTemperature" },
+  { label: t("alerts.types.powerLoss"), value: "powerLoss" },
+  { label: t("alerts.types.sensorOffline"), value: "sensorOffline" },
+]);
+
+const equipmentOptions = computed(() => {
+  const ids = [...new Set(alerts.value.map(a => a.equipmentId))];
+  return ids.map(id => ({ label: id, value: id }));
+});
+
+function formatDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? "-" : date.toLocaleString();
+}
+
+const filteredAlerts = computed(() => {
+  return alerts.value.filter(alert => {
+    const matchesType = !selectedType.value || alert.type === selectedType.value;
+    const matchesEquipment = !selectedEquipment.value || alert.equipmentId === selectedEquipment.value;
+    const alertDate = new Date(alert.createdAt ?? alert.timestamp ?? alert.ts);
+    const matchesDateFrom = !dateFrom.value || alertDate >= new Date(dateFrom.value);
+    const matchesDateTo = !dateTo.value || alertDate <= new Date(dateTo.value);
+    return matchesType && matchesEquipment && matchesDateFrom && matchesDateTo;
+  });
+});
+
+onMounted(() => {
+  if (!alertsLoaded.value) fetchAlerts();
+});
 </script>
 
 <template>
-  <section class="alerts">
-    <h1>{{ t('alerts.list.title') }}</h1>
+  <section>
+    <h1 class="text-2xl font-semibold mb-4 text-gray-800">
+      {{ t("alerts.list.title") }}
+    </h1>
 
-    <!-- Filtros -->
-    <div class="filters">
-      <pv-dropdown :options="severityOptions" optionLabel="label" optionValue="value" placeholder="Severidad" />
-      <pv-dropdown :options="statusOptions" optionLabel="label" optionValue="value" placeholder="Estado" />
-      <pv-dropdown :options="siteOptions" optionLabel="label" optionValue="value" placeholder="Sitio" />
-      <pv-dropdown :options="equipmentOptions" optionLabel="label" optionValue="value" placeholder="Equipo" />
-      <pv-dropdown :options="dateOptions" optionLabel="label" optionValue="value" placeholder="Rango de fechas" />
+    <div class="flex flex-wrap gap-4 mb-6 bg-gray-50 p-4 rounded-xl shadow-sm items-end">
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">
+          {{ t("alerts.list.type") }}
+        </label>
+        <pv-dropdown
+            v-model="selectedType"
+            :options="typeOptions"
+            option-label="label"
+            option-value="value"
+            :placeholder="t('alerts.placeholders.selectType')"
+            class="w-56"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">
+          {{ t("alerts.list.equipment") }}
+        </label>
+        <pv-dropdown
+            v-model="selectedEquipment"
+            :options="equipmentOptions"
+            option-label="label"
+            option-value="value"
+            :placeholder="t('alerts.placeholders.selectEquipment')"
+            class="w-56"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">
+          {{ t("alerts.list.dateFrom") }}
+        </label>
+        <pv-calendar v-model="dateFrom" show-icon date-format="yy-mm-dd" class="w-48" />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">
+          {{ t("alerts.list.dateTo") }}
+        </label>
+        <pv-calendar v-model="dateTo" show-icon date-format="yy-mm-dd" class="w-48" />
+      </div>
+
+      <pv-button
+          :label="t('alerts.list.clear')"
+          icon="pi pi-times"
+          class="!bg-gray-300 hover:!bg-gray-400 text-gray-800 !py-2 !px-4 rounded-lg"
+          @click="selectedType = selectedEquipment = dateFrom = dateTo = null"
+      />
     </div>
 
-    <!-- Tabla -->
-    <table class="alerts-table">
-      <thead>
-      <tr>
-        <th>{{ t('alerts.fields.createdAt') }}</th>
-        <th>{{ t('alerts.fields.equipment') }}</th>
-        <th>{{ t('alerts.fields.site') }}</th>
-        <th>{{ t('alerts.fields.type') }}</th>
-        <th>{{ t('alerts.fields.severity') }}</th>
-        <th>{{ t('alerts.fields.status') }}</th>
-        <th>{{ t('alerts.fields.actions') }}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="alert in alerts" :key="alert.id">
-        <td>{{ new Date(alert.createdAt).toLocaleString() }}</td>
-        <td>Equipo {{ alert.equipmentId }}</td>
-        <td>Sitio {{ alert.siteId }}</td>
-        <td>{{ alert.type }}</td>
-        <td>
-            <span :class="['badge', alert.severity]">
-              {{ alert.severity.toUpperCase() }}
+    <div class="p-4 bg-white rounded-2xl shadow-md">
+      <pv-data-table
+          :value="filteredAlerts"
+          :loading="!alertsLoaded"
+          striped-rows
+          table-style="min-width: 80rem"
+          paginator
+          :rows="6"
+          :rows-per-page-options="[6, 10, 20]"
+      >
+        <pv-column field="timestamp" :header="t('alerts.list.timestamp')" sortable>
+          <template #body="slotProps">
+            {{ formatDate(slotProps.data.createdAt ?? slotProps.data.timestamp ?? slotProps.data.ts) }}
+          </template>
+        </pv-column>
+
+        <pv-column field="equipmentId" :header="t('alerts.list.equipment')" sortable>
+          <template #body="slotProps">
+            <span class="font-semibold text-gray-800">
+              {{ slotProps.data.equipmentId }}
             </span>
-        </td>
-        <td class="status">
-          <span v-if="alert.status === 'open'">ABIERTA</span>
-          <span v-else-if="alert.status === 'resolved'">RESUELTA</span>
-          <span v-else-if="alert.status === 'closed'">CERRADA</span>
-          <span v-else-if="alert.status === 'acknowledged'">ACK</span>
-        </td>
-        <td class="action">
-          ACK /
-          <RouterLink :to="{ name: 'equipment-detail', params: { equipmentId: alert.equipmentId } }">Ver</RouterLink>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          </template>
+        </pv-column>
+
+        <pv-column field="siteId" :header="t('alerts.list.site')" sortable />
+
+        <pv-column field="type" :header="t('alerts.list.type')">
+          <template #body="slotProps">
+            <span
+                class="px-3 py-1 rounded-full text-white font-semibold text-sm capitalize"
+                :class="{
+                'bg-orange-500': slotProps.data.type === 'highTemperature',
+                'bg-gray-500': slotProps.data.type === 'powerLoss',
+                'bg-blue-500': slotProps.data.type === 'sensorOffline'
+              }"
+            >
+              {{ t(`alerts.types.${slotProps.data.type}`) }}
+            </span>
+          </template>
+        </pv-column>
+
+        <pv-column field="tenantId" :header="t('alerts.list.tenant')" sortable />
+
+        <pv-column :header="t('alerts.list.actions')">
+          <template #body="slotProps">
+            <RouterLink
+                :to="{ name: 'equipment-detail', params: { equipmentId: slotProps.data.equipmentId } }"
+            >
+              <pv-button
+                  :label="t('alerts.list.viewEquipment')"
+                  class="!bg-blue-600 hover:!bg-blue-700 text-white !py-2 !px-4 rounded-lg transition-all duration-200"
+              />
+            </RouterLink>
+          </template>
+        </pv-column>
+      </pv-data-table>
+
+      <div v-if="errors.length" class="text-red-500 mt-3">
+        {{ t("errors.occurred") }}: {{ errors.map(e => e.message).join(", ") }}
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.alerts {
-  padding: 1rem;
-}
-
-.alerts h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.filters {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.alerts-table {
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  background: white;
-  font-size: 0.875rem;
-  overflow: hidden;
-  border-collapse: collapse;
-}
-
-.alerts-table th {
-  background: #f9fafb;
-  text-align: left;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  color: #6b7280;
-  padding: 0.75rem 1rem;
-}
-
-.alerts-table td {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.alerts-table tr:hover {
-  background: #f9fafb;
-}
-
-/* Badges de severidad */
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge.critical {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.badge.warning {
-  background: #fef9c3;
-  color: #ca8a04;
-}
-
-.badge.info {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.status {
-  text-transform: uppercase;
-}
-
-.action {
-  color: #2563eb;
-  font-weight: 500;
-  cursor: pointer;
+section {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  padding: 2rem;
 }
 </style>
