@@ -8,6 +8,14 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import { definePreset } from '@primeuix/themes'
 import 'primeicons/primeicons.css'
+import Card from 'primevue/card'
+import Button from 'primevue/button'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Tag from 'primevue/tag'
+import Chart from 'primevue/chart'
+import {createPinia} from "pinia";
+import 'primeflex/primeflex.css'
 
 const AuraBlue = definePreset(Aura, {
     semantic: {
@@ -29,6 +37,7 @@ const AuraBlue = definePreset(Aura, {
 
 createApp(App)
     .use(i18n)
+    .use(createPinia())
     .use(PrimeVue, {
         ripple: true,
         theme: {
@@ -36,5 +45,11 @@ createApp(App)
             options: { darkModeSelector: false }
         }
     })
+    .component('pv-button', Button)
+    .component('pv-card', Card)
+    .component('pv-tag', Tag)
+    .component('pv-chart', Chart)
+    .component('pv-data-table', DataTable)
+    .component('pv-column', Column)
     .use(router)
     .mount('#app')

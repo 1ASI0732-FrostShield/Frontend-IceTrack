@@ -15,9 +15,49 @@
     "errors": { "invalidCredentials": "Correo o contraseña incorrectos." }
   },
   "dashboard": {
-    "title": "Resumen",
-    "kpis": { "totalEquipments": "Equipos totales", "openAlerts": "Alertas abiertas", "energyThisWeek": "Energía (esta semana)" },
-    "charts": { "temperatureTrend": "Tendencia de temperatura", "energyUsage": "Uso de energía" }
+    "title": "Dashboard",
+    "demoBanner": "Modo demo: usando tenant {id}",
+    "kpis": {
+      "equipments": "Equipos monitoreados",
+      "alerts": "Alertas abiertas",
+      "orders": "Órdenes activas",
+      "avgTemp": "Temperatura promedio"
+    },
+    "chartTitle": "Temperatura (24h/7d)",
+    "recentAlerts": "Alertas recientes",
+    "alerts": {
+      "noAlerts": "Sin alertas recientes",
+      "columns": {
+        "date": "FECHA",
+        "equipment": "EQUIPO",
+        "site": "SITIO",
+        "severity": "SEVERIDAD",
+        "status": "ESTADO",
+        "action": "ACCIÓN"
+      },
+      "severities": {
+        "critical": "Crítico",
+        "warning": "Advertencia",
+        "info": "Información",
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta"
+      },
+      "statuses": {
+        "open": "Abierto",
+        "acknowledged": "Reconocido",
+        "resolved": "Resuelto",
+        "closed": "Cerrado",
+        "pending": "Pendiente",
+        "in_progress": "En progreso"
+      },
+      "actions": {
+        "acknowledge": "Aceptar (ACK)",
+        "resolve": "Resolver",
+        "close": "Cerrar",
+        "view": "Ver detalles"
+      }
+    }
   },
   "sites": {
     "list": { "title": "Sitios", "empty": "Aún no hay sitios." },

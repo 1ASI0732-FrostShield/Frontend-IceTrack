@@ -15,9 +15,49 @@
     "errors": { "invalidCredentials": "Email or password is incorrect." }
   },
   "dashboard": {
-    "title": "Overview",
-    "kpis": { "totalEquipments": "Total equipments", "openAlerts": "Open alerts", "energyThisWeek": "Energy (this week)" },
-    "charts": { "temperatureTrend": "Temperature trend", "energyUsage": "Energy usage" }
+    "title": "Dashboard",
+    "demoBanner": "Demo mode: using tenant {id}",
+    "kpis": {
+      "equipments": "Monitored Equipment",
+      "alerts": "Open Alerts",
+      "orders": "Active Orders",
+      "avgTemp": "Average Temperature"
+    },
+    "chartTitle": "Temperature (24h/7d)",
+    "recentAlerts": "Recent Alerts",
+    "alerts": {
+      "noAlerts": "No recent alerts",
+      "columns": {
+        "date": "DATE",
+        "equipment": "EQUIPMENT",
+        "site": "SITE",
+        "severity": "SEVERITY",
+        "status": "STATUS",
+        "action": "ACTION"
+      },
+      "severities": {
+        "critical": "Critical",
+        "warning": "Warning",
+        "info": "Information",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "statuses": {
+        "open": "Open",
+        "acknowledged": "Acknowledged",
+        "resolved": "Resolved",
+        "closed": "Closed",
+        "pending": "Pending",
+        "in_progress": "In Progress"
+      },
+      "actions": {
+        "acknowledge": "Acknowledge (ACK)",
+        "resolve": "Resolve",
+        "close": "Close",
+        "view": "View details"
+      }
+    }
   },
   "sites": {
     "list": { "title": "Sites", "empty": "No sites yet." },
