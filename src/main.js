@@ -18,13 +18,12 @@ import {
     Card,
     Checkbox,
     Column,
-    Dropdown,
     ConfirmationService,
     ConfirmDialog, DataTable, Dialog,
     DialogService, Drawer, Divider, FileUpload, FloatLabel,
     IconField, InputIcon, InputNumber, InputText, Menu,
     Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
-    ToastService, Toolbar, Tooltip, PanelMenu
+    ToastService, Toolbar, Tooltip, PanelMenu, Dropdown, Calendar
 } from "primevue";
 
 const MaterialBlue = definePreset(Material, {
@@ -67,7 +66,6 @@ createApp(App)
     .component('pv-dialog', Dialog)
     .component('pv-divider', Divider)
     .component('pv-select', Select)
-    .component('pv-dropdown', Dropdown)
     .component('pv-select-button', SelectButton)
     .component('pv-file-upload', FileUpload)
     .component('pv-float-label', FloatLabel)
@@ -84,6 +82,8 @@ createApp(App)
     .component('pv-textarea', Textarea)
     .component('pv-toolbar', Toolbar)
     .component('pv-toast', Toast)
+    .component('pv-dropdown', Dropdown)
+    .component('pv-calendar', Calendar)
     .directive('tooltip', Tooltip)
     .use(router)
     .use(pinia)
