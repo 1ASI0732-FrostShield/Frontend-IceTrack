@@ -21,12 +21,12 @@
   },
   "sites": {
     "list": { "title": "Sites", "empty": "No sites yet.", "id": "Id", "name": "Name", "address": "Address" },
-    "detail": { "title": "Site detail", "latitude": "Latitude", "longitude": "Longitude", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
+    "detail": { "title": "Site detail", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
   },
   "equipments": {
-    "list": { "title": "Equipments", "id": "Id", "model": "Model", "serial": "Serial", "status": "Status" },
-    "detail": { "title": "Equipment detail", "installedAt": "Installed", "lastSeenAt": "last Seen", "setpointC": "Set Point °C", "createdAt": "Created", "updatedAt": "Updated" },
-    "controls": { "powerOn": "Power on", "powerOff": "Power off", "setTemperature": "Set temperature", "online": "Online" }
+    "list": { "title": "Equipments", "id": "Id", "model": "Model", "type": "Type", "serial": "Serial", "status": "Status" },
+    "detail": { "title": "Equipment detail", "siteId": "Site Id", "installedAt": "Installed", "lastSeenAt": "last Seen", "createdAt": "Created", "updatedAt": "Updated" },
+    "controls": { "info": "Information", "more": "More", "setpointC": "Set Point °C", "name": "Name", "manufacturer": "Manufacturer", "online": "Online" }
   },
   "services": {
     "requests": { "title": "Service requests", "new": "New request", "detail": "Request detail" },
