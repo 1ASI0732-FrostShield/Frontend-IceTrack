@@ -1,10 +1,17 @@
 <script setup>
 
-import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import {onMounted} from "vue";
+import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
+import {useI18n} from "vue-i18n";
 
-const { t } = useI18n()
-const route = useRoute()
+const {t} = useI18n();
+const store = useAssetsManagementStore();
+const { sites, sitesLoaded, errors, fetchSites } = store;
+
+onMounted(() => {
+  if (!sitesLoaded) fetchSites();
+  console.log(sites);
+});
 
 </script>
 
@@ -16,6 +23,7 @@ const route = useRoute()
 
         <pv-data-table
             :value="sites"
+            :loading="!sitesLoaded"
             striped-rows
             table-style="min-width: 80rem"
             paginator
@@ -27,19 +35,16 @@ const route = useRoute()
           <pv-column field="id" :header="t('sites.list.id')" sortable />
 
           <!-- Name -->
-          <pv-column field="name" :header="t('sites.list.name')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
-          </pv-column>
+          <pv-column field="name" :header="t('sites.list.name')" />
 
           <!-- Address -->
-          <pv-column field="address" :header="t('sites.list.address')">
-            <template #body="slotProps">
-              <span class="font-semibold text-gray-800">{{ slotProps.data.alerts }}</span>
-            </template>
-          </pv-column>
+          <pv-column field="address" :header="t('sites.list.address')"/>
         </pv-data-table>
+
+        <div v-if="errors.length" class="text-red-500 mt-3">
+          {{ t('errors.occurred') }}: {{ errors.map(e => e.message).join(', ') }}
+        </div>
+
       </div>
 
       <RouterLink :to="{ name: 'site-detail', params: { siteId: '1' } }">
@@ -47,6 +52,7 @@ const route = useRoute()
       </RouterLink>
 
     </div>
+
   </section>
 </template>
 
