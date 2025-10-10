@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
 
 import serviceRequestsRoutes from "@/service-request/presentation/service-requests-routes.js";
+import reportingRoutes from "@/reporting/presentation/reporting-routes.js";
 
 // Layout compartido
 const Layout = () => import('@/shared/presentation/components/layout.vue')
@@ -60,8 +61,7 @@ const routes = [
             ...serviceRequestsRoutes,
 
             // reporting
-            { path: 'reports', name: 'reports', component: ReportsListPage, meta: { titleKey: 'reports.list.title' } },
-            { path: 'reports/:reportId', name: 'report-detail', component: ReportDetailPage, meta: { titleKey: 'reports.detail.title' } },
+            ...reportingRoutes,
 
             // iam
             { path: 'admin/users', name: 'admin-users', component: AdminUsersPage, meta: { titleKey: 'admin.users.title' } },
