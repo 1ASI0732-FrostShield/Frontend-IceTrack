@@ -11,11 +11,11 @@ const confirm = useConfirm();
 const store = useServiceRequestsStore();
 const { requests, requestsLoaded, errors, fetchServiceRequests, cancelRequest } = store;
 
-const currentUserId = ref('u4');
+const currentTenantId = ref('t2');
 
 onMounted(() => {
   if (!requestsLoaded.value) {
-    fetchServiceRequests(currentUserId.value);
+    fetchServiceRequests(currentTenantId.value);
   }
 });
 

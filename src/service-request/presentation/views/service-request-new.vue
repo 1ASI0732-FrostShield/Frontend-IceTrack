@@ -25,6 +25,7 @@ const form = ref({
 const sites = ref([]);
 const equipments = ref([]);
 const filteredEquipments = computed(() => {
+  if (!form.value.siteId) return [];
   return equipments.value.filter(eq => eq.siteId === form.value.siteId);
 });
 
@@ -64,11 +65,13 @@ const saveRequest = async () => {
     createdAt: new Date().toISOString()
   };
 
-  await createRequest(newRequestData);
+  const success = await createRequest(newRequestData);
 
-  if (errors.value.length === 0) {
-    alert(t('service-requests.success-message'));
+  if (success) {
+    alert(t('common.request-created-successfully'));
     navigateBack();
+  } else {
+    alert(t('common.error-creating-request'));
   }
 };
 

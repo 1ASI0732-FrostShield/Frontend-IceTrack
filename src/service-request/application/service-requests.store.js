@@ -2,7 +2,6 @@ import { ServiceRequestsApi } from "../infrastructure/service-requests-api.js";
 import { ServiceRequestAssembler } from "../infrastructure/service-request.assembler.js";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-
 import { BaseApi} from "@/shared/infrastructure/base-api.js";
 
 const serviceRequestsApi = new ServiceRequestsApi();
@@ -14,6 +13,13 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
     const errors = ref([]);
 
     async function fetchAuxiliaryData() {
+        const extractArray = (response, key) => {
+            if (!response || !response.data) return [];
+            if (response.data[key]) return response.data[key];
+            if (Array.isArray(response.data)) return response.data;
+            return [];
+        };
+
         const [usersResponse, sitesResponse, equipmentResponse, reportsResponse] = await Promise.all([
             baseApi.http.get('/users'),
             baseApi.http.get('/sites'),
@@ -22,26 +28,22 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
         ]);
 
         return {
-            users: usersResponse.data,
-            sites: sitesResponse.data,
-            equipments: equipmentResponse.data,
-            reports: reportsResponse.data
+            users: extractArray(usersResponse, 'users'),
+            sites: extractArray(sitesResponse, 'sites'),
+            equipments: extractArray(equipmentResponse, 'equipments'),
+            reports: extractArray(reportsResponse, 'reports')
         };
     }
 
-    async function fetchServiceRequests(currentUserId) {
+    async function fetchServiceRequests(currentTenantId) {
         requestsLoaded.value = false;
         errors.value = [];
         try {
-            // 1. Obtener datos auxiliares (users, sites, equipments, reports)
             const context = await fetchAuxiliaryData();
-
-            // 2. Obtener todas las Service Requests
             const response = await serviceRequestsApi.getAllRequests();
 
-            // 3. Ensamblar y filtrar
             const allRequests = ServiceRequestAssembler.toEntitiesFromResponse(response, context);
-            requests.value = allRequests.filter(req => req.requesterId === currentUserId);
+            requests.value = allRequests.filter(req => req.tenantId === currentTenantId);
 
             requestsLoaded.value = true;
         } catch (error) {
@@ -57,21 +59,25 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
         errors.value = [];
         try {
             const response = await serviceRequestsApi.createRequest(requestData);
-            const context = await fetchAuxiliaryData(); // Obtener contexto actualizado
+
+            const context = await fetchAuxiliaryData();
             const newRequest = ServiceRequestAssembler.toEntityFromResource(response.data, context);
-            requests.value.unshift(newRequest); // Agregar al inicio
+
+            if (newRequest.tenantId === requestData.tenantId) {
+                requests.value.unshift(newRequest);
+            }
+            return true;
         } catch (error) {
             errors.value.push(error);
+            return false;
         }
     }
 
     async function cancelRequest(id) {
         errors.value = [];
         try {
-            // La API actualiza el status a 'canceled'
             await serviceRequestsApi.cancelRequest(id);
 
-            // Actualizar el estado local
             const index = requests.value.findIndex(req => req.id === id);
             if (index !== -1) {
                 requests.value[index].status = 'canceled';
