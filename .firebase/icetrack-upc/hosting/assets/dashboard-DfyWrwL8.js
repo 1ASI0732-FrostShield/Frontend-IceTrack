@@ -1,1 +1,0 @@
-import{u as s,c as e,t as a,b as o,o as n}from"./index-DqTnXSTO.js";const r={class:"text-2xl font-semibold mb-4"},i={__name:"dashboard",setup(c){const{t}=s();return(_,l)=>(n(),e("h1",r,a(o(t)("dashboard.title")),1))}};export{i as default};

@@ -1,1 +1,0 @@
-import{u as c,c as n,a as t,t as s,b as e,g as i,o as l}from"./index-DqTnXSTO.js";const r={class:"text-2xl font-semibold mb-2"},_={class:"text-sm opacity-70"},f={__name:"site-detail",setup(u){const{t:a}=c(),o=i();return(p,d)=>(l(),n("section",null,[t("h1",r,s(e(a)("sites.detail.title")),1),t("p",_,"siteId: "+s(e(o).params.siteId),1)]))}};export{f as default};
