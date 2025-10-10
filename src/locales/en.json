@@ -111,9 +111,36 @@
   },
 
   "alerts": {
-    "list": { "title": "Alerts" },
-    "types": { "highTemperature": "High temperature", "powerLoss": "Power loss", "sensorOffline": "Sensor offline" },
-    "actions": { "ack": "Acknowledge", "resolve": "Resolve" }
+    "list": {
+      "title": "Alerts",
+      "type": "Type",
+      "equipment": "Equipment",
+      "site": "Site",
+      "tenant": "Tenant",
+      "timestamp": "Date",
+      "actions": "Actions",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "viewEquipment": "View Equipment",
+      "clear": "Clear"
+    },
+    "types": {
+      "highTemperature": "High Temperature",
+      "powerLoss": "Power Loss",
+      "sensorOffline": "Sensor Offline"
+    },
+    "placeholders": {
+      "selectType": "Select type",
+      "selectEquipment": "Select equipment"
+    },
+    "deletion": {
+      "confirmDeleteTitle": "Delete Alert",
+      "confirmDeleteMessage": "Are you sure you want to delete this alert?",
+      "confirmDeleteAccept": "Yes, delete",
+      "confirmDeleteReject": "Cancel",
+      "deleteSuccess": "Alert deleted successfully",
+      "deleteError": "Error deleting alert"
+    }
   },
   "reports": {
     "list": {
