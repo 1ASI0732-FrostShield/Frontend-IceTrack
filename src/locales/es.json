@@ -72,9 +72,8 @@
   "equipments": {
     "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
     "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
-    "controls": { "info": "Informacion", "setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
+    "controls": { "info": "Informacion", "more": "Mas" ,"setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
   },
-
   "services": {
     "requests": {
       "id": "ID",
