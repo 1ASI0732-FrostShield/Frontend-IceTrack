@@ -132,6 +132,14 @@
     "placeholders": {
       "selectType": "Seleccionar tipo",
       "selectEquipment": "Seleccionar equipo"
+    },
+    "deletion": {
+      "confirmDeleteTitle": "Eliminar alerta",
+      "confirmDeleteMessage": "¿Estás seguro de eliminar esta alerta?",
+      "confirmDeleteAccept": "Sí, eliminar",
+      "confirmDeleteReject": "Cancelar",
+      "deleteSuccess": "Alerta eliminada correctamente",
+      "deleteError": "Error al eliminar la alerta"
     }
   },
 
