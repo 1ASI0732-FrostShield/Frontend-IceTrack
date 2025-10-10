@@ -23,7 +23,7 @@ import {
     DialogService, Drawer, Divider, FileUpload, FloatLabel,
     IconField, InputIcon, InputNumber, InputText, Menu,
     Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
-    ToastService, Toolbar, Tooltip, PanelMenu
+    ToastService, Toolbar, Tooltip, PanelMenu, Dropdown, Calendar
 } from "primevue";
 
 const MaterialBlue = definePreset(Material, {
@@ -82,7 +82,10 @@ createApp(App)
     .component('pv-textarea', Textarea)
     .component('pv-toolbar', Toolbar)
     .component('pv-toast', Toast)
+    .component('pv-dropdown', Dropdown)
+    .component('pv-calendar', Calendar)
     .directive('tooltip', Tooltip)
     .use(router)
     .use(pinia)
+    .use(router)
     .mount('#app')
