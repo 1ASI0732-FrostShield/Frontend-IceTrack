@@ -20,4 +20,8 @@ export class MonitoringApi extends BaseApi {
     getAlerts() {
         return this.#alertsEndpointPath.getAll();
     }
+
+    deleteAlert(alertId) {
+        return this.#alertsEndpointPath.delete(alertId);
+    }
 }
