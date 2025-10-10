@@ -16,9 +16,9 @@ const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue
 // Assets Management
 const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')
 const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue')
-const EquipmentsListPage = () => import('@/assets-management/presentation/views/equipments-list.vue')
 
 // Monitoring
+const EquipmentsListPage = () => import('@/monitoring/presentation/views/equipment-list.vue')
 const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
 const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
 
@@ -51,9 +51,9 @@ const routes = [
             // assets-management
             { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title' } },
             { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title' } },
-            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
 
             // monitoring
+            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
 
