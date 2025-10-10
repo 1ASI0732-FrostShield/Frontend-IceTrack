@@ -1,0 +1,1 @@
+import{u as r,c,a as t,t as e,b as s,g as n,o as l}from"./index-DqTnXSTO.js";const p={class:"text-2xl font-semibold mb-2"},i={class:"text-sm opacity-70"},f={__name:"report-detail",setup(_){const{t:o}=r(),a=n();return(u,d)=>(l(),c("section",null,[t("h1",p,e(s(o)("reports.detail.title")),1),t("p",i,"reportId: "+e(s(a).params.reportId),1)]))}};export{f as default};

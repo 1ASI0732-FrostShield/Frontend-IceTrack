@@ -1,0 +1,1 @@
+import{u as a,c as n,a as s,t as o,b as e,o as c}from"./index-DqTnXSTO.js";const i={class:"text-2xl font-semibold mb-2"},l={class:"opacity-70"},m={__name:"notifications",setup(r){const{t}=a();return(_,p)=>(c(),n("section",null,[s("h1",i,o(e(t)("notifications.title")),1),s("p",l,o(e(t)("notifications.empty")),1)]))}};export{m as default};
