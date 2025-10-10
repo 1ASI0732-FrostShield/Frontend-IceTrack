@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { EquipmentAssembler } from "@/monitoring/infrastructure/equipments.assembler.js";
-import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js"; 
+import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js"; // 🔹 nuevo import
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const monitoringApi = new MonitoringApi();
@@ -42,6 +42,14 @@ const useMonitoringStore = defineStore("monitoring", () => {
             });
     }
 
+    function deleteAlert(alertId) {
+        return monitoringApi.deleteAlert(alertId)
+            .then(() => {
+                alerts.value = alerts.value.filter(a => a.id !== alertId);
+            })
+            .catch(error => errors.value.push(error));
+    }
+
     return {
         equipments,
         alerts,
@@ -50,6 +58,7 @@ const useMonitoringStore = defineStore("monitoring", () => {
         alertsLoaded,
         fetchEquipments,
         fetchAlerts,
+        deleteAlert,
     };
 });
 
