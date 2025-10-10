@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { dashboardStore } from '../../application/dashboard.store.js'
+import { dashboardStore } from '@/dashboard/application/dashboard.store.js'
 import 'chart.js/auto'
 
 const props = defineProps({

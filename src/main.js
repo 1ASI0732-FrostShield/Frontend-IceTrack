@@ -16,6 +16,7 @@ import Tag from 'primevue/tag'
 import Chart from 'primevue/chart'
 import {createPinia} from "pinia";
 import 'primeflex/primeflex.css'
+import {Menu} from "primevue";
 
 const AuraBlue = definePreset(Aura, {
     semantic: {
@@ -51,5 +52,6 @@ createApp(App)
     .component('pv-chart', Chart)
     .component('pv-data-table', DataTable)
     .component('pv-column', Column)
+    .component('pv-menu', Menu)
     .use(router)
     .mount('#app')

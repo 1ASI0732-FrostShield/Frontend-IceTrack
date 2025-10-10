@@ -1,5 +1,5 @@
-import {DashboardApi} from '../infrastructure/dashboard.api.js'
-import {DashboardAssembler} from '../infrastructure/dashboard.assembler.js'
+import {DashboardApi} from '@/dashboard/infrastructure/dashboard.api.js'
+import {DashboardAssembler} from '@/dashboard/infrastructure/dashboard.assembler.js'
 
 export class DashboardService {
     constructor() {

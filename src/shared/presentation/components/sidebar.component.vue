@@ -20,7 +20,7 @@ const items = computed(() => [
 
 <template>
   <aside class="sidebar">
-    <pv-panel-menu :model="items" class="w-full" />
+    <PanelMenu :model="items" class="w-full" />
   </aside>
 </template>
 

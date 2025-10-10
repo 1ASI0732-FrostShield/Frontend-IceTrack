@@ -1,5 +1,5 @@
-import { DashboardSnapshot } from '../domain/entities/dashboard-snapshot.entity.js'
-import { AlertView } from '../domain/entities/alert-view.entity.js'
+import { DashboardSnapshot } from '@/dashboard/domain/entities/dashboard-snapshot.entity.js'
+import { AlertView } from '@/dashboard/domain/entities/alert-view.entity.js'
 
 export class DashboardAssembler {
     static toEntityFromResource(resource) {
