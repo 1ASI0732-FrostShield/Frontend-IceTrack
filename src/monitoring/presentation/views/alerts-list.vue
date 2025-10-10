@@ -3,12 +3,17 @@ import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { RouterLink } from "vue-router";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 
 const { t } = useI18n();
+const confirm = useConfirm();
+const toast = useToast();
+
 const store = useMonitoringStore();
 const { alerts, alertsLoaded, errors } = storeToRefs(store);
-const { fetchAlerts } = store;
+const { fetchAlerts, deleteAlert } = store;
 
 const selectedType = ref(null);
 const selectedEquipment = ref(null);
@@ -42,6 +47,24 @@ const filteredAlerts = computed(() => {
     return matchesType && matchesEquipment && matchesDateFrom && matchesDateTo;
   });
 });
+
+function confirmDelete(alert) {
+  confirm.require({
+    message: t("alerts.deletion.confirmDeleteMessage"),
+    header: t("alerts.deletion.confirmDeleteTitle"),
+    icon: "pi pi-exclamation-triangle",
+    acceptLabel: t("alerts.deletion.confirmDeleteAccept"),
+    rejectLabel: t("alerts.deletion.confirmDeleteReject"),
+    accept: async () => {
+      try {
+        await deleteAlert(alert.id);
+        toast.add({ severity: "success", summary: t("alerts.deletion.deleteSuccess"), life: 2000 });
+      } catch (err) {
+        toast.add({ severity: "error", summary: t("alerts.deletion.deleteError"), life: 3000 });
+      }
+    },
+  });
+}
 
 onMounted(() => {
   if (!alertsLoaded.value) fetchAlerts();
@@ -150,14 +173,22 @@ onMounted(() => {
 
         <pv-column :header="t('alerts.list.actions')">
           <template #body="slotProps">
-            <RouterLink
-                :to="{ name: 'equipment-detail', params: { equipmentId: slotProps.data.equipmentId } }"
-            >
+            <div class="flex gap-2">
+              <RouterLink
+                  :to="{ name: 'equipment-detail', params: { equipmentId: slotProps.data.equipmentId } }"
+              >
+                <pv-button
+                    :label="t('alerts.list.viewEquipment')"
+                    class="!bg-blue-600 hover:!bg-blue-700 text-white !py-2 !px-4 rounded-lg"
+                />
+              </RouterLink>
+
               <pv-button
-                  :label="t('alerts.list.viewEquipment')"
-                  class="!bg-blue-600 hover:!bg-blue-700 text-white !py-2 !px-4 rounded-lg transition-all duration-200"
+                  icon="pi pi-trash"
+                  class="!bg-red-500 hover:!bg-red-600 text-white !py-2 !px-3 rounded-lg"
+                  @click="confirmDelete(slotProps.data)"
               />
-            </RouterLink>
+            </div>
           </template>
         </pv-column>
       </pv-data-table>
@@ -166,6 +197,9 @@ onMounted(() => {
         {{ t("errors.occurred") }}: {{ errors.map(e => e.message).join(", ") }}
       </div>
     </div>
+
+    <pv-confirm-dialog />
+    <pv-toast />
   </section>
 </template>
 
