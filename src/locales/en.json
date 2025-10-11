@@ -103,9 +103,24 @@
     "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done", "pending": "Pending", "canceled": "Canceled" }
   },
   "service-requests": {
+    "new-request-title": "New Service Request",
+    "site": "Site",
+    "equipment": "Equipment",
+    "request-type": "Request Type",
+    "priority": "Priority",
+    "problem-description": "Problem Description",
+    "submit": "Submit Request",
+    "cancel": "Cancel",
+
     "types": {
-      "corrective": "Corrective",
-      "preventive": "Preventive"
+      "corrective": "Repair (Corrective)",
+      "preventive": "Maintenance (Preventive)"
+    },
+
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
     }
   },
 
