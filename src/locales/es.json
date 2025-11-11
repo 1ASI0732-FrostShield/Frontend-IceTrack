@@ -20,6 +20,11 @@
     "register": { "title": "Crear cuenta" },
     "errors": { "invalidCredentials": "Correo o contraseña incorrectos." }
   },
+  "page-not-found": {
+    "title": "Página no encontrada",
+    "content": "La ruta {unavailable-route} no está disponible.",
+    "go-dashboard": "Ir al Dashboard"
+  },
   "dashboard": {
     "title": "Dashboard",
     "demoBanner": "Modo demo: usando tenant {id}",
@@ -170,7 +175,49 @@
       "Service": "Servicio"
     }
   },
-  "admin": { "users": { "title": "Usuarios", "invite": "Invitar usuario" }, "settings": { "title": "Configuración", "language": "Idioma" } },
+  "admin": {
+    "users": {
+      "title": "Informacion del Usuario",
+      "invite": "Invitar usuario",
+      "firstName": "Nonbres:",
+      "lastName": "Apellidos:",
+      "user": "Nombre de Usuario:",
+      "email": "Correo Electronico:",
+      "plans": "Planes:",
+      "registerDate": "Fecha de registro:",
+      "lastConnection": "Ultima Coneccion:",
+      "password": "Contraseña:",
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    },
+    "alert": {
+      "save": "Perfil actualizado correctamente",
+      "cancel": "Cambios cancelados"
+    },
+    "settings": {
+      "title": "Configuración",
+      "language": "Idioma",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "lightMode": "Modo de luz:",
+      "notifications": "Notificaciones:",
+      "alarmType": "Tipos de Alarma:",
+      "night": "Noche",
+      "day": "Dia",
+      "notify": {
+        "sms": "SMS",
+        "email": "Correo electrónico",
+        "calls": "Llamada telefonica",
+        "social": "Redes sociales"
+      },
+      "alarm": {
+        "bells": "Campanas",
+        "chime": "Timbre",
+        "pop": "Pop",
+        "none": "Ninguno"
+      }
+    }
+  },
   "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },
   "dates": { "today": "Hoy", "yesterday": "Ayer", "period": "{start} – {end}" },
   "notifications": { "title": "Notificaciones", "empty": "¡No tienes pendientes!", "markAllRead": "Marcar todo como leído" },
