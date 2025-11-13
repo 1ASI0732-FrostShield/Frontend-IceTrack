@@ -5,6 +5,7 @@ import router from './router.js'
 import pinia from "./pinia.js";
 import i18n from './i18n.js'
 import PrimeVue from 'primevue/config'
+import { useAuthStore } from '@/iam/application/stores/auth.store.js' // Importar store aquí
 
 import Material from '@primeuix/themes/material'
 import { definePreset } from '@primeuix/themes'
@@ -44,8 +45,9 @@ const MaterialBlue = definePreset(Material, {
     }
 })
 
-createApp(App)
-    .use(i18n)
+const app = createApp(App);
+
+app.use(i18n)
     .use(PrimeVue, {
         ripple: true,
         theme: {
@@ -85,7 +87,11 @@ createApp(App)
     .component('pv-dropdown', Dropdown)
     .component('pv-calendar', Calendar)
     .directive('tooltip', Tooltip)
-    .use(router)
     .use(pinia)
-    .use(router)
+
+// Inicialización del Pinia Store y Axios
+const authStore = useAuthStore();
+authStore.initializeAuth();
+
+app.use(router)
     .mount('#app')
