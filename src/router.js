@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
+import { useAuthStore } from '@/iam/application/auth.store.js'
 
 import serviceRequestsRoutes from "@/service-request/presentation/service-requests-routes.js";
 import reportingRoutes from "@/reporting/presentation/reporting-routes.js";
@@ -9,6 +10,7 @@ const Layout = () => import('@/shared/presentation/components/layout.vue')
 
 // Shared
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
+const AccessDenied = () => import('@/shared/presentation/views/access-denied.vue') // Nueva vista de error
 
 // Dashboard
 const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue')
@@ -36,8 +38,9 @@ const RegisterPage = () => import('@/iam/presentation/views/register.vue')
 const NotificationsPage = () => import('@/communication/presentation/views/notifications.vue')
 
 const routes = [
-    { path: '/auth/login', name: 'auth-login', component: LoginPage, meta: { titleKey: 'auth.login.title' } },
-    { path: '/auth/register', name: 'auth-register', component: RegisterPage, meta: { titleKey: 'auth.register.title' } },
+    { path: '/auth/login', name: 'auth-login', component: LoginPage, meta: { titleKey: 'auth.login.title', public: true } }, // marcada como pública
+    { path: '/auth/register', name: 'auth-register', component: RegisterPage, meta: { titleKey: 'auth.register.title', public: true } }, // marcada como pública
+    { path: '/access-denied', name: 'access-denied', component: AccessDenied, meta: { title: 'Access Denied', public: true } }, // nueva ruta
 
     {
         path: '/',
@@ -64,15 +67,16 @@ const routes = [
             ...reportingRoutes,
 
             // iam
-            { path: 'admin/users', name: 'admin-users', component: AdminUsersPage, meta: { titleKey: 'admin.users.title' } },
-            { path: 'admin/settings', name: 'admin-settings', component: AdminSettingsPage, meta: { titleKey: 'admin.settings.title' } },
+            // NOTA: Añadimos 'roles' requeridos para las rutas administrativas
+            { path: 'admin/users', name: 'admin-users', component: AdminUsersPage, meta: { titleKey: 'admin.users.title', roles: ['Administrator'] } },
+            { path: 'admin/settings', name: 'admin-settings', component: AdminSettingsPage, meta: { titleKey: 'admin.settings.title', roles: ['Administrator'] } },
 
             // communication
             { path: 'notifications', name: 'notifications', component: NotificationsPage, meta: { titleKey: 'notifications.title' } },
         ],
     },
 
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: PageNotFound, meta: { title: 'Page Not Found' } },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: PageNotFound, meta: { title: 'Page Not Found', public: true } },
 ]
 
 const router = createRouter({
@@ -81,13 +85,46 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _from, next) => {
+    // 1. Manejo del Título (como lo tenías)
     const base = 'IceTrack'
     const t = i18n.global?.t ?? ((k) => k)
     const title =
         to.meta?.titleKey ? t(String(to.meta.titleKey)) :
             to.meta?.title    ? String(to.meta.title)       : ''
     document.title = title ? `${base} — ${title}` : base
-    next()
+
+    // 2. Manejo de Autenticación y Autorización
+    const store = useAuthStore();
+
+    // Si la ruta es pública, permitir acceso sin chequeos
+    if (to.meta.public) {
+        // Si ya está logeado e intenta ir a login/register, redirigir al dashboard
+        if (store.isLoggedIn && (to.name === 'auth-login' || to.name === 'auth-register')) {
+            return next({ name: 'dashboard' });
+        }
+        return next();
+    }
+
+    // Rutas protegidas (todas las rutas que no tienen meta.public: true)
+
+    // A. Chequear Autenticación
+    if (!store.isLoggedIn) {
+        // Redirigir al login si no está autenticado
+        return next({ name: 'auth-login' });
+    }
+
+    // B. Chequear Autorización (Roles)
+    const requiredRoles = to.meta.roles; // Ej: ['Administrator']
+    if (requiredRoles) {
+        const userRole = store.userRole; // El rol obtenido del JWT/Pinia Store
+
+        if (!requiredRoles.includes(userRole)) {
+            // El usuario no tiene el rol requerido -> Acceso Denegado
+            return next({ name: 'access-denied' });
+        }
+    }
+
+    next();
 })
 
 export default router
