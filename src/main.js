@@ -1,11 +1,12 @@
 import './assets/main.css'
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router.js'
 import pinia from "./pinia.js";
 import i18n from './i18n.js'
 import PrimeVue from 'primevue/config'
-import { useAuthStore } from '@/iam/application/stores/auth.store.js' // Importar store aquí
+import { useAuthStore} from "@/iam/application/auth.store.js"; // Importar store aquí
 
 import Material from '@primeuix/themes/material'
 import { definePreset } from '@primeuix/themes'
@@ -14,33 +15,20 @@ import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
 
 import {
-    Avatar,
-    Button,
-    Card,
-    Checkbox,
-    Column,
-    ConfirmationService,
-    ConfirmDialog, DataTable, Dialog,
-    DialogService, Drawer, Divider, FileUpload, FloatLabel,
-    IconField, InputIcon, InputNumber, InputText, Menu,
-    Rating, Row, Select, SelectButton, Tag, Textarea, Toast,
-    ToastService, Toolbar, Tooltip, PanelMenu, Dropdown, Calendar
+    Avatar, Button, Card, Checkbox, Column, ConfirmationService, ConfirmDialog,
+    DataTable, Dialog, DialogService, Drawer, Divider, FileUpload, FloatLabel,
+    IconField, InputIcon, InputNumber, InputText, Menu, Rating, Row, Select,
+    SelectButton, Tag, Textarea, Toast, ToastService, Toolbar, Tooltip, PanelMenu,
+    Dropdown, Calendar, RadioButton
 } from "primevue";
 
 const MaterialBlue = definePreset(Material, {
     semantic: {
         primary: {
-            50: '{blue.50}',
-            100: '{blue.100}',
-            200: '{blue.200}',
-            300: '{blue.300}',
-            400: '{blue.400}',
-            500: '{blue.500}',
-            600: '{blue.600}',
-            700: '{blue.700}',
-            800: '{blue.800}',
-            900: '{blue.900}',
-            950: '{blue.950}'
+            50: '{blue.50}', 100: '{blue.100}', 200: '{blue.200}',
+            300: '{blue.300}', 400: '{blue.400}', 500: '{blue.500}',
+            600: '{blue.600}', 700: '{blue.700}', 800: '{blue.800}',
+            900: '{blue.900}', 950: '{blue.950}'
         }
     }
 })
@@ -55,10 +43,21 @@ app.use(i18n)
             options: { darkModeSelector: false }
         }
     })
-    .component('pv-avatar', Avatar)
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
+    .use(pinia)
+
+const initializeAuthAndRun = async () => {
+    const authStore = useAuthStore();
+
+    await authStore.loadUserFromToken();
+
+    app.use(router)
+        .mount('#app');
+};
+
+app.component('pv-avatar', Avatar)
     .component('pv-button', Button)
     .component('pv-card', Card)
     .component('pv-column', Column)
@@ -86,12 +85,7 @@ app.use(i18n)
     .component('pv-toast', Toast)
     .component('pv-dropdown', Dropdown)
     .component('pv-calendar', Calendar)
+    .component('pv-radio-button', RadioButton)
     .directive('tooltip', Tooltip)
-    .use(pinia)
 
-// Inicialización del Pinia Store y Axios
-const authStore = useAuthStore();
-authStore.initializeAuth();
-
-app.use(router)
-    .mount('#app')
+initializeAuthAndRun();

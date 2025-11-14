@@ -10,8 +10,6 @@ const Layout = () => import('@/shared/presentation/components/layout.vue')
 
 // Shared
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
-const AccessDenied = () => import('@/shared/presentation/views/access-denied.vue') // Nueva vista de error
-
 // Dashboard
 const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue')
 
@@ -38,10 +36,8 @@ const RegisterPage = () => import('@/iam/presentation/views/register.vue')
 const NotificationsPage = () => import('@/communication/presentation/views/notifications.vue')
 
 const routes = [
-    { path: '/auth/login', name: 'auth-login', component: LoginPage, meta: { titleKey: 'auth.login.title', public: true } }, // marcada como pública
-    { path: '/auth/register', name: 'auth-register', component: RegisterPage, meta: { titleKey: 'auth.register.title', public: true } }, // marcada como pública
-    { path: '/access-denied', name: 'access-denied', component: AccessDenied, meta: { title: 'Access Denied', public: true } }, // nueva ruta
-
+    { path: '/auth/login', name: 'auth-login', component: LoginPage, meta: { titleKey: 'auth.login.title', public: true } },
+    { path: '/auth/register', name: 'auth-register', component: RegisterPage, meta: { titleKey: 'auth.register.title', public: true } },
     {
         path: '/',
         component: Layout,
@@ -49,16 +45,16 @@ const routes = [
             { path: '', redirect: '/dashboard' },
 
             // dashboard
-            { path: 'dashboard', name: 'dashboard', component: DashboardPage, meta: { titleKey: 'dashboard.title' } },
+            { path: 'dashboard', name: 'dashboard', component: DashboardPage, meta: { titleKey: 'dashboard.title', roleRequired: 'Owner' } },
 
             // assets-management
-            { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title' } },
-            { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title' } },
+            { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title', roleRequired: 'Owner'} },
+            { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title', roleRequired: 'Owner' } },
 
             // monitoring
-            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title' } },
-            { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title' } },
-            { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title' } },
+            { path: 'equipments', name: 'equipments', component: EquipmentsListPage, meta: { titleKey: 'equipments.list.title', roleRequired: 'Owner' } },
+            { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title', roleRequired: 'Owner' } },
+            { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title', roleRequired: 'Owner' } },
 
             // service-requests (Integración del Bounded Context)
             ...serviceRequestsRoutes,
@@ -67,12 +63,11 @@ const routes = [
             ...reportingRoutes,
 
             // iam
-            // NOTA: Añadimos 'roles' requeridos para las rutas administrativas
-            { path: 'admin/users', name: 'admin-users', component: AdminUsersPage, meta: { titleKey: 'admin.users.title', roles: ['Administrator'] } },
-            { path: 'admin/settings', name: 'admin-settings', component: AdminSettingsPage, meta: { titleKey: 'admin.settings.title', roles: ['Administrator'] } },
+            { path: 'admin/users', name: 'admin-users', component: AdminUsersPage, meta: { titleKey: 'admin.users.title' } },
+            { path: 'admin/settings', name: 'admin-settings', component: AdminSettingsPage, meta: { titleKey: 'admin.settings.title' } },
 
             // communication
-            { path: 'notifications', name: 'notifications', component: NotificationsPage, meta: { titleKey: 'notifications.title' } },
+            { path: 'notifications', name: 'notifications', component: NotificationsPage, meta: { titleKey: 'notifications.title', roleRequired: 'Owner' } },
         ],
     },
 
@@ -84,47 +79,38 @@ const router = createRouter({
     routes,
 })
 
-router.beforeEach((to, _from, next) => {
-    // 1. Manejo del Título (como lo tenías)
-    const base = 'IceTrack'
-    const t = i18n.global?.t ?? ((k) => k)
-    const title =
-        to.meta?.titleKey ? t(String(to.meta.titleKey)) :
-            to.meta?.title    ? String(to.meta.title)       : ''
-    document.title = title ? `${base} — ${title}` : base
+router.beforeEach(async (to, from, next) => {
+    const authStore = useAuthStore();
+    const requiresAuth = !to.meta.public;
 
-    // 2. Manejo de Autenticación y Autorización
-    const store = useAuthStore();
-
-    // Si la ruta es pública, permitir acceso sin chequeos
-    if (to.meta.public) {
-        // Si ya está logeado e intenta ir a login/register, redirigir al dashboard
-        if (store.isLoggedIn && (to.name === 'auth-login' || to.name === 'auth-register')) {
-            return next({ name: 'dashboard' });
-        }
-        return next();
-    }
-
-    // Rutas protegidas (todas las rutas que no tienen meta.public: true)
-
-    // A. Chequear Autenticación
-    if (!store.isLoggedIn) {
-        // Redirigir al login si no está autenticado
+    // 1. Control de Autenticación
+    if (requiresAuth && !authStore.isLoggedIn) {
         return next({ name: 'auth-login' });
     }
 
-    // B. Chequear Autorización (Roles)
-    const requiredRoles = to.meta.roles; // Ej: ['Administrator']
-    if (requiredRoles) {
-        const userRole = store.userRole; // El rol obtenido del JWT/Pinia Store
-
-        if (!requiredRoles.includes(userRole)) {
-            // El usuario no tiene el rol requerido -> Acceso Denegado
-            return next({ name: 'access-denied' });
-        }
+    // 2. Control de Redirección (Si está logueado no puede ir a login/register)
+    if ((to.name === 'auth-login' || to.name === 'auth-register') && authStore.isLoggedIn) {
+        return next({ name: 'dashboard' });
     }
 
+    // 3. Control de Autorización (Frontend)
+    const requiredRole = to.meta.requiredRole;
+    const currentUserRole = authStore.currentUserRole;
+
+    if (requiredRole && currentUserRole !== requiredRole) {
+        console.warn(`Access denied for role: ${currentUserRole}. Required role: ${requiredRole}`);
+        return next({ name: 'dashboard' });
+    }
+
+    // 4. Lógica de Título
+    const base = 'IceTrack';
+    const t = i18n.global?.t ?? ((k) => k);
+    const title =
+        to.meta?.titleKey ? t(String(to.meta.titleKey)) :
+            to.meta?.title    ? String(to.meta.title)       : '';
+    document.title = title ? `${base} — ${title}` : base;
+
     next();
-})
+});
 
 export default router
