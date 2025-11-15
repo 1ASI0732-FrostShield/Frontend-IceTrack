@@ -115,7 +115,7 @@ function formatDate(dateStr) {
           <pv-input-text
               v-model="filterModel.value"
               @input="filterCallback()"
-              placeholder="Buscar por nombre"
+              :placeholder="t('reports.list.label.search')"
           />
         </template>
       </pv-column>
@@ -127,7 +127,7 @@ function formatDate(dateStr) {
               @change="filterCallback()"
               :options="typeOptions"
               optionLabel="label"
-              placeholder="Seleccionar tipo"
+              :placeholder="t('reports.list.label.type')"
               :showClear="true"
               style="width: 100%"
           />
@@ -150,7 +150,7 @@ function formatDate(dateStr) {
               @change="filterCallback()"
               :options="statusOptions"
               optionLabel="label"
-              placeholder="Seleccionar estado"
+              :placeholder="t('reports.list.label.status')"
               :showClear="true"
               style="width: 100%"
           />
@@ -160,12 +160,14 @@ function formatDate(dateStr) {
       <pv-column :header="t('reports.list.actions')" style="min-width: 10rem">
         <template #body="{ data }">
           <pv-button
-              label="Ver Reporte"
+              type="button"
+              :label="t('reports.list.action.view')"
               icon="pi pi-eye"
               outlined
               @click="navigateToDetails(data.id)"
           />
           <pv-button
+              type="button"
               icon="pi pi-trash"
               rounded
               severity="danger"

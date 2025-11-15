@@ -16,6 +16,12 @@ const editMode = ref(false)
 
 const id = route.params.id
 
+const statusOptions = [
+  { label: 'Cancelado', value: 'Cancelado' },
+  { label: 'En espera', value: 'En espera' },
+  { label: 'Listo', value: 'Listo' }
+]
+
 onMounted(async () => {
   loading.value = true
 
@@ -23,7 +29,7 @@ onMounted(async () => {
     await store.fetchReports()
   }
 
-  const found = store.reports.find(r => r.id === id)
+  const found = store.reports.find(r => r.id === Number(id))
 
   if (found) {
     report.value = new Report(found)
@@ -42,18 +48,24 @@ const saveChanges = () => {
 
 <template>
   <div class="p-4">
-    <h2 class="text-lg font-bold mb-3">Detalle del Reporte</h2>
+    <h1>{{ t('reports.list.detail.start') }}</h1>
+
+    <br>
 
     <div v-if="loading">Cargando...</div>
     <div v-else-if="!report">Reporte no encontrado</div>
     <div v-else>
 
       <div v-if="!editMode">
-        <p><strong>Título:</strong> {{ report.title }}</p>
-        <p><strong>Tipo:</strong> {{ report.type }}</p>
-        <p><strong>Estado:</strong> {{ report.status }}</p>
+        <p><strong>{{ t('reports.list.detail.title') }}:</strong> {{ report.title }}</p>
+        <p><strong>{{ t('reports.list.detail.type') }}:</strong> {{ report.type }}</p>
+        <p><strong>{{ t('reports.list.detail.status') }}:</strong> {{ report.status }}</p>
+        <p><strong>{{ t('reports.list.detail.summary') }}:</strong> {{ report.summary }}</p>
+        <p><strong>{{ t('reports.list.detail.content') }}:</strong></p>
+        <p class="whitespace-pre-line">{{ report.content }}</p>
+
         <p>
-          <strong>Generado el:</strong>
+          <strong>{{ t('reports.list.detail.generatedAt') }}:</strong>
           {{
             report.generatedAt instanceof Date
                 ? report.getFormatedGeneratedAt()
@@ -61,51 +73,50 @@ const saveChanges = () => {
           }}
         </p>
 
-        <pv-button
-            label="Editar"
-            icon="pi pi-pencil"
-            class="mt-3"
-            @click="editMode = true"
-        />
-        <pv-button
-            label="Volver"
-            icon="pi pi-arrow-left"
-            class="mt-3 ml-2"
-            @click="router.back()"
-        />
+        <pv-button :label="t('reports.list.detail.edit')" icon="pi pi-pencil" class="mt-3" @click="editMode = true"/>
+        <pv-button :label="t('reports.list.detail.back')" icon="pi pi-arrow-left" class="mt-3 ml-2" @click="router.back()"/>
       </div>
 
       <div v-else>
-        <div class="flex flex-col gap-3">
-          <div>
-            <label>Título</label>
-            <pv-input-text v-model="report.title" class="w-full" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="mt-12" style="width: 85%;">
+            <label class="block mb-2">{{ t('reports.list.detail.title') }}</label>
+            <pv-input-text v-model="report.title" class="p-inputtext-lg" style="width: 40%;
+            height: 3rem;"/>
           </div>
 
-          <div>
-            <label>Tipo</label>
-            <pv-input-text v-model="report.type" class="w-full" />
+          <div class="mt-12" style="width: 85%;">
+            <label class="block mb-2">{{ t('reports.list.detail.type') }}</label>
+            <pv-input-text v-model="report.type" class="p-inputtext-lg" style="width: 40%;
+            height: 3rem;"/>
           </div>
 
-          <div>
-            <label>Estado</label>
-            <pv-input-text v-model="report.status" class="w-full" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <div class="mt-12" style="width: 10%;">
+            <label class="block mb-2">{{ t('reports.list.detail.status') }}</label>
+            <pv-select v-model="report.status" :options="statusOptions" optionLabel="label"
+                optionValue="value" placeholder="Seleccionar estado" style="width: 100%; height: 3rem;"/>
+          </div>
+
+          <div class="mt-12" style="width: 85%;">
+            <label class="block mb-2">{{ t('reports.list.detail.summary') }}</label>
+            <pv-textarea v-model="report.summary" autoResize rows="5"
+                style="width: 80%; min-height: 8rem; padding: 1rem;"/>
           </div>
         </div>
 
-        <div class="mt-4">
-          <pv-button
-              label="Guardar"
-              icon="pi pi-check"
-              class="p-button-success"
-              @click="saveChanges"
-          />
-          <pv-button
-              label="Cancelar"
-              icon="pi pi-times"
-              class="ml-2 p-button-secondary"
-              @click="editMode = false"
-          />
+        <div class="mt-8">
+          <label class="block mb-2">{{ t('reports.list.detail.content') }}</label>
+          <pv-textarea v-model="report.content" autoResize rows="12"
+              class="w-full" style="font-size: 1.05rem; padding: 1rem; min-height: 14rem;"/>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-8">
+          <pv-button :label="t('reports.list.detail.save')" icon="pi pi-check" class="p-button-success" @click="saveChanges"/>
+          <pv-button :label="t('reports.list.detail.cancel')" icon="pi pi-times" class="ml-2 p-button-secondary" @click="editMode = false"/>
         </div>
       </div>
     </div>
