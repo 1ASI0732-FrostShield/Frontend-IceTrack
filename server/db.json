@@ -624,7 +624,7 @@
   ],
   "reports": [
     {
-      "id": "rep1",
+      "id": 1,
       "tenantId": "t2",
       "type": "Historial de equipo",
       "equipmentId": "e2",
@@ -632,10 +632,11 @@
       "title": "Rendimiento - Cámara A (sep, 2025)",
       "status": "En Espera",
       "summary": "Temperatura promedio 4.3 °C, sin incidentes críticos.",
+      "content": "Rendimiento del equipo.",
       "url": "/reports/rep1.pdf"
     },
     {
-      "id": "rep2",
+      "id": 2,
       "tenantId": "t2",
       "type": "Consumo de energía",
       "equipmentId": "e2",
@@ -643,10 +644,11 @@
       "title": "Reporte de consumo de energía - Cámara A",
       "status": "Listo",
       "summary": "Consumo estable. Pico de 3.2 kWh",
+      "content": "Reporte detallado de consumo energético.",
       "url": "/reports/rep2.pdf"
     },
     {
-      "id": "rep3",
+      "id": 3,
       "tenantId": "t1",
       "type": "Historial de equipo",
       "equipmentId": "e2",
@@ -655,10 +657,11 @@
       "title": "Reporte de historial - Cámara B",
       "status": "En espera",
       "summary": "Generación pendiente. Última solicitud hace 2 horas.",
+      "content": "Reporte en proceso de generación.",
       "url": "/reports/rep3.pdf"
     },
     {
-      "id": "rep4",
+      "id": 4,
       "tenantId": "t1",
       "type": "Consumo de energía",
       "equipmentId": "e5",
@@ -666,10 +669,11 @@
       "title": "Reporte de consumo de energía - Cámara B",
       "status": "Listo",
       "summary": "Consumo promedio 2.9 kWh, sin anomalías.",
+      "content": "Reporte detallado de consumo energético.",
       "url": "/reports/rep4.pdf"
     },
     {
-      "id": "rep5",
+      "id": 5,
       "tenantId": "t2",
       "type": "Historial de equipo",
       "equipmentId": "e1",
@@ -677,6 +681,7 @@
       "title": "Rendimiento - Freezer Vertical #1 (sep, 2025)",
       "status": "Listo",
       "summary": "Temperatura promedio -17.5 °C, 1 alerta crítica resuelta.",
+      "content": "Rendimiento del equipo.",
       "url": "/reports/rep5.pdf"
     }
   ],
