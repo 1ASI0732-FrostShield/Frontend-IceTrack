@@ -4,12 +4,14 @@ import { useRouter } from "vue-router";
 import { onMounted, computed, ref } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 import useServiceRequestsStore from "../../application/service-requests.store.js";
+import { storeToRefs } from "pinia";
 
 const { t } = useI18n();
 const router = useRouter();
 const confirm = useConfirm();
 const store = useServiceRequestsStore();
-const { requests, requestsLoaded, errors, fetchServiceRequests, cancelRequest } = store;
+const { requests, requestsLoaded, errors } = storeToRefs(store);
+const { fetchServiceRequests, cancelRequest } = store;
 
 const currentTenantId = ref('t2');
 

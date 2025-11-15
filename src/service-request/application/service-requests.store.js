@@ -48,6 +48,7 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
             requestsLoaded.value = true;
         } catch (error) {
             errors.value.push(error);
+            console.error("Error al cargar service requests:", error);
         }
     }
 

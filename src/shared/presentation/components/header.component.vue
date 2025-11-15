@@ -1,8 +1,19 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { useAuthStore} from "@/iam/application/auth.store.js";
 
 const { locale, t } = useI18n()
+const router = useRouter()
+const authStore = useAuthStore()
+
 function setLang(lang) { locale.value = lang }
+
+function handleSignOut() {
+  authStore.logout()
+  router.push({ name: 'auth-login' })
+}
+
 </script>
 
 <template>
@@ -18,6 +29,23 @@ function setLang(lang) { locale.value = lang }
       <pv-button text @click="setLang('es')" label="ES" />
       <pv-button text @click="setLang('en')" label="EN" />
       <pv-divider layout="vertical" />
+
+      <!-- Mostrar nombre de usuario y botón de cerrar sesión si está autenticado -->
+      <template v-if="authStore.isLoggedIn && authStore.user">
+        <!-- Mostramos el rol del usuario -->
+        <span class="font-bold text-sm mr-2 text-primary-500">({{ authStore.user.role }})</span>
+        <!-- Mostramos el email (username) del usuario -->
+        <span class="font-medium text-color-secondary mr-2">{{ authStore.user.email }}</span>
+
+        <pv-button
+            icon="pi pi-power-off"
+            severity="danger"
+            rounded
+            text
+            aria-label="Logout"
+            @click="handleSignOut" />
+      </template>
+
       <pv-avatar icon="pi pi-user" shape="circle" />
     </div>
   </header>

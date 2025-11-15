@@ -20,6 +20,11 @@
     "register": { "title": "Create account" },
     "errors": { "invalidCredentials": "Email or password is incorrect." }
   },
+  "page-not-found": {
+    "title": "Page Not Found",
+    "content": "The path {unavailable-route} is not available.",
+    "go-dashboard": "Go Dashboard"
+  },
   "dashboard": {
     "title": "Dashboard",
     "demoBanner": "Demo mode: using tenant {id}",
@@ -181,7 +186,49 @@
       "Service": "Service"
     }
   },
-  "admin": { "users": { "title": "Users", "invite": "Invite user" }, "settings": { "title": "Settings", "language": "Language" } },
+  "admin": {
+    "users": {
+      "title": "User information",
+      "invite": "Invite user",
+      "firstName": "First Name:",
+      "lastName": "Last Name:",
+      "user": "User Name:",
+      "email": "Email:",
+      "plans": "Plans:",
+      "registerDate": "Register Date:",
+      "lastConnection": "Last Connection:",
+      "password": "Password:",
+      "hide": "Hide",
+      "show": "Show"
+    },
+    "alert": {
+      "save" : "Profile successfully updated",
+      "cancel": "Changes cancelled"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "cancel": "Cancel",
+      "save": "Save",
+      "lightMode": "Light Mode:",
+      "notifications": "Notifications:",
+      "alarmType": "Alarm Type:",
+      "night": "Night",
+      "day": "Day",
+      "notify": {
+        "sms": "SMS",
+        "email": "Email",
+        "calls": "Phone call",
+        "social": "Social Media"
+      },
+      "alarm": {
+        "bells": "Bells",
+        "chime": "Chime",
+        "pop": "Pop",
+        "none": "None"
+      }
+    }
+  },
   "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
   "dates": { "today": "Today", "yesterday": "Yesterday", "period": "{start} – {end}" },
   "notifications": { "title": "Notifications", "empty": "You're all caught up!", "markAllRead": "Mark all as read" },
