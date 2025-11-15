@@ -165,9 +165,30 @@
         "done": "Listo",
         "inProgress": "En progreso"
       },
-        "detail": {
-            "title": "Detalle del Reporte"
-        }
+      "label": {
+        "search": "Buscar por nombre",
+        "type": "Seleccionar tipo",
+        "status": "Seleccionar estado"
+      },
+      "action": {
+        "view": "Ver Reporte"
+      },
+      "detail": {
+        "start": "Detalle del Reporte",
+        "title": "Título",
+        "type": "Tipo",
+        "status": "Estado",
+        "summary": "Resumen",
+        "content": "Contenido",
+        "generatedAt": "Generado el",
+        "edit": "Editar",
+        "back": "Volver",
+        "save": "Guardar",
+        "cancel": "Cancelar"
+      },
+      "create": {
+        "start": "Nuevo Reporte"
+      }
     },
     "types": {
       "equipmentHistory": "Historial del Equipo",

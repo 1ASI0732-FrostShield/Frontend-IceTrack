@@ -176,8 +176,29 @@
         "done": "Done",
         "inProgress": "In Progress"
       },
+      "label": {
+        "search": "Search for name",
+        "type": "Select type",
+        "status": "Select status"
+      },
+      "action": {
+        "view": "View Report"
+      },
       "detail": {
-        "title": "Report Detail"
+        "start": "Report Detail",
+        "title": "Title",
+        "type": "Type",
+        "status": "Status",
+        "summary": "Summary",
+        "content": "Content",
+        "generatedAt": "Generated at",
+        "edit": "Edit",
+        "back": "Back",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "create": {
+        "start": "New Report"
       }
     },
     "types": {

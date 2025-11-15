@@ -11,7 +11,7 @@ export class Report {
      */
     constructor({ id = null, tenantId = null, type = '',
                 equipmentId = null, generatedAt = '', title = '',
-                status = '', summary = '', url = ''}) {
+                status = '', summary = '', content = '', url = ''}) {
         this.id = id;
         this.tenantId = tenantId;
         this.type = type;
@@ -20,6 +20,7 @@ export class Report {
         this.title = title;
         this.status = status;
         this.summary = summary;
+        this.content = content;
         this.url = url;
     }
 
