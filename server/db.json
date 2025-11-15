@@ -73,6 +73,13 @@
       "locale": "es",
       "timezone": "America/Lima",
       "lastLoginAt": "2025-09-21T14:07:00Z"
+    },
+    {
+      "name": "owner",
+      "username": "owner",
+      "password": "owner",
+      "role": 0,
+      "id": "KWPA3wG"
     }
   ],
   "sites": [
