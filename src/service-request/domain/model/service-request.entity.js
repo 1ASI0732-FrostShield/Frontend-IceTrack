@@ -8,20 +8,26 @@ export class ServiceRequest {
                     origin = 'manual',
                     alertId = null,
                     type = 'corrective',
-                    priority = 'medium', // high, medium, low
+                    priority = 'medium',
                     description = '',
-                    status = 'pending', // pending, assigned, scheduled, inProgress, done, canceled
+                    status = 'pending',
                     createdAt = null,
                     scheduledFor = null,
                     startedAt = null,
                     completedAt = null,
                     canceledAt = null,
                     assignedTo = null,
+                    technicianId = null,
+                    // Assembled properties
                     siteName = '',
                     equipmentName = '',
                     requesterName = '',
+                    assignedToName = '',
                     technicianName = null,
-                    reportUrl = null
+                    reportUrl = null,
+                    // Review properties
+                    hasReview = false,
+                    reviewId = null
                 }) {
         this.id = id;
         this.tenantId = tenantId;
@@ -40,11 +46,18 @@ export class ServiceRequest {
         this.completedAt = completedAt;
         this.canceledAt = canceledAt;
         this.assignedTo = assignedTo;
+        this.technicianId = technicianId;
 
+        // Assembled properties
         this.siteName = siteName;
         this.equipmentName = equipmentName;
         this.requesterName = requesterName;
+        this.assignedToName = assignedToName;
         this.technicianName = technicianName;
         this.reportUrl = reportUrl;
+
+        // Review properties
+        this.hasReview = hasReview;
+        this.reviewId = reviewId;
     }
 }
