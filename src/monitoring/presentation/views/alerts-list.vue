@@ -77,7 +77,7 @@ onMounted(() => {
       {{ t("alerts.list.title") }}
     </h1>
 
-    <div class="flex flex-wrap gap-4 mb-6 bg-gray-50 p-4 rounded-xl shadow-sm items-end">
+    <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-end">
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-600 mb-1">
           {{ t("alerts.list.type") }}
