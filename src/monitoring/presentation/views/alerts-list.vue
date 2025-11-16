@@ -202,11 +202,3 @@ onMounted(() => {
     <pv-toast />
   </section>
 </template>
-
-<style scoped>
-section {
-  background-color: #f9fafb;
-  min-height: 100vh;
-  padding: 2rem;
-}
-</style>
