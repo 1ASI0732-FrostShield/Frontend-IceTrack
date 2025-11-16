@@ -3,20 +3,22 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import useServiceRequestsStore from "../../application/service-requests.store.js";
-import { BaseApi} from "@/shared/infrastructure/base-api.js";
+import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { useAuthStore } from "@/iam/application/auth.store.js";
 
 const { t } = useI18n();
 const router = useRouter();
 const store = useServiceRequestsStore();
+const authStore = useAuthStore();
 const { errors, createRequest } = store;
-const baseApi = new BaseApi();
+const iamApi = new IamApi();
 
-const currentTenantId = ref('t2');
-const currentRequesterId = ref('u4');
+const currentRequesterId = computed(() => authStore.currentUserId);
 
 const form = ref({
   siteId: null,
   equipmentId: null,
+  assignedTo: null,
   type: 'corrective',
   priority: 'medium',
   description: '',
@@ -24,6 +26,8 @@ const form = ref({
 
 const sites = ref([]);
 const equipments = ref([]);
+const providers = ref([]);
+
 const filteredEquipments = computed(() => {
   if (!form.value.siteId) return [];
   return equipments.value.filter(eq => eq.siteId === form.value.siteId);
@@ -31,12 +35,14 @@ const filteredEquipments = computed(() => {
 
 onMounted(async () => {
   try {
-    const [sitesRes, equipRes] = await Promise.all([
-      baseApi.http.get(`/sites?tenantId=${currentTenantId.value}`),
-      baseApi.http.get(`/equipments?tenantId=${currentTenantId.value}`)
+    const [sitesRes, equipRes, providersRes] = await Promise.all([
+      iamApi.http.get(`/sites`),
+      iamApi.http.get(`/equipments`),
+      iamApi.getUsersByRole('provider')
     ]);
     sites.value = sitesRes.data;
     equipments.value = equipRes.data;
+    providers.value = providersRes.data;
   } catch (error) {
     errors.value.push(error);
   }
@@ -47,16 +53,16 @@ const handleSiteChange = () => {
 };
 
 const saveRequest = async () => {
-  if (!form.value.siteId || !form.value.equipmentId || !form.value.description) {
+  if (!form.value.siteId || !form.value.equipmentId || !form.value.description || !form.value.assignedTo) {
     alert("Por favor complete todos los campos requeridos.");
     return;
   }
 
   const newRequestData = {
-    tenantId: currentTenantId.value,
     requesterId: currentRequesterId.value,
     siteId: form.value.siteId,
     equipmentId: form.value.equipmentId,
+    assignedTo: form.value.assignedTo,
     origin: 'manual',
     type: form.value.type,
     priority: form.value.priority,
@@ -68,10 +74,10 @@ const saveRequest = async () => {
   const success = await createRequest(newRequestData);
 
   if (success) {
-    alert(t('common.request-created-successfully'));
+    alert('Request created successfully!');
     navigateBack();
   } else {
-    alert(t('common.error-creating-request'));
+    alert('Error creating request.');
   }
 };
 
@@ -88,6 +94,21 @@ const navigateBack = () => {
         <form @submit.prevent="saveRequest">
 
           <div class="p-fluid grid">
+            <div class="field col-12 md:col-6">
+              <pv-float-label>
+                <pv-select
+                    id="provider"
+                    v-model="form.assignedTo"
+                    :options="providers"
+                    optionLabel="name"
+                    optionValue="id"
+                    required
+                    class="w-full"
+                />
+                <label for="provider">Service Provider *</label>
+              </pv-float-label>
+            </div>
+
             <div class="field col-12 md:col-6">
               <pv-float-label>
                 <pv-select
