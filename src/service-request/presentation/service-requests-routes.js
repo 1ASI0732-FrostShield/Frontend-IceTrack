@@ -12,14 +12,14 @@ const serviceRequestsRoutes = [
                 path: '',
                 name: 'service-requests-list',
                 component: ServiceRequestListPage,
-                meta: { titleKey: 'services.requests.title' }
+                meta: { titleKey: 'services.requests.title', roleRequired: 'owner' }
             },
             {
                 // Ruta: /services/new
                 path: 'new',
                 name: 'service-requests-new',
                 component: ServiceRequestFormPage,
-                meta: { titleKey: 'services.requests.new' }
+                meta: { titleKey: 'services.requests.new', roleRequired: 'owner' }
             },
         ]
     },
