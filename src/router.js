@@ -14,6 +14,7 @@ const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue
 
 // Owner Views
 const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')
+const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue') // Import SiteDetailPage
 const EquipmentListPage = () => import('@/monitoring/presentation/views/equipment-list.vue')
 const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue') // Import EquipmentDetailPage
 const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
@@ -42,7 +43,8 @@ const routes = [
 
             // --- Owner Routes ---
             { path: 'dashboard', name: 'dashboard', component: DashboardPage, meta: { titleKey: 'dashboard.title', roleRequired: 'owner' } },
-            { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title', roleRequired: 'owner'} },
+            { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title', public: true } },
+            { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title', public: true } },
             { path: 'equipments', name: 'equipments', component: EquipmentListPage, meta: { titleKey: 'equipments.list.title', roleRequired: 'owner' } },
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title', roleRequired: 'owner' } }, // Added EquipmentDetailPage route
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title', roleRequired: 'owner' } },
@@ -81,7 +83,7 @@ router.beforeEach(async (to, from, next) => {
         if (authStore.currentUserRole === 'owner') return next({ name: 'dashboard' });
     }
 
-    const requiredRole = to.meta.requiredRole;
+    const requiredRole = to.meta.roleRequired;
     if (requiredRole && authStore.currentUserRole !== requiredRole) {
         console.warn(`Access denied for role: ${authStore.currentUserRole}. Required role: ${requiredRole}`);
         if (authStore.currentUserRole === 'provider') return next({ name: 'provider-dashboard' });
