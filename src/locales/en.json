@@ -14,10 +14,33 @@
     "cancel-tooltip": "Cancel Request",
     "error-occurred": "An error occurred"
   },
-  "nav": { "dashboard": "Dashboard", "sites": "Sites", "equipments": "Equipments", "services": "Services", "alerts": "Alerts", "reports": "Reports", "admin": "Admin", "help": "Help" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "sites": "Sites",
+    "equipments": "Equipments",
+    "services": "Services",
+    "alerts": "Alerts",
+    "reports": "Reports",
+    "admin": "Admin",
+    "help": "Help",
+    "provider_dashboard": "Provider Dashboard",
+    "provider_services": "Provider Services",
+    "technician_management": "Technician Management"
+  },
   "auth": {
-    "login": { "title": "Sign in", "email": "Email", "password": "Password", "cta": "Sign in" },
-    "register": { "title": "Create account" },
+    "login": { "title": "Sign in", "email": "Email", "username": "Username", "password": "Password", "cta": "Sign in" },
+    "register": {
+      "title": "Create account",
+      "alreadyHaveAccount": "Already have an account?",
+      "selectRole": "Select your role",
+      "cta": "Register",
+      "roles": {
+        "owner": "Owner",
+        "ownerDesc": "Manage your sites and equipment",
+        "provider": "Service Provider",
+        "providerDesc": "Provide services to owners"
+      }
+    },
     "errors": { "invalidCredentials": "Email or password is incorrect." }
   },
   "page-not-found": {
@@ -103,9 +126,20 @@
       "cancel-header": "Confirm Cancellation",
       "request-type": "Request Type",
       "priority": "Priority",
-      "problem-description": "Problem Description"
+      "problem-description": "Problem Description",
+      "provider": "Provider"
     },
-    "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done", "pending": "Pending", "canceled": "Canceled" }
+    "status": {
+      "scheduled": "Scheduled",
+      "assigned": "Assigned",
+      "inProgress": "In progress",
+      "done": "Done",
+      "pending": "Pending",
+      "canceled": "Canceled",
+      "completed": "Completed",
+      "rejected": "Rejected",
+      "accepted": "Accepted"
+    }
   },
   "service-requests": {
     "new-request-title": "New Service Request",
@@ -249,6 +283,11 @@
         "none": "None"
       }
     }
+  },
+  "provider": {
+    "dashboard": { "title": "Provider Dashboard" },
+    "services": { "title": "Provider Services" },
+    "technicians": { "title": "Technician Management" }
   },
   "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
   "dates": { "today": "Today", "yesterday": "Yesterday", "period": "{start} – {end}" },

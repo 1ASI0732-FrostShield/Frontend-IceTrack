@@ -16,8 +16,19 @@
   },
   "nav": { "dashboard": "Inicio", "sites": "Sitios", "equipments": "Equipos", "services": "Órdenes", "alerts": "Alertas", "reports": "Reportes", "admin": "Administración", "help": "Ayuda" },
   "auth": {
-    "login": { "title": "Iniciar sesión", "email": "Correo", "password": "Contraseña", "cta": "Entrar" },
-    "register": { "title": "Crear cuenta" },
+    "login": { "title": "Iniciar sesión", "email": "Correo", "username": "Nombre de usuario", "password": "Contraseña", "cta": "Entrar" },
+    "register": {
+      "title": "Crear cuenta",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "selectRole": "Selecciona tu rol",
+      "cta": "Registrarse",
+      "roles": {
+        "owner": "Propietario",
+        "ownerDesc": "Administra tus sitios y equipos",
+        "provider": "Proveedor de servicios",
+        "providerDesc": "Proporciona servicios a propietarios"
+      }
+    },
     "errors": { "invalidCredentials": "Correo o contraseña incorrectos." }
   },
   "page-not-found": {
@@ -238,6 +249,11 @@
         "none": "Ninguno"
       }
     }
+  },
+  "provider": {
+    "dashboard": { "title": "Dashboard del Proveedor" },
+    "services": { "title": "Servicios del Proveedor" },
+    "technicians": { "title": "Gestión de Técnicos" }
   },
   "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },
   "dates": { "today": "Hoy", "yesterday": "Ayer", "period": "{start} – {end}" },
