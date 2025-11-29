@@ -104,14 +104,14 @@ onMounted(async () => {
 });
 
 const navigate = (status) => {
-  if (status === 'pending') {
-    router.push({ name: 'provider-dashboard' }); // This view will now only show pending
-  } else if (status === 'in-progress') {
-    router.push({ name: 'provider-in-progress' }); // This view will show accepted and inProgress
-  } else if (status === 'completed') {
-    router.push({ name: 'provider-completed-services' });
-  } else if (status === 'rejected-canceled') {
-    router.push({ name: 'provider-rejected-canceled-services' });
+  const routeNames = {
+    'pending': 'provider-pending-services',
+    'in-progress': 'provider-in-progress',
+    'completed': 'provider-completed-services',
+    'rejected-canceled': 'provider-rejected-canceled-services'
+  };
+  if (routeNames[status]) {
+    router.push({ name: routeNames[status] });
   }
 };
 </script>

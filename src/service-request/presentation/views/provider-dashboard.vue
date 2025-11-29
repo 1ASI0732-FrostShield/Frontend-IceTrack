@@ -5,7 +5,7 @@
 
     <!-- KPI Cards -->
     <div class="grid mb-4">
-      <div class="col-12 md:col-6 lg:col-4">
+      <div class="col-12 md:col-6 lg:col-3">
         <pv-card class="bg-blue-100">
           <template #title><span class="text-blue-900">New Requests</span></template>
           <template #content>
@@ -16,7 +16,7 @@
           </template>
         </pv-card>
       </div>
-      <div class="col-12 md:col-6 lg:col-4">
+      <div class="col-12 md:col-6 lg:col-3">
         <pv-card class="bg-orange-100">
           <template #title><span class="text-orange-900">Active Services</span></template>
           <template #content>
@@ -27,13 +27,24 @@
           </template>
         </pv-card>
       </div>
-      <div class="col-12 md:col-6 lg:col-4">
+      <div class="col-12 md:col-6 lg:col-3">
         <pv-card class="bg-teal-100">
           <template #title><span class="text-teal-900">My Technicians</span></template>
           <template #content>
             <div class="flex justify-content-between align-items-center">
               <i class="pi pi-users text-teal-500 text-5xl"></i>
               <span class="text-5xl font-bold text-teal-900">{{ kpis.technicians }}</span>
+            </div>
+          </template>
+        </pv-card>
+      </div>
+       <div class="col-12 md:col-6 lg:col-3">
+        <pv-card class="bg-purple-100">
+          <template #title><span class="text-purple-900">All Services</span></template>
+          <template #content>
+             <div class="flex flex-column align-items-start">
+                <p class="text-color-secondary m-0">Go to the complete list of your services.</p>
+                <pv-button label="View All Services" icon="pi pi-arrow-right" class="p-button-text mt-2" @click="navigateToList" />
             </div>
           </template>
         </pv-card>
@@ -75,11 +86,13 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler } from '@/service-request/infrastructure/service-request.assembler.js';
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 
+const router = useRouter();
 const serviceApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
@@ -133,6 +146,10 @@ const handleAccept = async (requestId) => {
 const handleReject = async (requestId) => {
   await serviceApi.rejectRequest(requestId);
   await fetchData();
+};
+
+const navigateToList = () => {
+  router.push({ name: 'provider-services-list' });
 };
 
 onMounted(fetchData);
