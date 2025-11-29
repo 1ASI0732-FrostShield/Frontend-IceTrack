@@ -13,7 +13,14 @@ const items = computed(() => {
   if (authStore.currentUserRole === 'provider') {
     return [
       { label: t('nav.provider_dashboard'), icon: 'pi pi-th-large', command: () => router.push({ name: 'provider-dashboard' }) },
-      { label: t('nav.provider_services'), icon: 'pi pi-briefcase', command: () => router.push({ name: 'provider-services-hub' }) },
+      {
+        label: t('nav.provider_services'),
+        icon: 'pi pi-briefcase',
+        items: [
+          { label: 'Services Hub', icon: 'pi pi-sitemap', command: () => router.push({ name: 'provider-services-hub' }) },
+          { label: 'All Services', icon: 'pi pi-list', command: () => router.push({ name: 'provider-services-list' }) },
+        ]
+      },
       { label: t('nav.technician_management'), icon: 'pi pi-users', command: () => router.push({ name: 'provider-technicians' }) },
     ];
   }

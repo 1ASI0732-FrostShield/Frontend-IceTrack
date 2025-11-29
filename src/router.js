@@ -14,9 +14,9 @@ const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue
 
 // Owner Views
 const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')
-const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue') // Import SiteDetailPage
+const SiteDetailPage = () => import('@/assets-management/presentation/views/site-detail.vue')
 const EquipmentListPage = () => import('@/monitoring/presentation/views/equipment-list.vue')
-const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue') // Import EquipmentDetailPage
+const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
 const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
 
 // IAM
@@ -25,9 +25,10 @@ const RegisterPage = () => import('@/iam/presentation/views/register.vue')
 
 // Provider Views
 const ProviderDashboard = () => import('@/service-request/presentation/views/provider-dashboard.vue');
+const ProviderServiceList = () => import('@/service-request/presentation/views/provider-service-list.vue');
+const TechnicianManagement = () => import('@/service-request/presentation/views/technician-management.vue');
 const ProviderServicesHub = () => import('@/service-request/presentation/views/provider-services-hub.vue');
 const InProgressServices = () => import('@/service-request/presentation/views/in-progress-services.vue');
-const TechnicianManagement = () => import('@/service-request/presentation/views/technician-management.vue');
 const ProviderCompletedServices = () => import('@/service-request/presentation/views/provider-completed-services.vue');
 const ProviderRejectedCanceledServices = () => import('@/service-request/presentation/views/provider-rejected-canceled-services.vue');
 
@@ -46,15 +47,16 @@ const routes = [
             { path: 'sites', name: 'sites', component: SitesListPage, meta: { titleKey: 'sites.list.title', public: true } },
             { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title', public: true } },
             { path: 'equipments', name: 'equipments', component: EquipmentListPage, meta: { titleKey: 'equipments.list.title', roleRequired: 'owner' } },
-            { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title', roleRequired: 'owner' } }, // Added EquipmentDetailPage route
+            { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title', roleRequired: 'owner' } },
             { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title', roleRequired: 'owner' } },
             ...serviceRequestsRoutes,
             ...reportingRoutes,
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'provider' } },
-            { path: 'provider/services', name: 'provider-services-hub', component: ProviderServicesHub, meta: { titleKey: 'provider.services.title', roleRequired: 'provider' } },
-            { path: 'provider/services/pending', name: 'provider-pending-services', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'provider' } }, // Re-using dashboard for pending list
+            { path: 'provider/services', name: 'provider-services-list', component: ProviderServiceList, meta: { titleKey: 'provider.services.title', roleRequired: 'provider' } },
+            { path: 'provider/services-hub', name: 'provider-services-hub', component: ProviderServicesHub, meta: { titleKey: 'provider.services.title', roleRequired: 'provider' } },
+            { path: 'provider/services/pending', name: 'provider-pending-services', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'provider' } },
             { path: 'provider/services/in-progress', name: 'provider-in-progress', component: InProgressServices, meta: { titleKey: 'provider.in_progress.title', roleRequired: 'provider' } },
             { path: 'provider/services/completed', name: 'provider-completed-services', component: ProviderCompletedServices, meta: { titleKey: 'provider.completed.title', roleRequired: 'provider' } },
             { path: 'provider/services/rejected-canceled', name: 'provider-rejected-canceled-services', component: ProviderRejectedCanceledServices, meta: { titleKey: 'provider.rejected_canceled.title', roleRequired: 'provider' } },
