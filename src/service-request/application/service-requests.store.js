@@ -13,18 +13,20 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
     const errors = ref([]);
 
     async function fetchAuxiliaryData() {
-        const [usersResponse, sitesResponse, equipmentResponse, techniciansResponse] = await Promise.all([
+        const [usersResponse, sitesResponse, equipmentResponse, techniciansResponse, reviewsResponse] = await Promise.all([
             iamApi.http.get('/users'),
             iamApi.http.get('/sites'),
             iamApi.http.get('/equipments'),
-            iamApi.http.get('/technicians')
+            iamApi.http.get('/technicians'),
+            serviceRequestsApi.http.get('/reviews')
         ]);
 
         return {
             users: usersResponse.data,
             sites: sitesResponse.data,
             equipments: equipmentResponse.data,
-            technicians: techniciansResponse.data
+            technicians: techniciansResponse.data,
+            reviews: reviewsResponse.data
         };
     }
 
@@ -34,7 +36,15 @@ const useServiceRequestsStore = defineStore('service-requests', () => {
         try {
             const context = await fetchAuxiliaryData();
             const response = await serviceRequestsApi.getRequestsByRequester(requesterId);
-            requests.value = ServiceRequestAssembler.toEntitiesFromResponse(response, context);
+
+            const reviewsMap = new Set(context.reviews.map(r => r.serviceRequestId));
+            const assembledRequests = ServiceRequestAssembler.toEntitiesFromResponse(response, context);
+
+            requests.value = assembledRequests.map(req => ({
+                ...req,
+                hasReview: reviewsMap.has(req.id)
+            }));
+
             requestsLoaded.value = true;
         } catch (error) {
             errors.value.push(error);
