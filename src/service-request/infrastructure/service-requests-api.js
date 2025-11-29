@@ -71,6 +71,10 @@ export class ServiceRequestsApi extends BaseApi {
 
     // --- Methods for Interventions ---
 
+    getInterventionById(interventionId) {
+        return this.http.get(`${interventionsEndpointPath}/${interventionId}`);
+    }
+
     getInterventionsByServiceRequestId(serviceRequestId) {
         return this.http.get(interventionsEndpointPath, { params: { serviceRequestId } });
     }
