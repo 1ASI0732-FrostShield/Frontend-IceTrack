@@ -54,10 +54,7 @@ const statusTranslation = (status) => t(status ? `services.status.${status}` : '
 const typeTranslation = (type) => t(type ? `service-requests.types.${type}` : 'common.all');
 
 const navigateToNew = () => router.push({ name: 'service-requests-new' });
-
-const openTrackDrawer = (request) => {
-  alert(`Tracking for ${request.id}: Status is ${statusTranslation(request.status)}. Technician: ${request.technicianName || 'Pending'}`);
-};
+const navigateToDetail = (request) => router.push({ name: 'service-request-detail', params: { requestId: request.id } });
 
 const confirmCancel = (request) => {
   confirm.require({
@@ -161,7 +158,7 @@ const submitReview = async () => {
       </pv-column>
       <pv-column :header="t('services.requests.actions')" style="width: 220px;">
         <template #body="{ data }">
-          <pv-button icon="pi pi-search" text rounded severity="info" v-tooltip.top="t('services.requests.track-tooltip')" @click="openTrackDrawer(data)" />
+          <pv-button icon="pi pi-eye" text rounded severity="info" v-tooltip.top="t('services.requests.detail')" @click="navigateToDetail(data)" />
           <pv-button v-if="data.status === 'completed' && !data.hasReview" label="Review" icon="pi pi-star" text rounded severity="warning" @click="openReviewDialog(data)" />
           <pv-button v-if="data.status === 'completed' && data.hasReview" label="View Review" icon="pi pi-eye" text rounded severity="info" @click="openReviewDialog(data)" />
           <pv-button v-if="data.status === 'completed' && data.reportUrl" icon="pi pi-file-pdf" text rounded severity="help" v-tooltip.top="t('services.requests.report-tooltip')" @click="openReport(data)" />
