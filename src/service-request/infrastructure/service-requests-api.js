@@ -69,6 +69,14 @@ export class ServiceRequestsApi extends BaseApi {
         return this.http.post(techniciansEndpointPath, resource);
     }
 
+    updateTechnician(id, resource) {
+        return this.http.put(`${techniciansEndpointPath}/${id}`, resource);
+    }
+
+    deleteTechnician(id) {
+        return this.http.delete(`${techniciansEndpointPath}/${id}`);
+    }
+
     // --- Methods for Interventions ---
 
     getInterventionById(interventionId) {

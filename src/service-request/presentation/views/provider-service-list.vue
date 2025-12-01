@@ -36,16 +36,26 @@ const fetchData = async () => {
 };
 
 const filteredRequests = computed(() => {
-  let filtered = requests.value;
+  let list = [...requests.value];
+
+  // Sort by creation date ascending to establish order
+  list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  // Assign order number
+  list = list.map((req, index) => ({ ...req, orderNumber: index + 1 }));
+
+  // Apply filters
   if (filters.value.status) {
-    filtered = filtered.filter(req => req.status === filters.value.status);
+    list = list.filter(req => req.status === filters.value.status);
   }
   if (filters.value.clientName) {
-    filtered = filtered.filter(req =>
+    list = list.filter(req =>
       req.requesterName.toLowerCase().includes(filters.value.clientName.toLowerCase())
     );
   }
-  return filtered;
+
+  // Finally, sort by date descending for display
+  return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
 const navigateToDetail = (request) => {
@@ -89,7 +99,7 @@ onMounted(fetchData);
 
     <!-- Data Table -->
     <pv-data-table :value="filteredRequests" :loading="loading" paginator :rows="10" responsive-layout="scroll">
-      <pv-column field="id" header="ID" sortable />
+      <pv-column field="orderNumber" header="Order #" sortable />
       <pv-column field="requesterName" header="Client" sortable />
       <pv-column field="siteName" header="Site" sortable />
       <pv-column field="status" header="Status" sortable>

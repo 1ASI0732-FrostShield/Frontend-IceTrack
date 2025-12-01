@@ -32,9 +32,19 @@ const filters = ref({
 });
 
 const filteredRequests = computed(() => {
-  let list = Array.isArray(requests.value) ? requests.value : [];
+  let list = Array.isArray(requests.value) ? [...requests.value] : [];
+
+  // Sort by creation date ascending to establish order
+  list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  // Assign order number
+  list = list.map((req, index) => ({ ...req, orderNumber: index + 1 }));
+
+  // Apply filters
   if (filters.value.status) list = list.filter(req => req.status === filters.value.status);
   if (filters.value.type) list = list.filter(req => req.type === filters.value.type);
+
+  // Finally, sort by date descending for display
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
@@ -139,7 +149,7 @@ const submitReview = async () => {
 
     <!-- Data Table -->
     <pv-data-table :value="filteredRequests" :loading="!requestsLoaded" striped-rows :rows="10" paginator table-style="min-width: 50rem">
-      <pv-column field="id" :header="t('services.requests.id')" sortable style="width: 100px;"/>
+      <pv-column field="orderNumber" header="Order #" sortable style="width: 100px;"/>
       <pv-column field="createdAt" :header="t('services.requests.date')" sortable>
         <template #body="{ data }">{{ new Date(data.createdAt).toLocaleDateString() }}</template>
       </pv-column>
