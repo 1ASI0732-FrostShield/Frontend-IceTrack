@@ -4,12 +4,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
+import { IamApi } from '@/iam/infrastructure/iam.api.js';
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const api = new ServiceRequestsApi();
+const iamApi = new IamApi();
 
 const serviceRequest = ref(null);
 const interventions = ref([]);
@@ -26,6 +28,9 @@ const newPhotoUrl = ref('');
 const isLoading = ref(false);
 const isProvider = computed(() => authStore.currentUserRole === 'provider');
 const requestId = computed(() => route.params.requestId);
+
+const displayEquipmentDialog = ref(false);
+const selectedEquipment = ref(null);
 
 async function fetchRequestDetails() {
   isLoading.value = true;
@@ -45,6 +50,17 @@ async function fetchRequestDetails() {
     console.error("Failed to fetch request details:", error);
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function openEquipmentDialog() {
+  if (!serviceRequest.value) return;
+  try {
+    const response = await iamApi.http.get(`/equipments/${serviceRequest.value.equipmentId}`);
+    selectedEquipment.value = response.data;
+    displayEquipmentDialog.value = true;
+  } catch (error) {
+    console.error("Failed to fetch equipment details:", error);
   }
 }
 
@@ -113,6 +129,9 @@ onMounted(fetchRequestDetails);
                 <p><strong>Equipment ID:</strong> {{ serviceRequest.equipmentId }}</p>
                 <p><strong>Created At:</strong> {{ new Date(serviceRequest.createdAt).toLocaleString() }}</p>
               </div>
+            </div>
+            <div class="mt-4">
+              <pv-button label="View Equipment Details" icon="pi pi-server" @click="openEquipmentDialog" />
             </div>
           </template>
         </pv-card>
@@ -188,6 +207,23 @@ onMounted(fetchRequestDetails);
         <p>Service request not found.</p>
       </div>
     </div>
+
+    <!-- Equipment Details Dialog -->
+    <pv-dialog v-model:visible="displayEquipmentDialog" header="Equipment Details" :modal="true" class="p-fluid" style="width: 50vw">
+      <div v-if="selectedEquipment">
+        <div class="grid">
+          <div class="col-6"><strong>Name:</strong> {{ selectedEquipment.name }}</div>
+          <div class="col-6"><strong>Model:</strong> {{ selectedEquipment.model }}</div>
+          <div class="col-6"><strong>Serial:</strong> {{ selectedEquipment.serial }}</div>
+          <div class="col-6"><strong>Type:</strong> {{ selectedEquipment.type }}</div>
+          <div class="col-6"><strong>Status:</strong> <pv-tag :value="selectedEquipment.status" /></div>
+          <div class="col-6"><strong>Installed:</strong> {{ new Date(selectedEquipment.installedAt).toLocaleDateString() }}</div>
+        </div>
+      </div>
+      <template #footer>
+        <pv-button label="Close" icon="pi pi-times" @click="displayEquipmentDialog = false" class="p-button-text"/>
+      </template>
+    </pv-dialog>
   </div>
 </template>
 
