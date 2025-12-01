@@ -13,7 +13,7 @@ const iamApi = new IamApi();
 
 const loading = ref(false);
 const requests = ref([]);
-const filters = ref({ status: '' });
+const filters = ref({ status: '', clientName: '' });
 
 const currentProviderId = computed(() => authStore.currentUserId);
 
@@ -21,11 +21,12 @@ const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   try {
-    const [requestsRes, sitesRes] = await Promise.all([
+    const [requestsRes, sitesRes, usersRes] = await Promise.all([
       serviceApi.http.get('/serviceRequests', { params: { assignedTo: currentProviderId.value } }),
-      iamApi.http.get('/sites')
+      iamApi.http.get('/sites'),
+      iamApi.http.get('/users')
     ]);
-    const context = { sites: sitesRes.data };
+    const context = { sites: sitesRes.data, users: usersRes.data };
     requests.value = requestsRes.data.map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
   } catch (error) {
     console.error("Failed to fetch service requests:", error);
@@ -35,8 +36,16 @@ const fetchData = async () => {
 };
 
 const filteredRequests = computed(() => {
-  if (!filters.value.status) return requests.value;
-  return requests.value.filter(req => req.status === filters.value.status);
+  let filtered = requests.value;
+  if (filters.value.status) {
+    filtered = filtered.filter(req => req.status === filters.value.status);
+  }
+  if (filters.value.clientName) {
+    filtered = filtered.filter(req =>
+      req.requesterName.toLowerCase().includes(filters.value.clientName.toLowerCase())
+    );
+  }
+  return filtered;
 });
 
 const navigateToDetail = (request) => {
@@ -60,12 +69,22 @@ onMounted(fetchData);
     <h1 class="text-3xl font-bold mb-4">My Service Requests</h1>
 
     <!-- Filters -->
-    <div class="bg-white p-4 rounded-xl shadow-md mb-6">
-      <pv-select-button v-model="filters.status"
-                        :options="['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected']"
-                        :allowEmpty="true">
-        <template #option="slotProps">{{ slotProps.option || 'All' }}</template>
-      </pv-select-button>
+    <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-4 items-center">
+      <div class="flex items-center gap-2">
+        <label for="status-filter" class="font-semibold">Status:</label>
+        <pv-select-button id="status-filter" v-model="filters.status"
+                          :options="['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected']"
+                          :allowEmpty="true">
+          <template #option="slotProps">{{ slotProps.option || 'All' }}</template>
+        </pv-select-button>
+      </div>
+      <div class="flex items-center gap-2">
+        <label for="client-search" class="font-semibold">Client:</label>
+        <pv-icon-field iconPosition="left">
+          <pv-input-icon class="pi pi-search" />
+          <pv-input-text id="client-search" v-model="filters.clientName" placeholder="Search by client name" />
+        </pv-icon-field>
+      </div>
     </div>
 
     <!-- Data Table -->
