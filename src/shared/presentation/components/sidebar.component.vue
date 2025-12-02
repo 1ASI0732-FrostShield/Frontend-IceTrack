@@ -10,7 +10,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 
 const items = computed(() => {
-  if (authStore.currentUserRole === 'provider') {
+  if (authStore.currentUserRole === 'Provider') {
     return [
       { label: t('nav.provider_dashboard'), icon: 'pi pi-th-large', command: () => router.push({ name: 'provider-dashboard' }) },
       {
