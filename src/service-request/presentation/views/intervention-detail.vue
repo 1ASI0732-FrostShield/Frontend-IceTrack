@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { IamApi } from '@/iam/infrastructure/iam.api.js';
 
 const route = useRoute();
@@ -18,7 +18,7 @@ const interventionId = computed(() => route.params.interventionId);
 async function fetchData() {
   isLoading.value = true;
   try {
-    const interventionRes = await api.http.get(`/interventions/${interventionId.value}`);
+    const interventionRes = await api.getInterventionDetailsQuery(interventionId.value);
     intervention.value = interventionRes.data;
 
     if (intervention.value.technicianId) {

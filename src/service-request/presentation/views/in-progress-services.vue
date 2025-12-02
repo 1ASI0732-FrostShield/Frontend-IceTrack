@@ -1,3 +1,64 @@
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { useAuthStore } from '@/iam/application/auth.store.js';
+import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+
+const serviceRequestApi = new ServiceRequestsApi();
+const techniciansApi = new TechniciansApi();
+const authStore = useAuthStore();
+
+const loading = ref(false);
+const error = ref(null);
+const activeRequests = ref([]);
+const technicians = ref([]);
+const selectedTechnicians = ref({});
+
+const currentProviderId = computed(() => authStore.currentUserId);
+
+const fetchData = async () => {
+  if (!currentProviderId.value) return;
+  loading.value = true;
+  error.value = null;
+  try {
+    const [acceptedRes, inProgressRes, techsRes] = await Promise.all([
+      serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'accepted'),
+      serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'inProgress'),
+      // iamApi.http.get('/sites'), // Not implemented yet
+      techniciansApi.getTechniciansByProvider(currentProviderId.value)
+    ]);
+
+    // MODIFIED: Removed sites from context
+    const context = { technicians: techsRes.data };
+    const accepted = ServiceRequestAssembler.toEntitiesFromResponse(acceptedRes.data, context);
+    const inProgress = ServiceRequestAssembler.toEntitiesFromResponse(inProgressRes.data, context);
+
+    activeRequests.value = [...accepted, ...inProgress];
+    technicians.value = techsRes.data;
+  } catch (e) {
+    error.value = 'Failed to load data.';
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const assignTechnician = async (requestId) => {
+  const technicianId = selectedTechnicians.value[requestId];
+  if (!technicianId) return;
+  await serviceRequestApi.sendAssignTechnicianCommand(requestId, technicianId);
+  await fetchData();
+};
+
+const completeService = async (requestId) => {
+  await serviceRequestApi.sendCompleteRequestCommand(requestId);
+  await fetchData();
+};
+
+onMounted(fetchData);
+</script>
+
 <template>
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">In-Progress Services</h1>
@@ -33,60 +94,3 @@
     </pv-card>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
-import { useAuthStore } from '@/iam/application/auth.store.js';
-import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
-
-const serviceApi = new ServiceRequestsApi();
-const authStore = useAuthStore();
-
-const loading = ref(false);
-const error = ref(null);
-const activeRequests = ref([]);
-const technicians = ref([]);
-const selectedTechnicians = ref({});
-
-const currentProviderId = computed(() => authStore.currentUserId);
-
-const fetchData = async () => {
-  if (!currentProviderId.value) return;
-  loading.value = true;
-  error.value = null;
-  try {
-    const [acceptedRes, inProgressRes, techsRes] = await Promise.all([
-      serviceApi.getRequestsForProvider(currentProviderId.value, 'accepted'),
-      serviceApi.getRequestsForProvider(currentProviderId.value, 'inProgress'),
-      serviceApi.getTechniciansByProvider(currentProviderId.value)
-    ]);
-
-    const context = { technicians: techsRes.data };
-    const accepted = acceptedRes.data.map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
-    const inProgress = inProgressRes.data.map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
-
-    activeRequests.value = [...accepted, ...inProgress];
-    technicians.value = techsRes.data;
-  } catch (e) {
-    error.value = 'Failed to load data.';
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const assignTechnician = async (requestId) => {
-  const technicianId = selectedTechnicians.value[requestId];
-  if (!technicianId) return;
-  await serviceApi.assignTechnician(requestId, technicianId);
-  await fetchData();
-};
-
-const completeService = async (requestId) => {
-  await serviceApi.completeRequest(requestId);
-  await fetchData();
-};
-
-onMounted(fetchData);
-</script>
