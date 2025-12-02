@@ -156,6 +156,18 @@
       "actions": "Acciones",
       "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
       "delete-header": "Confirmar eliminación",
+      "search": "Buscar",
+      "statusFilter": {
+        "completed": "Completado",
+        "inProgress": "En progreso",
+        "canceled": "Cancelado"
+      },
+      "typesFilter": {
+        "inspection": "Inspección",
+        "maintenance": "Mantenimiento",
+        "incident": "Incidente",
+        "audit": "Auditoría"
+      },
       "statusType": {
         "done": "Listo",
         "inProgress": "En progreso"

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import useReportingStore from '@/reporting/application/reporting.store.js'
@@ -13,13 +13,14 @@ const title = ref('')
 const type = ref('')
 const summary = ref('')
 const content = ref('')
-const status = ref('En Progreso')
+const status = ref('In Progress')
 
-const typeOptions = [
-  { label: 'Historial de equipo', value: 'Historial de equipo' },
-  { label: 'Consumo de energía', value: 'Consumo de energía' },
-  { label: 'Servicio', value: 'Servicio' }
-]
+const typeOptions = computed(() => [
+  { label: t('reports.list.typesFilter.inspection'), value: 'Inspection' },
+  { label: t('reports.list.typesFilter.maintenance'), value: 'Maintenance' },
+  { label: t('reports.list.typesFilter.incident'), value: 'Incident' },
+  { label: t('reports.list.typesFilter.audit'), value: 'Audit' },
+])
 
 const errors = ref([])
 
@@ -55,7 +56,7 @@ const saveReport = async () => {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <pv-select v-model="type" :options="typeOptions" optionLabel="label" :placeholder="t('reports.list.label.type')"
+      <pv-select v-model="type" :options="typeOptions" optionLabel="label" optionValue="value" :placeholder="t('reports.list.label.type')"
           :showClear="true" class="w-full"/>
       <pv-input-text v-model="summary" :placeholder="t('reports.list.detail.summary')" class="w-full"/>
     </div>
