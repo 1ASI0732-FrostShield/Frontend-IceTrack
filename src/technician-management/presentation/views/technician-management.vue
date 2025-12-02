@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { TechniciansApi } from '../services/technicians.api.js';
-import { ReviewsApi } from '@/feedback/services/reviews.api.js';
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+import { ReviewsApi } from '@/feedback/infrastructure/reviews.api.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { useConfirm } from 'primevue/useconfirm';
-import { Technician } from '../model/technician.entity.js';
+import { Technician } from '../../domain/model/technician.entity.js';
 
 const techniciansApi = new TechniciansApi();
 const reviewsApi = new ReviewsApi();
