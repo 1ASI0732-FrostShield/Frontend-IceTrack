@@ -55,6 +55,18 @@
       "selectType": "Select type",
       "selectEquipment": "Select equipment"
     }
+     "ack": {
+      "confirmMessage": "Mark this alert as acknowledged?",
+      "confirmTitle": "Confirm Acknowledge",
+      "accept": "Acknowledge",
+      "reject": "Cancel",
+
+      "successTitle": "Alert acknowledged",
+      "successMessage": "The alert has been acknowledged.",
+
+      "errorTitle": "Acknowledge error",
+      "errorMessage": "An error occurred while acknowledging the alert."
+    }
   },
 
   "errors": {
