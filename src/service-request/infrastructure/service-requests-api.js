@@ -1,106 +1,66 @@
-import { BaseApi } from "@/shared/infrastructure/base-api.js";
+import { BaseApi} from "@/shared/infrastructure/base-api.js";
 
-const serviceRequestsEndpointPath = '/serviceRequests';
-const interventionsEndpointPath = '/interventions';
-const techniciansEndpointPath = '/technicians';
-const reviewsEndpointPath = '/reviews';
+const serviceRequestsPath = '/service-requests';
+const interventionsPath = '/interventions';
 
 export class ServiceRequestsApi extends BaseApi {
-
     constructor() {
         super();
     }
 
-    // --- Methods for Owners ---
+    // --- Commands ---
 
-    createRequest(resource) {
-        return this.http.post(serviceRequestsEndpointPath, resource);
+    sendNewRequestCommand(command) {
+        return this.http.post(serviceRequestsPath, command);
     }
 
-    getRequestsByRequester(requesterId) {
-        return this.http.get(serviceRequestsEndpointPath, { params: { requesterId } });
+    sendAcceptRequestCommand(requestId) {
+        return this.http.patch(`${serviceRequestsPath}/${requestId}/accept`);
     }
 
-    cancelRequest(id) {
-        return this.http.patch(`${serviceRequestsEndpointPath}/${id}`, { status: 'canceled', canceledAt: new Date().toISOString() });
+    sendRejectRequestCommand(requestId) {
+        return this.http.patch(`${serviceRequestsPath}/${requestId}/reject`);
     }
 
-    // --- Methods for Providers ---
-
-    getRequestsForProvider(providerId, status) {
-        return this.http.get(serviceRequestsEndpointPath, { params: { assignedTo: providerId, status } });
+    sendCancelRequestCommand(requestId) {
+        return this.http.patch(`${serviceRequestsPath}/${requestId}/cancel`);
     }
 
-    async acceptRequest(requestId) {
-        const updateResponse = await this.http.patch(`${serviceRequestsEndpointPath}/${requestId}`, { status: 'accepted' });
+    sendAssignTechnicianCommand(requestId, technicianId) {
+        return this.http.patch(`${serviceRequestsPath}/${requestId}/assign-technician`, { technicianId });
+    }
 
-        if (updateResponse.status === 200) {
-            const interventionResource = {
-                serviceRequestId: requestId,
-                technicianId: null,
-                status: 'scheduled',
-                summary: 'Intervention scheduled, pending technician assignment.',
-                createdAt: new Date().toISOString()
-            };
-            await this.createIntervention(interventionResource);
+    sendCompleteRequestCommand(requestId) {
+        return this.http.patch(`${serviceRequestsPath}/${requestId}/complete`);
+    }
+
+    sendRecordInterventionCommand(command) {
+        return this.http.post(interventionsPath, command);
+    }
+
+    // --- Queries ---
+
+    getRequestsByRequesterQuery(requesterId) {
+        return this.http.get(`${serviceRequestsPath}/requester/${requesterId}`);
+    }
+
+    getRequestsForProviderQuery(providerId, status = null) {
+        const params = {};
+        if (status) {
+            params.status = status;
         }
-        return updateResponse;
+        return this.http.get(`${serviceRequestsPath}/provider/${providerId}`, { params });
     }
 
-    rejectRequest(requestId) {
-        return this.http.patch(`${serviceRequestsEndpointPath}/${requestId}`, { status: 'rejected' });
+    getServiceRequestDetailsQuery(requestId) {
+        return this.http.get(`${serviceRequestsPath}/${requestId}`);
     }
 
-    assignTechnician(requestId, technicianId) {
-        return this.http.patch(`${serviceRequestsEndpointPath}/${requestId}`, { technicianId: technicianId, status: 'inProgress' });
+    getInterventionsByRequestQuery(serviceRequestId) {
+        return this.http.get(`${interventionsPath}/serviceRequest/${serviceRequestId}`);
     }
 
-    completeRequest(requestId) {
-        return this.http.patch(`${serviceRequestsEndpointPath}/${requestId}`, { status: 'completed', completedAt: new Date().toISOString() });
-    }
-
-    // --- Methods for Technicians ---
-
-    getTechniciansByProvider(providerId) {
-        return this.http.get(techniciansEndpointPath, { params: { providerId } });
-    }
-
-    createTechnician(resource) {
-        return this.http.post(techniciansEndpointPath, resource);
-    }
-
-    updateTechnician(id, resource) {
-        return this.http.put(`${techniciansEndpointPath}/${id}`, resource);
-    }
-
-    deleteTechnician(id) {
-        return this.http.delete(`${techniciansEndpointPath}/${id}`);
-    }
-
-    // --- Methods for Interventions ---
-
-    getInterventionById(interventionId) {
-        return this.http.get(`${interventionsEndpointPath}/${interventionId}`);
-    }
-
-    getInterventionsByServiceRequestId(serviceRequestId) {
-        return this.http.get(interventionsEndpointPath, { params: { serviceRequestId } });
-    }
-
-    createIntervention(resource) {
-        return this.http.post(interventionsEndpointPath, resource);
-    }
-
-    // --- Methods for Reviews ---
-    createReview(reviewData) {
-        return this.http.post(reviewsEndpointPath, reviewData);
-    }
-
-    getReviewsByTechnician(technicianId) {
-        return this.http.get(reviewsEndpointPath, { params: { technicianId } });
-    }
-
-    getReviewsByServiceRequest(serviceRequestId) {
-        return this.http.get(reviewsEndpointPath, { params: { serviceRequestId } });
+    getInterventionDetailsQuery(interventionId) {
+        return this.http.get(`${interventionsPath}/${interventionId}`);
     }
 }
