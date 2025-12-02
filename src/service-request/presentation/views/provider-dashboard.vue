@@ -1,3 +1,76 @@
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { useAuthStore } from '@/iam/application/auth.store.js';
+import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
+import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+
+const router = useRouter();
+const serviceRequestApi = new ServiceRequestsApi();
+const techniciansApi = new TechniciansApi();
+const iamApi = new IamApi();
+const authStore = useAuthStore();
+
+const loading = ref(false);
+const error = ref(null);
+const pendingRequests = ref([]);
+const kpis = ref({
+  pending: 0,
+  active: 0,
+  technicians: 0,
+});
+
+const currentProviderId = computed(() => authStore.currentUserId);
+
+const fetchData = async () => {
+  if (!currentProviderId.value) return;
+  loading.value = true;
+  error.value = null;
+  try {
+    const [requestsRes, techsRes] = await Promise.all([
+      serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
+      techniciansApi.getTechniciansByProvider(currentProviderId.value),
+      // iamApi.http.get('/sites') // Not implemented yet
+    ]);
+
+    const allRequests = requestsRes.data;
+    const context = { /* sites: sitesRes.data */ };
+
+    pendingRequests.value = allRequests
+        .filter(r => r.status === 'pending')
+        .map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
+
+    kpis.value.pending = pendingRequests.value.length;
+    kpis.value.active = allRequests.filter(r => ['accepted', 'inProgress'].includes(r.status)).length;
+    kpis.value.technicians = techsRes.data.length;
+
+  } catch (e) {
+    error.value = 'Failed to load dashboard data.';
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleAccept = async (requestId) => {
+  await serviceRequestApi.sendAcceptRequestCommand(requestId);
+  await fetchData();
+};
+
+const handleReject = async (requestId) => {
+  await serviceRequestApi.sendRejectRequestCommand(requestId);
+  await fetchData();
+};
+
+const navigateToList = () => {
+  router.push({ name: 'provider-infrastructure-list' });
+};
+
+onMounted(fetchData);
+</script>
+
 <template>
   <div class="p-4">
     <!-- Header -->
@@ -38,13 +111,13 @@
           </template>
         </pv-card>
       </div>
-       <div class="col-12 md:col-6 lg:col-3">
+      <div class="col-12 md:col-6 lg:col-3">
         <pv-card class="bg-purple-100">
           <template #title><span class="text-purple-900">All Services</span></template>
           <template #content>
-             <div class="flex flex-column align-items-start">
-                <p class="text-color-secondary m-0">Go to the complete list of your services.</p>
-                <pv-button label="View All Services" icon="pi pi-arrow-right" class="p-button-text mt-2" @click="navigateToList" />
+            <div class="flex flex-column align-items-start">
+              <p class="text-color-secondary m-0">Go to the complete list of your services.</p>
+              <pv-button label="View All Services" icon="pi pi-arrow-right" class="p-button-text mt-2" @click="navigateToList" />
             </div>
           </template>
         </pv-card>
@@ -83,74 +156,3 @@
     </pv-card>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
-import { useAuthStore } from '@/iam/application/auth.store.js';
-import { ServiceRequestAssembler } from '@/service-request/infrastructure/service-request.assembler.js';
-import { IamApi } from "@/iam/infrastructure/iam.api.js";
-
-const router = useRouter();
-const serviceApi = new ServiceRequestsApi();
-const iamApi = new IamApi();
-const authStore = useAuthStore();
-
-const loading = ref(false);
-const error = ref(null);
-const pendingRequests = ref([]);
-const kpis = ref({
-  pending: 0,
-  active: 0,
-  technicians: 0,
-});
-
-const currentProviderId = computed(() => authStore.currentUserId);
-
-const fetchData = async () => {
-  if (!currentProviderId.value) return;
-  loading.value = true;
-  error.value = null;
-  try {
-    const [requestsRes, techsRes, sitesRes] = await Promise.all([
-      serviceApi.http.get('/serviceRequests', { params: { assignedTo: currentProviderId.value } }),
-      serviceApi.getTechniciansByProvider(currentProviderId.value),
-      iamApi.http.get('/sites')
-    ]);
-
-    const allRequests = requestsRes.data;
-    const context = { sites: sitesRes.data };
-
-    pendingRequests.value = allRequests
-        .filter(r => r.status === 'pending')
-        .map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
-
-    kpis.value.pending = pendingRequests.value.length;
-    kpis.value.active = allRequests.filter(r => ['accepted', 'inProgress'].includes(r.status)).length;
-    kpis.value.technicians = techsRes.data.length;
-
-  } catch (e) {
-    error.value = 'Failed to load dashboard data.';
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleAccept = async (requestId) => {
-  await serviceApi.acceptRequest(requestId);
-  await fetchData();
-};
-
-const handleReject = async (requestId) => {
-  await serviceApi.rejectRequest(requestId);
-  await fetchData();
-};
-
-const navigateToList = () => {
-  router.push({ name: 'provider-services-list' });
-};
-
-onMounted(fetchData);
-</script>

@@ -2,13 +2,13 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/iam/application/auth.store.js';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
-import { ServiceRequestAssembler } from '@/service-request/infrastructure/service-request.assembler.js';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const serviceApi = new ServiceRequestsApi();
+const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 
 const loading = ref(false);
@@ -21,13 +21,13 @@ const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   try {
-    const [requestsRes, sitesRes, usersRes] = await Promise.all([
-      serviceApi.http.get('/serviceRequests', { params: { assignedTo: currentProviderId.value } }),
-      iamApi.http.get('/sites'),
+    const [requestsRes, usersRes] = await Promise.all([
+      serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
+      // iamApi.http.get('/sites'),
       iamApi.http.get('/users')
     ]);
-    const context = { sites: sitesRes.data, users: usersRes.data };
-    requests.value = requestsRes.data.map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
+    const context = { users: usersRes.data /* sites: sitesRes.data */ };
+    requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
   } catch (error) {
     console.error("Failed to fetch service requests:", error);
   } finally {
@@ -37,24 +37,17 @@ const fetchData = async () => {
 
 const filteredRequests = computed(() => {
   let list = [...requests.value];
-
-  // Sort by creation date ascending to establish order
   list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-  // Assign order number
   list = list.map((req, index) => ({ ...req, orderNumber: index + 1 }));
 
-  // Apply filters
   if (filters.value.status) {
     list = list.filter(req => req.status === filters.value.status);
   }
   if (filters.value.clientName) {
     list = list.filter(req =>
-      req.requesterName.toLowerCase().includes(filters.value.clientName.toLowerCase())
+        req.requesterName.toLowerCase().includes(filters.value.clientName.toLowerCase())
     );
   }
-
-  // Finally, sort by date descending for display
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 

@@ -1,3 +1,47 @@
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { useAuthStore } from '@/iam/application/auth.store.js';
+import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
+import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+
+const serviceRequestApi = new ServiceRequestsApi();
+const techniciansApi = new TechniciansApi();
+const iamApi = new IamApi();
+const authStore = useAuthStore();
+
+const loading = ref(false);
+const error = ref(null);
+const completedRequests = ref([]);
+
+const currentProviderId = computed(() => authStore.currentUserId);
+
+const fetchData = async () => {
+  if (!currentProviderId.value) return;
+  loading.value = true;
+  error.value = null;
+  try {
+    const [requestsRes, usersRes, techsRes] = await Promise.all([
+      serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'completed'),
+      iamApi.http.get('/users'),
+      techniciansApi.getTechniciansByProvider(currentProviderId.value)
+    ]);
+
+    const context = { users: usersRes.data, technicians: techsRes.data };
+    completedRequests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
+
+  } catch (e) {
+    error.value = 'Failed to load completed infrastructure.';
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(fetchData);
+</script>
+
 <template>
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">Completed Services</h1>
@@ -21,45 +65,3 @@
     </pv-card>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
-import { useAuthStore } from '@/iam/application/auth.store.js';
-import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
-import { IamApi } from "@/iam/infrastructure/iam.api.js";
-
-const serviceApi = new ServiceRequestsApi();
-const iamApi = new IamApi();
-const authStore = useAuthStore();
-
-const loading = ref(false);
-const error = ref(null);
-const completedRequests = ref([]);
-
-const currentProviderId = computed(() => authStore.currentUserId);
-
-const fetchData = async () => {
-  if (!currentProviderId.value) return;
-  loading.value = true;
-  error.value = null;
-  try {
-    const [requestsRes, sitesRes, techsRes] = await Promise.all([
-      serviceApi.getRequestsForProvider(currentProviderId.value, 'completed'),
-      iamApi.http.get('/sites'),
-      serviceApi.getTechniciansByProvider(currentProviderId.value)
-    ]);
-
-    const context = { sites: sitesRes.data, technicians: techsRes.data };
-    completedRequests.value = requestsRes.data.map(r => ServiceRequestAssembler.toEntityFromResource(r, context));
-
-  } catch (e) {
-    error.value = 'Failed to load completed services.';
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(fetchData);
-</script>
