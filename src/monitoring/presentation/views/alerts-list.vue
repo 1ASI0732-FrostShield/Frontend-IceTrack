@@ -47,20 +47,19 @@ const filteredAlerts = computed(() => {
     return matchesType && matchesEquipment && matchesDateFrom && matchesDateTo;
   });
 });
-
-function confirmDelete(alert) {
+function confirmAcknowledge(alert) {
   confirm.require({
-    message: t("alerts.deletion.confirmDeleteMessage"),
-    header: t("alerts.deletion.confirmDeleteTitle"),
-    icon: "pi pi-exclamation-triangle",
-    acceptLabel: t("alerts.deletion.confirmDeleteAccept"),
-    rejectLabel: t("alerts.deletion.confirmDeleteReject"),
+    message: t("alerts.ack.confirmMessage", "¿Marcar esta alerta como atendida?"),
+    header: t("alerts.ack.confirmTitle", "Acknowledge Alert"),
+    icon: "pi pi-check-circle",
+    acceptLabel: t("alerts.ack.accept", "Acknowledge"),
+    rejectLabel: t("alerts.ack.reject", "Cancelar"),
     accept: async () => {
       try {
-        await deleteAlert(alert.id);
-        toast.add({ severity: "success", summary: t("alerts.deletion.deleteSuccess"), life: 2000 });
+        await deleteAlert(alert.id); // <- sigue usando deleteAlert
+        toast.add({ severity: "success", summary: t("alerts.ack.success", "Alerta reconocida"), life: 2000 });
       } catch (err) {
-        toast.add({ severity: "error", summary: t("alerts.deletion.deleteError"), life: 3000 });
+        toast.add({ severity: "error", summary: t("alerts.ack.error", "Error al reconocer alerta"), life: 3000 });
       }
     },
   });
@@ -77,7 +76,7 @@ onMounted(() => {
       {{ t("alerts.list.title") }}
     </h1>
 
-    <div class="flex flex-wrap gap-4 mb-6 bg-gray-50 p-4 rounded-xl shadow-sm items-end">
+    <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-end">
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-600 mb-1">
           {{ t("alerts.list.type") }}
@@ -184,9 +183,10 @@ onMounted(() => {
               </RouterLink>
 
               <pv-button
-                  icon="pi pi-trash"
-                  class="!bg-red-500 hover:!bg-red-600 text-white !py-2 !px-3 rounded-lg"
-                  @click="confirmDelete(slotProps.data)"
+                  icon="pi pi-check"
+                  :label="t('alerts.list.acknowledge', 'Acknowledge')"
+                  class="!bg-yellow-500 hover:!bg-yellow-600 text-white !py-2 !px-3 rounded-lg"
+                  @click="confirmAcknowledge(slotProps.data)"
               />
             </div>
           </template>
@@ -202,11 +202,3 @@ onMounted(() => {
     <pv-toast />
   </section>
 </template>
-
-<style scoped>
-section {
-  background-color: #f9fafb;
-  min-height: 100vh;
-  padding: 2rem;
-}
-</style>
