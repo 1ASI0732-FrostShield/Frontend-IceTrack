@@ -2,16 +2,18 @@
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
-import useServiceRequestsStore from "../../application/service-requests.store.js";
+import { useServiceRequestStore} from "@/service-request/application/service-requests.store.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { useAuthStore } from "@/iam/application/auth.store.js";
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 
 const { t } = useI18n();
 const router = useRouter();
-const store = useServiceRequestsStore();
+const store = useServiceRequestStore();
 const authStore = useAuthStore();
-const { errors, createRequest } = store;
+const { errors } = store;
 const iamApi = new IamApi();
+const serviceRequestApi = new ServiceRequestsApi();
 
 const currentRequesterId = computed(() => authStore.currentUserId);
 
@@ -19,8 +21,8 @@ const form = ref({
   siteId: null,
   equipmentId: null,
   assignedTo: null,
-  type: 'corrective',
-  priority: 'medium',
+  type: 'Corrective',
+  priority: 'Medium',
   description: '',
 });
 
@@ -35,13 +37,13 @@ const filteredEquipments = computed(() => {
 
 onMounted(async () => {
   try {
-    const [sitesRes, equipRes, providersRes] = await Promise.all([
-      iamApi.http.get(`/sites`),
-      iamApi.http.get(`/equipments`),
-      iamApi.getUsersByRole('provider')
+    const [providersRes] = await Promise.all([
+      // iamApi.http.get(`/sites`),
+      // iamApi.http.get(`/equipments`),
+      iamApi.getUsersByRole('Provider')
     ]);
-    sites.value = sitesRes.data;
-    equipments.value = equipRes.data;
+    // sites.value = sitesRes.data;
+    // equipments.value = equipRes.data;
     providers.value = providersRes.data;
   } catch (error) {
     errors.value.push(error);
@@ -53,17 +55,17 @@ const handleSiteChange = () => {
 };
 
 const saveRequest = async () => {
-  if (!form.value.siteId || !form.value.equipmentId || !form.value.description || !form.value.assignedTo) {
+  if (!form.value.description || !form.value.assignedTo) {
     alert("Por favor complete todos los campos requeridos.");
     return;
   }
 
   const newRequestData = {
     requesterId: currentRequesterId.value,
-    siteId: form.value.siteId,
-    equipmentId: form.value.equipmentId,
+    siteId: 1, // Using a placeholder ID
+    equipmentId: 1, // Using a placeholder ID
     assignedTo: form.value.assignedTo,
-    origin: 'manual',
+    origin: 'Manual',
     type: form.value.type,
     priority: form.value.priority,
     description: form.value.description,
@@ -71,12 +73,13 @@ const saveRequest = async () => {
     createdAt: new Date().toISOString()
   };
 
-  const success = await createRequest(newRequestData);
-
-  if (success) {
+  try {
+    await serviceRequestApi.sendNewRequestCommand(newRequestData);
+    await store.fetchContextAndRequests(currentRequesterId.value);
     alert('Request created successfully!');
     navigateBack();
-  } else {
+  } catch (error) {
+    errors.value.push(error);
     alert('Error creating request.');
   }
 };
@@ -100,7 +103,7 @@ const navigateBack = () => {
                     id="provider"
                     v-model="form.assignedTo"
                     :options="providers"
-                    optionLabel="name"
+                    optionLabel="username"
                     optionValue="id"
                     required
                     class="w-full"
@@ -109,34 +112,17 @@ const navigateBack = () => {
               </pv-float-label>
             </div>
 
+            <!-- MODIFIED: Disabled Site and Equipment selection -->
             <div class="field col-12 md:col-6">
               <pv-float-label>
-                <pv-select
-                    id="site"
-                    v-model="form.siteId"
-                    :options="sites"
-                    optionLabel="name"
-                    optionValue="id"
-                    @change="handleSiteChange"
-                    required
-                    class="w-full"
-                />
+                <pv-input-text id="site" value="Default Site (Not Implemented)" disabled class="w-full" />
                 <label for="site">{{ t('service-requests.site') }} *</label>
               </pv-float-label>
             </div>
 
             <div class="field col-12 md:col-6">
               <pv-float-label>
-                <pv-select
-                    id="equipment"
-                    v-model="form.equipmentId"
-                    :options="filteredEquipments"
-                    optionLabel="name"
-                    optionValue="id"
-                    :disabled="!form.siteId"
-                    required
-                    class="w-full"
-                />
+                <pv-input-text id="equipment" value="Default Equipment (Not Implemented)" disabled class="w-full" />
                 <label for="equipment">{{ t('service-requests.equipment') }} *</label>
               </pv-float-label>
             </div>

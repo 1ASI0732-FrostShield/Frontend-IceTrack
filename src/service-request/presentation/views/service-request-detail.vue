@@ -3,8 +3,9 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
-import { ServiceRequestsApi } from '@/service-request/infrastructure/service-requests-api.js';
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { IamApi } from '@/iam/infrastructure/iam.api.js';
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -12,6 +13,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const api = new ServiceRequestsApi();
 const iamApi = new IamApi();
+const techniciansApi = new TechniciansApi();
 
 const serviceRequest = ref(null);
 const interventions = ref([]);
@@ -26,7 +28,7 @@ const newIntervention = ref({
 const newPhotoUrl = ref('');
 
 const isLoading = ref(false);
-const isProvider = computed(() => authStore.currentUserRole === 'provider');
+const isProvider = computed(() => authStore.currentUserRole === 'Provider');
 const requestId = computed(() => route.params.requestId);
 
 const displayEquipmentDialog = ref(false);
@@ -36,14 +38,14 @@ async function fetchRequestDetails() {
   isLoading.value = true;
   try {
     const [requestRes, interventionsRes] = await Promise.all([
-      api.http.get(`/serviceRequests/${requestId.value}`),
-      api.getInterventionsByServiceRequestId(requestId.value)
+      api.getServiceRequestDetailsQuery(requestId.value),
+      api.getInterventionsByRequestQuery(requestId.value)
     ]);
     serviceRequest.value = requestRes.data;
     interventions.value = interventionsRes.data;
 
     if (isProvider.value) {
-      const techniciansRes = await api.getTechniciansByProvider(authStore.currentUserId);
+      const techniciansRes = await techniciansApi.getTechniciansByProvider(authStore.currentUserId);
       technicians.value = techniciansRes.data;
     }
   } catch (error) {
@@ -88,7 +90,7 @@ async function registerIntervention() {
   };
 
   try {
-    await api.createIntervention(payload);
+    await api.sendRecordInterventionCommand(payload);
     newIntervention.value = { technicianId: null, summary: '', startTime: '', endTime: '', photoUrls: [] };
     await fetchRequestDetails();
   } catch (error) {
@@ -156,7 +158,7 @@ onMounted(fetchRequestDetails);
                   </template>
                   <template #content>
                     <p class="line-clamp-2">{{ slotProps.item.summary }}</p>
-                     <pv-button label="View Details" icon="pi pi-arrow-right" text class="p-button-sm mt-2" />
+                    <pv-button label="View Details" icon="pi pi-arrow-right" text class="p-button-sm mt-2" />
                   </template>
                 </pv-card>
               </template>
@@ -187,15 +189,15 @@ onMounted(fetchRequestDetails);
                   <pv-calendar id="endTime" v-model="newIntervention.endTime" showTime hourFormat="24" />
                 </div>
               </div>
-               <div class="p-fluid">
-                  <label for="photoUrl">Add Photo URL</label>
-                  <div class="p-inputgroup">
-                      <pv-input-text id="photoUrl" v-model="newPhotoUrl" placeholder="https://example.com/photo.jpg" />
-                      <pv-button icon="pi pi-plus" class="p-button-secondary" @click="addPhotoUrl" type="button" />
-                  </div>
-                  <div v-if="newIntervention.photoUrls && newIntervention.photoUrls.length" class="mt-2 flex flex-wrap gap-2">
-                      <img v-for="url in newIntervention.photoUrls" :key="url" :src="url" class="w-4rem h-4rem shadow-1 border-round"/>
-                  </div>
+              <div class="p-fluid">
+                <label for="photoUrl">Add Photo URL</label>
+                <div class="p-inputgroup">
+                  <pv-input-text id="photoUrl" v-model="newPhotoUrl" placeholder="https://example.com/photo.jpg" />
+                  <pv-button icon="pi pi-plus" class="p-button-secondary" @click="addPhotoUrl" type="button" />
+                </div>
+                <div v-if="newIntervention.photoUrls && newIntervention.photoUrls.length" class="mt-2 flex flex-wrap gap-2">
+                  <img v-for="url in newIntervention.photoUrls" :key="url" :src="url" class="w-4rem h-4rem shadow-1 border-round"/>
+                </div>
               </div>
               <pv-button type="submit" label="Register Intervention" />
             </form>
@@ -229,14 +231,14 @@ onMounted(fetchRequestDetails);
 
 <style scoped>
 .custom-marker {
-    display: flex;
-    width: 2rem;
-    height: 2rem;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    border-radius: 50%;
-    z-index: 1;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border-radius: 50%;
+  z-index: 1;
 }
 .line-clamp-2 {
   display: -webkit-box;

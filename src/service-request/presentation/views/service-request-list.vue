@@ -3,26 +3,26 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { useConfirm } from "primevue/useconfirm";
-import useServiceRequestsStore from "../../application/service-requests.store.js";
+import { useServiceRequestStore} from "@/service-request/application/service-requests.store.js";
 import { useAuthStore } from "@/iam/application/auth.store.js";
-import { ServiceRequestsApi } from "@/service-request/infrastructure/service-requests-api.js";
+import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
 import { storeToRefs } from "pinia";
 
 const { t } = useI18n();
 const router = useRouter();
 const confirm = useConfirm();
-const requestsStore = useServiceRequestsStore();
+const requestsStore = useServiceRequestStore();
 const authStore = useAuthStore();
-const serviceApi = new ServiceRequestsApi();
+const reviewsApi = new ReviewsApi();
 
 const { requests, requestsLoaded, errors } = storeToRefs(requestsStore);
-const { fetchServiceRequests, cancelRequest } = requestsStore;
+const { fetchContextAndRequests, cancelRequest } = requestsStore;
 
 const currentOwnerId = computed(() => authStore.currentUserId);
 
 watch(currentOwnerId, (newId) => {
   if (newId) {
-    fetchServiceRequests(newId);
+    fetchContextAndRequests(newId);
   }
 }, { immediate: true });
 
@@ -33,32 +33,17 @@ const filters = ref({
 
 const filteredRequests = computed(() => {
   let list = Array.isArray(requests.value) ? [...requests.value] : [];
-
-  // Sort by creation date ascending to establish order
   list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-  // Assign order number
   list = list.map((req, index) => ({ ...req, orderNumber: index + 1 }));
-
-  // Apply filters
   if (filters.value.status) list = list.filter(req => req.status === filters.value.status);
   if (filters.value.type) list = list.filter(req => req.type === filters.value.type);
-
-  // Finally, sort by date descending for display
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
-const statusSeverity = (status) => {
-  const severities = {
-    pending: 'danger',
-    accepted: 'warning',
-    inProgress: 'info',
-    completed: 'success',
-    canceled: 'secondary',
-    rejected: 'secondary'
-  };
-  return severities[status] || 'secondary';
-};
+const statusSeverity = (status) => ({
+  pending: 'danger', accepted: 'warning', inProgress: 'info',
+  completed: 'success', canceled: 'secondary', rejected: 'secondary'
+}[status] || 'secondary');
 
 const statusTranslation = (status) => t(status ? `services.status.${status}` : 'common.all');
 const typeTranslation = (type) => t(type ? `service-requests.types.${type}` : 'common.all');
@@ -78,10 +63,7 @@ const confirmCancel = (request) => {
 // --- Review Logic ---
 const displayReviewDialog = ref(false);
 const currentServiceRequest = ref(null);
-const reviewForm = ref({
-  rating: 0,
-  comment: ''
-});
+const reviewForm = ref({ rating: 0, comment: '' });
 const existingReview = ref(null);
 
 const openReviewDialog = async (request) => {
@@ -91,23 +73,17 @@ const openReviewDialog = async (request) => {
 
   if (request.hasReview) {
     try {
-      const response = await serviceApi.http.get(`/reviews/${request.reviewId}`);
+      const response = await reviewsApi.getReviewById(request.reviewId);
       existingReview.value = response.data;
       reviewForm.value.rating = existingReview.value.rating;
       reviewForm.value.comment = existingReview.value.comment;
-    } catch (e) {
-      console.error("Failed to load existing review:", e);
-    }
+    } catch (e) { console.error("Failed to load existing review:", e); }
   }
   displayReviewDialog.value = true;
 };
 
 const submitReview = async () => {
-  if (!currentServiceRequest.value || reviewForm.value.rating === 0) {
-    alert("Please provide a rating.");
-    return;
-  }
-
+  if (!currentServiceRequest.value || reviewForm.value.rating === 0) return;
   try {
     const reviewData = {
       serviceRequestId: currentServiceRequest.value.id,
@@ -117,26 +93,19 @@ const submitReview = async () => {
       comment: reviewForm.value.comment,
       createdAt: new Date().toISOString()
     };
-    await serviceApi.createReview(reviewData);
+    await reviewsApi.createReview(reviewData);
     displayReviewDialog.value = false;
-    await fetchServiceRequests(currentOwnerId.value); // Refresh list
-    alert("Review submitted successfully!");
-  } catch (e) {
-    console.error("Failed to submit review:", e);
-    alert("Error submitting review.");
-  }
+    await fetchContextAndRequests(currentOwnerId.value);
+  } catch (e) { console.error("Error submitting review:", e); }
 };
 </script>
 
 <template>
   <div class="p-4">
-    <!-- Header -->
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('services.requests.my-requests') }}</h1>
       <pv-button :label="t('services.requests.new')" icon="pi pi-plus" severity="success" @click="navigateToNew" />
     </div>
-
-    <!-- Filters -->
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
       <span class="text-sm font-semibold">{{ t('common.filter-by') }}:</span>
       <pv-select-button v-model="filters.status" :options="['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected']" :allowEmpty="true">
@@ -146,8 +115,6 @@ const submitReview = async () => {
         <template #option="slotProps">{{ typeTranslation(slotProps.option) }}</template>
       </pv-select-button>
     </div>
-
-    <!-- Data Table -->
     <pv-data-table :value="filteredRequests" :loading="!requestsLoaded" striped-rows :rows="10" paginator table-style="min-width: 50rem">
       <pv-column field="orderNumber" header="Order #" sortable style="width: 100px;"/>
       <pv-column field="createdAt" :header="t('services.requests.date')" sortable>
@@ -176,11 +143,8 @@ const submitReview = async () => {
         </template>
       </pv-column>
     </pv-data-table>
-
     <div v-if="errors.length" class="text-red-500 mt-3">{{ t('common.error-occurred') }}: {{ errors.map(e => e.message).join(', ') }}</div>
     <pv-confirm-dialog/>
-
-    <!-- Review Dialog -->
     <pv-dialog v-model:visible="displayReviewDialog" :header="currentServiceRequest && currentServiceRequest.hasReview ? 'View Review' : 'Submit Review'" :modal="true" class="p-fluid">
       <div class="field">
         <label for="rating">Rating</label>
@@ -197,6 +161,3 @@ const submitReview = async () => {
     </pv-dialog>
   </div>
 </template>
-
-<style scoped>
-</style>
