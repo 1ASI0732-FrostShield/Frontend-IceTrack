@@ -55,6 +55,18 @@
       "selectType": "Seleccionar tipo",
       "selectEquipment": "Seleccionar equipo"
     }
+     "ack": {
+      "confirmTitle": "Confirmar Reconocimiento",
+      "confirmMessage": "¿Desea marcar esta alerta como reconocida?",
+      "accept": "Reconocer",
+      "reject": "Cancelar",
+
+      "successTitle": "Alerta reconocida",
+      "successMessage": "La alerta ha sido marcada como reconocida.",
+
+      "errorTitle": "Error al reconocer",
+      "errorMessage": "Ocurrió un error al reconocer la alerta."
+    }
   },
 
   "errors": {
