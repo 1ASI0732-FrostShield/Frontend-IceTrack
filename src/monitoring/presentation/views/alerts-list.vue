@@ -56,7 +56,7 @@ function confirmAcknowledge(alert) {
     rejectLabel: t("alerts.ack.reject", "Cancelar"),
     accept: async () => {
       try {
-        await deleteAlert(alert.id); // <- sigue usando deleteAlert
+        await deleteAlert(alert.id);
         toast.add({ severity: "success", summary: t("alerts.ack.success", "Alerta reconocida"), life: 2000 });
       } catch (err) {
         toast.add({ severity: "error", summary: t("alerts.ack.error", "Error al reconocer alerta"), life: 3000 });
