@@ -172,6 +172,18 @@
       "actions": "Actions",
       "confirm-delete": "Do you want to delete the report \"{name}\"?",
       "delete-header": "Confirm deletion",
+      "search": "Search",
+      "statusFilter": {
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "canceled": "Canceled"
+      },
+      "typesFilter": {
+        "inspection": "Inspection",
+        "maintenance": "Maintenance",
+        "incident": "Incident",
+        "audit": "Audit"
+      },
       "statusType": {
         "done": "Done",
         "inProgress": "In Progress"
@@ -190,7 +202,10 @@
         "type": "Type",
         "status": "Status",
         "summary": "Summary",
+        "tenantId": "Tenant ID",
+        "equipmentId": "Equipment ID",
         "content": "Content",
+        "url": "Report URL",
         "generatedAt": "Generated at",
         "edit": "Edit",
         "back": "Back",

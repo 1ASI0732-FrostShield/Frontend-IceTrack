@@ -161,6 +161,18 @@
       "actions": "Acciones",
       "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
       "delete-header": "Confirmar eliminación",
+      "search": "Buscar",
+      "statusFilter": {
+        "completed": "Completado",
+        "inProgress": "En progreso",
+        "canceled": "Cancelado"
+      },
+      "typesFilter": {
+        "inspection": "Inspección",
+        "maintenance": "Mantenimiento",
+        "incident": "Incidente",
+        "audit": "Auditoría"
+      },
       "statusType": {
         "done": "Listo",
         "inProgress": "En progreso"
@@ -179,7 +191,10 @@
         "type": "Tipo",
         "status": "Estado",
         "summary": "Resumen",
+        "tenantId": "Inquilino ID",
+        "equipmentId": "Equipo ID",
         "content": "Contenido",
+        "url": "URL del Reporte",
         "generatedAt": "Generado el",
         "edit": "Editar",
         "back": "Volver",
