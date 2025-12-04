@@ -156,7 +156,8 @@
       "resolved": "Resolved",
       "acknowledged": "Acknowledged",
       "open": "Open",
-      "closed": "Closed"
+      "closed": "Closed",
+      "active": "Active"
     },
 
     "actions": {
@@ -189,6 +190,7 @@
       "selectType": "Select type",
       "selectEquipment": "Select equipment"
     },
+
     "deletion": {
       "confirmDeleteTitle": "Delete Alert",
       "confirmDeleteMessage": "Are you sure you want to delete this alert?",

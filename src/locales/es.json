@@ -192,7 +192,7 @@
       "type": "Tipo",
       "equipment": "Equipo",
       "site": "Sitio",
-      "tenant": "Inquilino",
+      "tenant": "Arrendatario",
       "timestamp": "Fecha",
       "actions": "Acciones",
       "dateFrom": "Desde",
@@ -201,42 +201,51 @@
       "clear": "Limpiar",
       "status": "Estado"
     },
+
     "types": {
       "highTemperature": "Alta Temperatura",
-      "powerLoss": "Fallo de Energía",
+      "powerLoss": "Pérdida de Energía",
       "sensorOffline": "Sensor Desconectado"
     },
+
     "status": {
       "pending": "Pendiente",
       "resolved": "Resuelto",
       "acknowledged": "Reconocido",
       "open": "Abierto",
-      "closed": "Cerrado"
+      "closed": "Cerrado",
+      "active": "Activo"
     },
+
     "actions": {
       "acknowledge": "Reconocer",
       "delete": "Eliminar",
       "viewEquipment": "Ver Equipo"
     },
+
     "confirm": {
       "header": "Reconocer Alerta",
       "message": "¿Desea marcar esta alerta como reconocida?",
+
       "deleteHeader": "Eliminar Alerta",
       "deleteMessage": "¿Está seguro de que desea eliminar esta alerta?"
     },
+
     "success": {
       "acknowledged": "Alerta reconocida exitosamente",
       "deleted": "Alerta eliminada exitosamente"
     },
+
     "errors": {
       "generic": "Error al cargar las alertas",
       "invalidId": "ID de alerta inválido",
       "acknowledge": "Error al reconocer la alerta",
       "delete": "Error al eliminar la alerta"
     },
+
     "placeholders": {
-      "selectType": "Seleccionar tipo",
-      "selectEquipment": "Seleccionar equipo"
+      "selectType": "Seleccione tipo",
+      "selectEquipment": "Seleccione equipo"
     },
     "deletion": {
       "confirmDeleteTitle": "Eliminar alerta",
