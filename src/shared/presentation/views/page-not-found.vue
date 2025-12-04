@@ -1,9 +1,18 @@
 <script setup>
+import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
 
+const router = useRouter();
+const unavailableRoute = router.currentRoute.value.fullPath;
+const { t } = useI18n();
 </script>
 
 <template>
-<h1>Page not found</h1>
+  <div class="align-content-start justify-content-start m-4">
+    <h1>{{ t('page-not-found.title')}}</h1>
+    <p>{{ t('page-not-found.content', { 'unavailable-route': unavailableRoute })}}</p>
+    <router-link to="/dashboard">{{ t('page-not-found.go-dashboard') }}</router-link>
+  </div>
 </template>
 
 <style scoped>

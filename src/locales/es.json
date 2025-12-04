@@ -5,32 +5,186 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "search": "Buscar",
-    "status": { "open": "Abierta", "assigned": "Asignada", "inProgress": "En progreso", "resolved": "Resuelta", "closed": "Cerrada" },
-    "severity": { "info": "Info", "warning": "Advertencia", "critical": "Crítica" }
+    "status": {
+      "open": "Abierta",
+      "assigned": "Asignada",
+      "inProgress": "En progreso",
+      "resolved": "Resuelta",
+      "closed": "Cerrada"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Advertencia",
+      "critical": "Crítica"
+    },
+    "filter-by": "Filtrar por",
+    "all": "Todos",
+    "submit-request": "Enviar Solicitud",
+    "cancel-tooltip": "Cancelar Solicitud",
+    "error-occurred": "Ha ocurrido un error"
   },
-  "nav": { "dashboard": "Inicio", "sites": "Sitios", "equipments": "Equipos", "services": "Órdenes", "alerts": "Alertas", "reports": "Reportes", "admin": "Administración", "help": "Ayuda" },
+  "nav": {
+    "dashboard": "Inicio",
+    "sites": "Sitios",
+    "equipments": "Equipos",
+    "services": "Órdenes",
+    "alerts": "Alertas",
+    "reports": "Reportes",
+    "admin": "Administración",
+    "help": "Ayuda"
+  },
   "auth": {
-    "login": { "title": "Iniciar sesión", "email": "Correo", "password": "Contraseña", "cta": "Entrar" },
-    "register": { "title": "Crear cuenta" },
-    "errors": { "invalidCredentials": "Correo o contraseña incorrectos." }
+    "login": {
+      "title": "Iniciar sesión",
+      "email": "Correo",
+      "password": "Contraseña",
+      "cta": "Entrar"
+    },
+    "register": {
+      "title": "Crear cuenta"
+    },
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos."
+    }
+  },
+  "page-not-found": {
+    "title": "Página no encontrada",
+    "content": "La ruta {unavailable-route} no está disponible.",
+    "go-dashboard": "Ir al Dashboard"
   },
   "dashboard": {
-    "title": "Resumen",
-    "kpis": { "totalEquipments": "Equipos totales", "openAlerts": "Alertas abiertas", "energyThisWeek": "Energía (esta semana)" },
-    "charts": { "temperatureTrend": "Tendencia de temperatura", "energyUsage": "Uso de energía" }
+    "title": "Dashboard",
+    "demoBanner": "Modo demo: usando tenant {id}",
+    "kpis": {
+      "equipments": "Equipos monitoreados",
+      "alerts": "Alertas abiertas",
+      "orders": "Órdenes activas",
+      "avgTemp": "Temperatura promedio",
+      "totalEquipments": "Equipos totales",
+      "openAlerts": "Alertas abiertas",
+      "energyThisWeek": "Energía (esta semana)"
+    },
+    "chartTitle": "Temperatura (24h/7d)",
+    "recentAlerts": "Alertas recientes",
+    "alerts": {
+      "noAlerts": "Sin alertas recientes",
+      "columns": {
+        "date": "FECHA",
+        "equipment": "EQUIPO",
+        "site": "SITIO",
+        "severity": "SEVERIDAD",
+        "status": "ESTADO",
+        "action": "ACCIÓN"
+      },
+      "severities": {
+        "critical": "Crítico",
+        "warning": "Advertencia",
+        "info": "Información",
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta"
+      },
+      "statuses": {
+        "open": "Abierto",
+        "acknowledged": "Reconocido",
+        "resolved": "Resuelto",
+        "closed": "Cerrado",
+        "pending": "Pendiente",
+        "in_progress": "En progreso"
+      },
+      "actions": {
+        "acknowledge": "Aceptar (ACK)",
+        "resolve": "Resolver",
+        "close": "Cerrar",
+        "view": "Ver detalles"
+      }
+    },
+    "charts": {
+      "temperatureTrend": "Tendencia de temperatura",
+      "energyUsage": "Uso de energía"
+    }
   },
   "sites": {
-    "list": { "title": "Sitios", "empty": "Aún no hay sitios.", "id": "Id", "name": "Nombre", "address": "Dirección" },
-    "detail": {"title": "Detalle del sitio", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
+    "list": {
+      "title": "Sitios",
+      "empty": "Aún no hay sitios.",
+      "id": "Id",
+      "name": "Nombre",
+      "address": "Dirección"
+    },
+    "detail": {
+      "title": "Detalle del sitio",
+      "contactName": "Nombre de contacto",
+      "contactPhone": "Teléfono",
+      "createdAt": "Creado",
+      "updatedAt": "Actualizado"
+    }
   },
   "equipments": {
-    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
-    "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
-    "controls": { "info": "Informacion", "setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
+    "list": {
+      "title": "Equipos",
+      "id": "Id",
+      "model": "Modelo",
+      "type": "Tipo",
+      "serial": "Serie",
+      "status": "Estado"
+    },
+    "detail": {
+      "title": "Detalle del equipo",
+      "siteId": "Sitio Id",
+      "installedAt": "Instalado",
+      "lastSeenAt": "Última conexión",
+      "createdAt": "Creado",
+      "updatedAt": "Actualizado"
+    },
+    "controls": {
+      "info": "Informacion",
+      "more": "Mas",
+      "setpointC": "Punto de ajuste °C",
+      "name": "Nombre",
+      "manufacturer": "Fabricante",
+      "online": "En línea"
+    }
   },
   "services": {
-    "requests": { "title": "Solicitudes de servicio", "new": "Nueva solicitud", "detail": "Detalle de solicitud" },
-    "status": { "scheduled": "Programada", "assigned": "Asignada", "inProgress": "En progreso", "done": "Completada" }
+    "requests": {
+      "id": "ID",
+      "title": "Solicitudes de servicio",
+      "new": "Nueva solicitud",
+      "detail": "Detalle de solicitud",
+      "my-requests": "Mis Solicitudes de Servicio",
+      "new-request-title": "Crear Nueva Solicitud",
+      "success-message": "¡Solicitud creada exitosamente! Pronto nos comunicaremos.",
+      "date": "Fecha",
+      "equipment": "Equipo",
+      "site": "Sitio",
+      "type": "Tipo",
+      "status": "Estado",
+      "actions": "Acciones",
+      "track": "Seguimiento",
+      "track-tooltip": "Ver el estado actual y el técnico asignado",
+      "view-report": "Ver Reporte",
+      "report-tooltip": "Descargar el informe de servicio completado",
+      "confirm-cancel": "¿Está seguro de que desea cancelar la Solicitud {id}?",
+      "cancel-header": "Confirmar Cancelación",
+      "request-type": "Tipo de Solicitud",
+      "priority": "Prioridad",
+      "problem-description": "Descripción del Problema"
+    },
+    "status": {
+      "scheduled": "Programada",
+      "assigned": "Asignada",
+      "inProgress": "En progreso",
+      "done": "Completada",
+      "pending": "Pendiente",
+      "canceled": "Cancelada"
+    }
+  },
+  "service-requests": {
+    "types": {
+      "corrective": "Correctivo",
+      "preventive": "Preventivo"
+    }
   },
   "alerts": {
     "list": {
@@ -47,13 +201,11 @@
       "clear": "Limpiar",
       "status": "Estado"
     },
-
     "types": {
       "highTemperature": "Alta Temperatura",
       "powerLoss": "Fallo de Energía",
       "sensorOffline": "Sensor Desconectado"
     },
-
     "status": {
       "pending": "Pendiente",
       "resolved": "Resuelto",
@@ -61,51 +213,171 @@
       "open": "Abierto",
       "closed": "Cerrado"
     },
-
     "actions": {
       "acknowledge": "Reconocer",
       "delete": "Eliminar",
       "viewEquipment": "Ver Equipo"
     },
-
     "confirm": {
       "header": "Reconocer Alerta",
       "message": "¿Desea marcar esta alerta como reconocida?",
-
       "deleteHeader": "Eliminar Alerta",
       "deleteMessage": "¿Está seguro de que desea eliminar esta alerta?"
     },
-
     "success": {
       "acknowledged": "Alerta reconocida exitosamente",
       "deleted": "Alerta eliminada exitosamente"
     },
-
     "errors": {
       "generic": "Error al cargar las alertas",
       "invalidId": "ID de alerta inválido",
       "acknowledge": "Error al reconocer la alerta",
       "delete": "Error al eliminar la alerta"
     },
-
     "placeholders": {
-      "selectType": "Seleccione tipo",
-      "selectEquipment": "Seleccione equipo"
+      "selectType": "Seleccionar tipo",
+      "selectEquipment": "Seleccionar equipo"
+    },
+    "deletion": {
+      "confirmDeleteTitle": "Eliminar alerta",
+      "confirmDeleteMessage": "¿Estás seguro de eliminar esta alerta?",
+      "confirmDeleteAccept": "Sí, eliminar",
+      "confirmDeleteReject": "Cancelar",
+      "deleteSuccess": "Alerta eliminada correctamente",
+      "deleteError": "Error al eliminar la alerta"
     }
   },
-
   "errors": {
     "occurred": "Ocurrió un error"
   },
   "reports": {
-    "list": { "title": "Reportes" },
-    "detail": { "title": "Detalle de reporte" },
-    "types": { "performance": "Rendimiento", "service": "Servicio" },
-    "actions": { "downloadPdf": "Descargar PDF" }
+    "list": {
+      "title": "Reportes Generados",
+      "new": "Nuevo Reporte",
+      "name": "Nombre",
+      "type": "Tipo",
+      "date": "Fecha",
+      "status": "Estado",
+      "actions": "Acciones",
+      "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
+      "delete-header": "Confirmar eliminación",
+      "search": "Buscar",
+      "statusFilter": {
+        "completed": "Completado",
+        "inProgress": "En progreso",
+        "canceled": "Cancelado"
+      },
+      "typesFilter": {
+        "inspection": "Inspección",
+        "maintenance": "Mantenimiento",
+        "incident": "Incidente",
+        "audit": "Auditoría"
+      },
+      "statusType": {
+        "done": "Listo",
+        "inProgress": "En progreso"
+      },
+      "label": {
+        "search": "Buscar por nombre",
+        "type": "Seleccionar tipo",
+        "status": "Seleccionar estado"
+      },
+      "action": {
+        "view": "Ver Reporte"
+      },
+      "detail": {
+        "start": "Detalle del Reporte",
+        "title": "Título",
+        "type": "Tipo",
+        "status": "Estado",
+        "summary": "Resumen",
+        "tenantId": "Inquilino ID",
+        "equipmentId": "Equipo ID",
+        "content": "Contenido",
+        "url": "URL del Reporte",
+        "generatedAt": "Generado el",
+        "edit": "Editar",
+        "back": "Volver",
+        "save": "Guardar",
+        "cancel": "Cancelar"
+      },
+      "create": {
+        "start": "Nuevo Reporte"
+      }
+    },
+    "detail": {
+      "title": "Detalle de reporte"
+    },
+    "types": {
+      "equipmentHistory": "Historial del Equipo",
+      "energyConsumption": "Consumo de Energía",
+      "Service": "Servicio",
+      "performance": "Rendimiento"
+    },
+    "actions": {
+      "downloadPdf": "Descargar PDF"
+    }
   },
-  "admin": { "users": { "title": "Usuarios", "invite": "Invitar usuario" }, "settings": { "title": "Configuración", "language": "Idioma" } },
-  "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },
-  "dates": { "today": "Hoy", "yesterday": "Ayer", "period": "{start} – {end}" },
-  "notifications": { "title": "Notificaciones", "empty": "¡No tienes pendientes!", "markAllRead": "Marcar todo como leído" },
-  "table": { "rows": "{count, plural, one {# fila} other {# filas}}" }
+  "admin": {
+    "users": {
+      "title": "Informacion del Usuario",
+      "invite": "Invitar usuario",
+      "firstName": "Nonbres:",
+      "lastName": "Apellidos:",
+      "user": "Nombre de Usuario:",
+      "email": "Correo Electronico:",
+      "plans": "Planes:",
+      "registerDate": "Fecha de registro:",
+      "lastConnection": "Ultima Coneccion:",
+      "password": "Contraseña:",
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    },
+    "alert": {
+      "save": "Perfil actualizado correctamente",
+      "cancel": "Cambios cancelados"
+    },
+    "settings": {
+      "title": "Configuración",
+      "language": "Idioma",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "lightMode": "Modo de luz:",
+      "notifications": "Notificaciones:",
+      "alarmType": "Tipos de Alarma:",
+      "night": "Noche",
+      "day": "Dia",
+      "notify": {
+        "sms": "SMS",
+        "email": "Correo electrónico",
+        "calls": "Llamada telefonica",
+        "social": "Redes sociales"
+      },
+      "alarm": {
+        "bells": "Campanas",
+        "chime": "Timbre",
+        "pop": "Pop",
+        "none": "Ninguno"
+      }
+    }
+  },
+  "validation": {
+    "required": "{field} es obligatorio",
+    "email": "Ingresa un correo válido",
+    "min": "Mínimo {min}",
+    "max": "Máximo {max}"
+  },
+  "dates": {
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "period": "{start} – {end}"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "¡No tienes pendientes!",
+    "markAllRead": "Marcar todo como leído"
+  },
+  "table": {
+    "rows": "{count, plural, one {# fila} other {# filas}}"
+  }
 }
