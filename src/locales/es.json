@@ -36,15 +36,21 @@
   "auth": {
     "login": {
       "title": "Iniciar sesión",
+      "username": "Usuario",
       "email": "Correo",
       "password": "Contraseña",
-      "cta": "Entrar"
+      "cta": "Entrar",
+      "submit": "Ingresar",
+      "error": "Usuario o contraseña inválidos"
     },
     "register": {
-      "title": "Crear cuenta"
+      "title": "Crear cuenta",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Inicia sesión"
     },
     "errors": {
-      "invalidCredentials": "Correo o contraseña incorrectos."
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "occurred": "Ocurrió un error"
     }
   },
   "page-not-found": {
@@ -53,8 +59,15 @@
     "go-dashboard": "Ir al Dashboard"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Panel de Control",
+    "loading": "Cargando panel...",
+    "refresh": "Actualizar Panel",
+    "noConfig": "No se encontró configuración del dashboard",
+    "noCardsAdded": "No has agregado tarjetas a tu dashboard aún",
+    "dataPoints": "puntos de datos",
     "demoBanner": "Modo demo: usando tenant {id}",
+    "chartTitle": "Tendencia de Temperatura",
+    "recentAlerts": "Alertas recientes",
     "kpis": {
       "equipments": "Equipos monitoreados",
       "alerts": "Alertas abiertas",
@@ -64,8 +77,38 @@
       "openAlerts": "Alertas abiertas",
       "energyThisWeek": "Energía (esta semana)"
     },
-    "chartTitle": "Temperatura (24h/7d)",
-    "recentAlerts": "Alertas recientes",
+    "errors": {
+      "title": "Se encontraron errores:"
+    },
+    "settings": {
+      "title": "Configuración del Dashboard",
+      "defaultSite": "Sitio Predeterminado",
+      "selectSite": "Seleccione un sitio",
+      "defaultSiteHelp": "Los datos se filtrarán por este sitio por defecto",
+      "temperatureRange": "Rango de Temperatura",
+      "temperatureRangePlaceholder": "ej., -20 to 5",
+      "temperatureRangeHelp": "Rango de temperatura predeterminado para monitoreo de equipos"
+    },
+    "addCard": {
+      "title": "Agregar Tarjeta",
+      "selectType": "Seleccione el tipo de tarjeta",
+      "add": "Agregar Tarjeta",
+      "allCardsAdded": "Todas las tarjetas disponibles han sido agregadas"
+    },
+    "cardTypes": {
+      "AlertsCard": "Alertas",
+      "TemperatureMonitoringCard": "Monitoreo de Temperatura",
+      "EquipmentStatusCard": "Estado de Equipos",
+      "RecentReportsCard": "Reportes Recientes",
+      "ServiceRequestsCard": "Solicitudes de Servicio"
+    },
+    "cardDescriptions": {
+      "AlertsCard": "Ver alertas recientes y su estado",
+      "TemperatureMonitoringCard": "Monitorear tendencias de temperatura en el tiempo",
+      "EquipmentStatusCard": "Ver estado de equipos y KPIs",
+      "RecentReportsCard": "Acceder a reportes generados recientemente",
+      "ServiceRequestsCard": "Rastrear solicitudes de servicio activas"
+    },
     "alerts": {
       "noAlerts": "Sin alertas recientes",
       "columns": {

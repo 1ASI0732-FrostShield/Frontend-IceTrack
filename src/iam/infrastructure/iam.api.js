@@ -21,8 +21,28 @@ export class IamApi extends BaseApi {
      * @returns {Promise<Object>}
      */
     async login(username, password) {
-        const response = await this.http.post(`${authEndpointPath}/sign-in`, { username, password });
-        return response;
+        const response = await this.http.get(usersEndpointPath, { params: { username } });
+        const users = response.data;
+
+        if (users.length === 0) {
+            throw new Error('Invalid username or password');
+        }
+
+        const user = users[0];
+        if (user.password !== password) {
+            throw new Error('Invalid username or password');
+        }
+
+        // Simulate the token response from the C# backend
+        const token = btoa(`${username}:${password}`);
+        return {
+            data: {
+                id: user.id,
+                username: user.username,
+                role: user.role,
+                token: token
+            }
+        };
     }
 
     /**
