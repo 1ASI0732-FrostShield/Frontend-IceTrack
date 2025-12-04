@@ -58,7 +58,7 @@ async function fetchRequestDetails() {
 async function openEquipmentDialog() {
   if (!serviceRequest.value) return;
   try {
-    const response = await iamApi.http.get(`/equipments/${serviceRequest.value.equipmentId}`);
+    const response = await iamApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`);
     selectedEquipment.value = response.data;
     displayEquipmentDialog.value = true;
   } catch (error) {
