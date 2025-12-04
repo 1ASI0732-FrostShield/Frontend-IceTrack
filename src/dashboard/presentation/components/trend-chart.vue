@@ -1,28 +1,20 @@
 <script setup>
 import { computed } from 'vue'
-import { dashboardStore } from '@/dashboard/application/dashboard.store.js'
 import 'chart.js/auto'
 
 const props = defineProps({
-  snapshot: {
+  chartData: {
     type: Object,
     default: null
   }
 })
 
 const hasValidData = computed(() => {
-  return dashboardStore.hasValidChartData()
-})
-
-const chartData = computed(() => {
-  if (!props.snapshot) return null
-  return props.snapshot.temperatureChartData
+  return props.chartData &&
+      props.chartData.datasets?.[0]?.data?.length > 0
 })
 
 const noDataMessage = computed(() => {
-  if (dashboardStore.loading) {
-    return 'Cargando datos...'
-  }
   return 'Sin datos de tendencia disponibles'
 })
 
