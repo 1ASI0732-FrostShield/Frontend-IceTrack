@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { EquipmentAssembler } from "@/monitoring/infrastructure/equipments.assembler.js";
-import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js"; // 🔹 nuevo import
+import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const monitoringApi = new MonitoringApi();
@@ -50,6 +50,15 @@ const useMonitoringStore = defineStore("monitoring", () => {
             .catch(error => errors.value.push(error));
     }
 
+    function acknowledgeAlert(alertId) {
+        return monitoringApi.acknowledgeAlert(alertId)
+            .then(() => {
+                const alert = alerts.value.find(a => a.id === alertId);
+                if (alert) alert.acknowledged = "acknowledged";
+            })
+            .catch(error => errors.value.push(error));
+    }
+
     return {
         equipments,
         alerts,
@@ -57,6 +66,7 @@ const useMonitoringStore = defineStore("monitoring", () => {
         equipmentsLoaded,
         alertsLoaded,
         fetchEquipments,
+        acknowledgeAlert,
         fetchAlerts,
         deleteAlert,
     };

@@ -24,4 +24,8 @@ export class MonitoringApi extends BaseApi {
     deleteAlert(alertId) {
         return this.#alertsEndpointPath.delete(alertId);
     }
+
+    acknowledgeAlert(alertId) {
+        return this.#alertsEndpointPath.patch(`${alertId}/acknowledge`);
+    }
 }

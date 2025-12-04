@@ -13,7 +13,7 @@ const toast = useToast();
 
 const store = useMonitoringStore();
 const { alerts, alertsLoaded, errors } = storeToRefs(store);
-const { fetchAlerts, deleteAlert } = store;
+const { fetchAlerts, acknowledgeAlert } = store;
 
 const selectedType = ref(null);
 const selectedEquipment = ref(null);
@@ -47,21 +47,80 @@ const filteredAlerts = computed(() => {
     return matchesType && matchesEquipment && matchesDateFrom && matchesDateTo;
   });
 });
+
 function confirmAcknowledge(alert) {
+  if (!alert?.id) {
+    toast.add({
+      severity: "error",
+      summary: t("alerts.errors.invalidId"),
+      life: 3000,
+    });
+    return;
+  }
+
   confirm.require({
-    message: t("alerts.ack.confirmMessage", "¿Marcar esta alerta como atendida?"),
-    header: t("alerts.ack.confirmTitle", "Acknowledge Alert"),
+    message: t("alerts.confirm.message"),
+    header: t("alerts.confirm.header"),
     icon: "pi pi-check-circle",
-    acceptLabel: t("alerts.ack.accept", "Acknowledge"),
-    rejectLabel: t("alerts.ack.reject", "Cancelar"),
+    acceptLabel: t("alerts.actions.acknowledge"),
+    rejectLabel: t("common.cancel"),
+
     accept: async () => {
       try {
-        await deleteAlert(alert.id);
-        toast.add({ severity: "success", summary: t("alerts.ack.success", "Alerta reconocida"), life: 2000 });
+        await acknowledgeAlert(alert.id);
+        alert.status = "acknowledged";
+
+        toast.add({
+          severity: "success",
+          summary: t("alerts.success.acknowledged"),
+          life: 2000
+        });
       } catch (err) {
-        toast.add({ severity: "error", summary: t("alerts.ack.error", "Error al reconocer alerta"), life: 3000 });
+        toast.add({
+          severity: "error",
+          summary: t("alerts.errors.acknowledge"),
+          life: 3000
+        });
       }
     },
+  });
+}
+
+function confirmDelete(alert) {
+  if (!alert?.id) {
+    toast.add({
+      severity: "error",
+      summary: t("alerts.errors.invalidId"),
+      life: 3000,
+    });
+    return;
+  }
+
+  confirm.require({
+    message: t("alerts.confirm.deleteMessage"),
+    header: t("alerts.confirm.deleteHeader"),
+    icon: "pi pi-exclamation-triangle",
+    acceptLabel: t("alerts.actions.delete"),
+    rejectLabel: t("common.cancel"),
+
+    accept: async () => {
+      try {
+        await store.deleteAlert(alert.id);
+
+        toast.add({
+          severity: "success",
+          summary: t("alerts.success.deleted"),
+          life: 2000
+        });
+
+      } catch (err) {
+        toast.add({
+          severity: "error",
+          summary: t("alerts.errors.delete"),
+          life: 3000
+        });
+      }
+    }
   });
 }
 
@@ -76,6 +135,7 @@ onMounted(() => {
       {{ t("alerts.list.title") }}
     </h1>
 
+    <!-- Filters -->
     <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm items-end">
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-600 mb-1">
@@ -127,6 +187,7 @@ onMounted(() => {
       />
     </div>
 
+    <!-- Alerts Table -->
     <div class="p-4 bg-white rounded-2xl shadow-md">
       <pv-data-table
           :value="filteredAlerts"
@@ -137,56 +198,84 @@ onMounted(() => {
           :rows="6"
           :rows-per-page-options="[6, 10, 20]"
       >
-        <pv-column field="timestamp" :header="t('alerts.list.timestamp')" sortable>
-          <template #body="slotProps">
-            {{ formatDate(slotProps.data.createdAt ?? slotProps.data.timestamp ?? slotProps.data.ts) }}
+        <!-- Date -->
+        <pv-column :header="t('alerts.list.timestamp')" sortable>
+          <template #body="{ data }">
+            {{ formatDate(data.createdAt ?? data.timestamp ?? data.ts) }}
           </template>
         </pv-column>
 
+        <!-- Equipment -->
         <pv-column field="equipmentId" :header="t('alerts.list.equipment')" sortable>
-          <template #body="slotProps">
-            <span class="font-semibold text-gray-800">
-              {{ slotProps.data.equipmentId }}
-            </span>
+          <template #body="{ data }">
+            <span class="font-semibold text-gray-800">{{ data.equipmentId }}</span>
           </template>
         </pv-column>
 
+        <!-- Site -->
         <pv-column field="siteId" :header="t('alerts.list.site')" sortable />
 
+        <!-- Alert Type -->
         <pv-column field="type" :header="t('alerts.list.type')">
-          <template #body="slotProps">
+          <template #body="{ data }">
             <span
-                class="px-3 py-1 rounded-full text-white font-semibold text-sm capitalize"
+                class="px-2 py-1 rounded-md font-medium text-sm capitalize border"
                 :class="{
-                'bg-orange-500': slotProps.data.type === 'highTemperature',
-                'bg-gray-500': slotProps.data.type === 'powerLoss',
-                'bg-blue-500': slotProps.data.type === 'sensorOffline'
-              }"
+              'bg-orange-50 text-orange-700 border-orange-300': data.type === 'highTemperature',
+              'bg-gray-100 text-gray-700 border-gray-400': data.type === 'powerLoss',
+              'bg-blue-50 text-blue-700 border-blue-300': data.type === 'sensorOffline'
+            }"
             >
-              {{ t(`alerts.types.${slotProps.data.type}`) }}
+                {{ t(`alerts.types.${data.type}`) }}
             </span>
           </template>
         </pv-column>
 
         <pv-column field="tenantId" :header="t('alerts.list.tenant')" sortable />
 
+        <!-- Alert Status -->
+        <pv-column :header="t('alerts.list.status')">
+          <template #body="{ data }">
+    <span
+        class="px-3 py-1 rounded-full font-semibold text-sm"
+        :class="{
+        'bg-yellow-500 text-white': data.status === 'open',
+        'bg-green-500 text-white': data.status === 'acknowledged',
+        'bg-gray-500 text-white': data.status === 'closed',
+        'bg-blue-500 text-white': data.status === 'resolved'
+      }"
+    >
+      {{ t(`alerts.status.${data.status}`) }}
+    </span>
+          </template>
+        </pv-column>
+
+        <!-- Actions -->
         <pv-column :header="t('alerts.list.actions')">
-          <template #body="slotProps">
+          <template #body="{ data }">
             <div class="flex gap-2">
               <RouterLink
-                  :to="{ name: 'equipment-detail', params: { equipmentId: slotProps.data.equipmentId } }"
+                  :to="{ name: 'equipment-detail', params: { equipmentId: data.equipmentId } }"
               >
                 <pv-button
-                    :label="t('alerts.list.viewEquipment')"
+                    :label="t('alerts.actions.viewEquipment')"
                     class="!bg-blue-600 hover:!bg-blue-700 text-white !py-2 !px-4 rounded-lg"
                 />
               </RouterLink>
 
               <pv-button
                   icon="pi pi-check"
-                  :label="t('alerts.list.acknowledge', 'Acknowledge')"
+                  :label="t('alerts.actions.acknowledge')"
                   class="!bg-yellow-500 hover:!bg-yellow-600 text-white !py-2 !px-3 rounded-lg"
-                  @click="confirmAcknowledge(slotProps.data)"
+                  :disabled="data.status === 'acknowledged'"
+                  @click="confirmAcknowledge(data)"
+              />
+
+              <pv-button
+                  icon="pi pi-trash"
+                  :label="t('alerts.actions.delete')"
+                  class="!bg-red-500 hover:!bg-red-600 text-white !py-2 !px-3 rounded-lg"
+                  @click="confirmDelete(data)"
               />
             </div>
           </template>
@@ -194,7 +283,8 @@ onMounted(() => {
       </pv-data-table>
 
       <div v-if="errors.length" class="text-red-500 mt-3">
-        {{ t("errors.occurred") }}: {{ errors.map(e => e.message).join(", ") }}
+        {{ t("alerts.errors.generic") }}:
+        {{ errors.map(e => e.message).join(", ") }}
       </div>
     </div>
 

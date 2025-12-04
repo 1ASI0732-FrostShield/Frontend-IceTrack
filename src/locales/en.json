@@ -44,28 +44,53 @@
       "dateFrom": "From",
       "dateTo": "To",
       "viewEquipment": "View Equipment",
-      "clear": "Clear"
+      "clear": "Clear",
+      "status": "Status"
     },
+
     "types": {
       "highTemperature": "High Temperature",
       "powerLoss": "Power Loss",
       "sensorOffline": "Sensor Offline"
     },
+
+    "status": {
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "acknowledged": "Acknowledged",
+      "open": "Open",
+      "closed": "Closed"
+    },
+
+    "actions": {
+      "acknowledge": "Acknowledge",
+      "delete": "Delete",
+      "viewEquipment": "View Equipment"
+    },
+
+    "confirm": {
+      "header": "Acknowledge Alert",
+      "message": "Do you want to mark this alert as acknowledged?",
+
+      "deleteHeader": "Delete Alert",
+      "deleteMessage": "Are you sure you want to delete this alert?"
+    },
+
+    "success": {
+      "acknowledged": "Alert acknowledged successfully",
+      "deleted": "Alert deleted successfully"
+    },
+
+    "errors": {
+      "generic": "Error loading alerts",
+      "invalidId": "Invalid alert ID",
+      "acknowledge": "Failed to acknowledge alert",
+      "delete": "Error deleting alert"
+    },
+
     "placeholders": {
       "selectType": "Select type",
       "selectEquipment": "Select equipment"
-    }
-     "ack": {
-      "confirmMessage": "Mark this alert as acknowledged?",
-      "confirmTitle": "Confirm Acknowledge",
-      "accept": "Acknowledge",
-      "reject": "Cancel",
-
-      "successTitle": "Alert acknowledged",
-      "successMessage": "The alert has been acknowledged.",
-
-      "errorTitle": "Acknowledge error",
-      "errorMessage": "An error occurred while acknowledging the alert."
     }
   },
 

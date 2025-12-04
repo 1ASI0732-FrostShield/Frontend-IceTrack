@@ -38,34 +38,59 @@
       "type": "Tipo",
       "equipment": "Equipo",
       "site": "Sitio",
-      "tenant": "Tenant",
+      "tenant": "Inquilino",
       "timestamp": "Fecha",
       "actions": "Acciones",
       "dateFrom": "Desde",
       "dateTo": "Hasta",
-      "viewEquipment": "Ver equipo",
-      "clear": "Limpiar"
+      "viewEquipment": "Ver Equipo",
+      "clear": "Limpiar",
+      "status": "Estado"
     },
+
     "types": {
-      "highTemperature": "Alta temperatura",
-      "powerLoss": "Pérdida de energía",
-      "sensorOffline": "Sensor desconectado"
+      "highTemperature": "Alta Temperatura",
+      "powerLoss": "Fallo de Energía",
+      "sensorOffline": "Sensor Desconectado"
     },
+
+    "status": {
+      "pending": "Pendiente",
+      "resolved": "Resuelto",
+      "acknowledged": "Reconocido",
+      "open": "Abierto",
+      "closed": "Cerrado"
+    },
+
+    "actions": {
+      "acknowledge": "Reconocer",
+      "delete": "Eliminar",
+      "viewEquipment": "Ver Equipo"
+    },
+
+    "confirm": {
+      "header": "Reconocer Alerta",
+      "message": "¿Desea marcar esta alerta como reconocida?",
+
+      "deleteHeader": "Eliminar Alerta",
+      "deleteMessage": "¿Está seguro de que desea eliminar esta alerta?"
+    },
+
+    "success": {
+      "acknowledged": "Alerta reconocida exitosamente",
+      "deleted": "Alerta eliminada exitosamente"
+    },
+
+    "errors": {
+      "generic": "Error al cargar las alertas",
+      "invalidId": "ID de alerta inválido",
+      "acknowledge": "Error al reconocer la alerta",
+      "delete": "Error al eliminar la alerta"
+    },
+
     "placeholders": {
-      "selectType": "Seleccionar tipo",
-      "selectEquipment": "Seleccionar equipo"
-    }
-     "ack": {
-      "confirmTitle": "Confirmar Reconocimiento",
-      "confirmMessage": "¿Desea marcar esta alerta como reconocida?",
-      "accept": "Reconocer",
-      "reject": "Cancelar",
-
-      "successTitle": "Alerta reconocida",
-      "successMessage": "La alerta ha sido marcada como reconocida.",
-
-      "errorTitle": "Error al reconocer",
-      "errorMessage": "Ocurrió un error al reconocer la alerta."
+      "selectType": "Seleccione tipo",
+      "selectEquipment": "Seleccione equipo"
     }
   },
 
