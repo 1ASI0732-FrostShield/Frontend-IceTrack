@@ -262,7 +262,8 @@
             "resolved": "Resuelto",
             "acknowledged": "Reconocido",
             "open": "Abierto",
-            "closed": "Cerrado"
+            "closed": "Cerrado",
+            "active": "Activo"
         },
         "actions": {
             "acknowledge": "Reconocer",

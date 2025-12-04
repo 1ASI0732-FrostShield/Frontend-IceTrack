@@ -29,24 +29,15 @@ export class IamApi extends BaseApi {
 
     /**
      * Realiza el registro llamando al endpoint POST /authentication/sign-up.
-     * @param {string} username - El nombre de usuario.
-     * @param {string} password - La contraseña.
-     * @param {number} role - El rol del usuario (0 = Owner, etc.).
+     * @param {Object} userData - Debe contener propiedades en camelCase (username, password, role, name).
      * @returns {Promise<import('axios').AxiosResponse>}
      */
-    async register(username, password, role = 0) {
-        return await this.http.post(`${authEndpointPath}/sign-up`, {
-            username,
-            password,
-            role
-        });
+    register(userData) {
+        return this.http.post(`${authEndpointPath}/sign-up`, userData);
     }
 
     // --- USER OPERATIONS ---
 
-    /**
-     * Obtiene todos los usuarios (requiere autenticación)
-     */
     getUsers(tenantId) {
         return this.http.get(usersEndpointPath, { params: { tenantId } });
     }
