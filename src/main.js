@@ -19,7 +19,7 @@ import {
     DataTable, Dialog, DialogService, Drawer, Divider, FileUpload, FloatLabel,
     IconField, InputIcon, InputNumber, InputText, Menu, Rating, Row, Select,
     SelectButton, Tag, Textarea, Toast, ToastService, Toolbar, Tooltip, PanelMenu,
-    Dropdown, Calendar, RadioButton
+    Dropdown, Calendar, RadioButton, Timeline
 } from "primevue";
 
 const MaterialBlue = definePreset(Material, {
@@ -86,6 +86,7 @@ app.component('pv-avatar', Avatar)
     .component('pv-dropdown', Dropdown)
     .component('pv-calendar', Calendar)
     .component('pv-radio-button', RadioButton)
+    .component('pv-timeline', Timeline)
     .directive('tooltip', Tooltip)
 
 initializeAuthAndRun();

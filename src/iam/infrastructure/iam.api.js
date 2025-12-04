@@ -18,31 +18,13 @@ export class IamApi extends BaseApi {
      * Realiza la autenticación llamando al endpoint POST /authentication/sign-in.
      * @param {string} username - El nombre de usuario para autenticar.
      * @param {string} password - La contraseña.
-     * @returns {Promise<Object>}
+     * @returns {Promise<import('axios').AxiosResponse>}
      */
     async login(username, password) {
-        const response = await this.http.get(usersEndpointPath, { params: { username } });
-        const users = response.data;
-
-        if (users.length === 0) {
-            throw new Error('Invalid username or password');
-        }
-
-        const user = users[0];
-        if (user.password !== password) {
-            throw new Error('Invalid username or password');
-        }
-
-        // Simulate the token response from the C# backend
-        const token = btoa(`${username}:${password}`);
-        return {
-            data: {
-                id: user.id,
-                username: user.username,
-                role: user.role,
-                token: token
-            }
-        };
+        return this.http.post(`${authEndpointPath}/sign-in`, {
+            username: username,
+            password: password
+        });
     }
 
     /**
@@ -58,6 +40,10 @@ export class IamApi extends BaseApi {
 
     getUsers(tenantId) {
         return this.http.get(usersEndpointPath, { params: { tenantId } });
+    }
+
+    getUsersByRole(role) {
+        return this.http.get(`${usersEndpointPath}/role/${role}`);
     }
 
     updateUser(id, resource) {
