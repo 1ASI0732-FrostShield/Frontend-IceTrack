@@ -30,7 +30,7 @@ const filters = ref({
 
 const statusOptions = computed(() => [
   { label: t('reports.list.statusFilter.completed'), value: 'Completed' },
-  { label: t('reports.list.statusFilter.inProgress'), value: 'In Progress' },
+  { label: t('reports.list.statusFilter.inProgress'), value: 'InProgress' },
   { label: t('reports.list.statusFilter.canceled'), value: 'Canceled' }
 ])
 
@@ -44,7 +44,7 @@ const typeOptions = computed(() => [
 const getSeverity = (status) => {
   switch (status) {
     case 'Completed': return 'success'
-    case 'In Progress': return 'warning'
+    case 'InProgress': return 'warning'
     case 'Canceled': return 'danger'
     default: return 'secondary'
   }
