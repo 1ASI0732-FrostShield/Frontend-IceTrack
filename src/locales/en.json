@@ -5,9 +5,18 @@
     "cancel": "Cancel",
     "save": "Save",
     "search": "Search",
-    "status": { "open": "Open", "assigned": "Assigned", "inProgress": "In progress", "resolved": "Resolved", "closed": "Closed" },
-    "severity": { "info": "Info", "warning": "Warning", "critical": "Critical" },
-
+    "status": {
+      "open": "Open",
+      "assigned": "Assigned",
+      "inProgress": "In progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical"
+    },
     "filter-by": "Filter by",
     "all": "All",
     "submit-request": "Submit Request",
@@ -28,12 +37,21 @@
     "technician_management": "Technician Management"
   },
   "auth": {
-    "login": { "title": "Sign in", "email": "Email", "username": "Username", "password": "Password", "cta": "Sign in" },
+    "login": {
+      "title": "Sign in",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "cta": "Sign in",
+      "submit": "Sign In",
+      "error": "Invalid username or password"
+    },
     "register": {
       "title": "Create account",
       "alreadyHaveAccount": "Already have an account?",
       "selectRole": "Select your role",
       "cta": "Register",
+      "signIn": "Sign in",
       "roles": {
         "owner": "Owner",
         "ownerDesc": "Manage your sites and equipment",
@@ -41,7 +59,10 @@
         "providerDesc": "Provide services to owners"
       }
     },
-    "errors": { "invalidCredentials": "Email or password is incorrect." }
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "occurred": "An error occurred"
+    }
   },
   "page-not-found": {
     "title": "Page Not Found",
@@ -50,15 +71,52 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "loading": "Loading dashboard...",
+    "refresh": "Refresh Dashboard",
+    "noConfig": "No dashboard configuration found",
+    "noCardsAdded": "No cards added to your dashboard yet",
+    "dataPoints": "data points",
     "demoBanner": "Demo mode: using tenant {id}",
+    "chartTitle": "Temperature Trend",
+    "recentAlerts": "Recent Alerts",
     "kpis": {
       "equipments": "Monitored Equipment",
       "alerts": "Open Alerts",
       "orders": "Active Orders",
       "avgTemp": "Average Temperature"
     },
-    "chartTitle": "Temperature (24h/7d)",
-    "recentAlerts": "Recent Alerts",
+    "errors": {
+      "title": "Errors occurred:"
+    },
+    "settings": {
+      "title": "Dashboard Settings",
+      "defaultSite": "Default Site",
+      "selectSite": "Select a site",
+      "defaultSiteHelp": "Data will be filtered by this site by default",
+      "temperatureRange": "Temperature Range",
+      "temperatureRangePlaceholder": "e.g., -20 to 5",
+      "temperatureRangeHelp": "Default temperature range for equipment monitoring"
+    },
+    "addCard": {
+      "title": "Add Card",
+      "selectType": "Select card type",
+      "add": "Add Card",
+      "allCardsAdded": "All available cards have been added"
+    },
+    "cardTypes": {
+      "AlertsCard": "Alerts",
+      "TemperatureMonitoringCard": "Temperature Monitoring",
+      "EquipmentStatusCard": "Equipment Status",
+      "RecentReportsCard": "Recent Reports",
+      "ServiceRequestsCard": "Service Requests"
+    },
+    "cardDescriptions": {
+      "AlertsCard": "View recent alerts and their status",
+      "TemperatureMonitoringCard": "Monitor temperature trends over time",
+      "EquipmentStatusCard": "View equipment status and KPIs",
+      "RecentReportsCard": "Access recent generated reports",
+      "ServiceRequestsCard": "Track active service requests"
+    },
     "alerts": {
       "noAlerts": "No recent alerts",
       "columns": {
@@ -94,13 +152,46 @@
     }
   },
   "sites": {
-    "list": { "title": "Sites", "empty": "No sites yet.", "id": "Id", "name": "Name", "address": "Address" },
-    "detail": { "title": "Site detail", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
+    "list": {
+      "title": "Sites",
+      "empty": "No sites yet.",
+      "id": "Id",
+      "name": "Name",
+      "address": "Address"
+    },
+    "detail": {
+      "title": "Site detail",
+      "contactName": "Contact Name",
+      "contactPhone": "Phone",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    }
   },
   "equipments": {
-    "list": { "title": "Equipments", "id": "Id", "model": "Model", "type": "Type", "serial": "Serial", "status": "Status" },
-    "detail": { "title": "Equipment detail", "siteId": "Site Id", "installedAt": "Installed", "lastSeenAt": "last Seen", "createdAt": "Created", "updatedAt": "Updated" },
-    "controls": { "info": "Information", "more": "More", "setpointC": "Set Point °C", "name": "Name", "manufacturer": "Manufacturer", "online": "Online" }
+    "list": {
+      "title": "Equipments",
+      "id": "Id",
+      "model": "Model",
+      "type": "Type",
+      "serial": "Serial",
+      "status": "Status"
+    },
+    "detail": {
+      "title": "Equipment detail",
+      "siteId": "Site Id",
+      "installedAt": "Installed",
+      "lastSeenAt": "last Seen",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    },
+    "controls": {
+      "info": "Information",
+      "more": "More",
+      "setpointC": "Set Point °C",
+      "name": "Name",
+      "manufacturer": "Manufacturer",
+      "online": "Online"
+    }
   },
   "services": {
     "requests": {
@@ -108,7 +199,6 @@
       "title": "Service requests",
       "new": "New request",
       "detail": "Request detail",
-
       "my-requests": "My Service Requests",
       "new-request-title": "Create New Request",
       "success-message": "Request created successfully! We will contact you soon.",
@@ -150,19 +240,16 @@
     "problem-description": "Problem Description",
     "submit": "Submit Request",
     "cancel": "Cancel",
-
     "types": {
       "corrective": "Repair (Corrective)",
       "preventive": "Maintenance (Preventive)"
     },
-
     "priorities": {
       "low": "Low",
       "medium": "Medium",
       "high": "High"
     }
   },
-
   "alerts": {
     "list": {
       "title": "Alerts",
@@ -175,12 +262,41 @@
       "dateFrom": "From",
       "dateTo": "To",
       "viewEquipment": "View Equipment",
-      "clear": "Clear"
+      "clear": "Clear",
+      "status": "Status"
     },
     "types": {
       "highTemperature": "High Temperature",
       "powerLoss": "Power Loss",
       "sensorOffline": "Sensor Offline"
+    },
+    "status": {
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "acknowledged": "Acknowledged",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "actions": {
+      "acknowledge": "Acknowledge",
+      "delete": "Delete",
+      "viewEquipment": "View Equipment"
+    },
+    "confirm": {
+      "header": "Acknowledge Alert",
+      "message": "Do you want to mark this alert as acknowledged?",
+      "deleteHeader": "Delete Alert",
+      "deleteMessage": "Are you sure you want to delete this alert?"
+    },
+    "success": {
+      "acknowledged": "Alert acknowledged successfully",
+      "deleted": "Alert deleted successfully"
+    },
+    "errors": {
+      "generic": "Error loading alerts",
+      "invalidId": "Invalid alert ID",
+      "acknowledge": "Failed to acknowledge alert",
+      "delete": "Error deleting alert"
     },
     "placeholders": {
       "selectType": "Select type",
@@ -206,6 +322,18 @@
       "actions": "Actions",
       "confirm-delete": "Do you want to delete the report \"{name}\"?",
       "delete-header": "Confirm deletion",
+      "search": "Search",
+      "statusFilter": {
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "canceled": "Canceled"
+      },
+      "typesFilter": {
+        "inspection": "Inspection",
+        "maintenance": "Maintenance",
+        "incident": "Incident",
+        "audit": "Audit"
+      },
       "statusType": {
         "done": "Done",
         "inProgress": "In Progress"
@@ -224,7 +352,10 @@
         "type": "Type",
         "status": "Status",
         "summary": "Summary",
+        "tenantId": "Tenant ID",
+        "equipmentId": "Equipment ID",
         "content": "Content",
+        "url": "Report URL",
         "generatedAt": "Generated at",
         "edit": "Edit",
         "back": "Back",
@@ -257,7 +388,7 @@
       "show": "Show"
     },
     "alert": {
-      "save" : "Profile successfully updated",
+      "save": "Profile successfully updated",
       "cancel": "Changes cancelled"
     },
     "settings": {
@@ -285,12 +416,36 @@
     }
   },
   "provider": {
-    "dashboard": { "title": "Provider Dashboard" },
-    "services": { "title": "Provider Services" },
-    "technicians": { "title": "Technician Management" }
+    "dashboard": {
+      "title": "Provider Dashboard"
+    },
+    "services": {
+      "title": "Provider Services"
+    },
+    "technicians": {
+      "title": "Technician Management"
+    }
   },
-  "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
-  "dates": { "today": "Today", "yesterday": "Yesterday", "period": "{start} – {end}" },
-  "notifications": { "title": "Notifications", "empty": "You're all caught up!", "markAllRead": "Mark all as read" },
-  "table": { "rows": "{count, plural, one {# row} other {# rows}}" }
+  "validation": {
+    "required": "{field} is required",
+    "email": "Enter a valid email",
+    "min": "Minimum {min}",
+    "max": "Maximum {max}"
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "period": "{start} – {end}"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "You're all caught up!",
+    "markAllRead": "Mark all as read"
+  },
+  "table": {
+    "rows": "{count, plural, one {# row} other {# rows}}"
+  },
+  "errors": {
+    "occurred": "An error occurred"
+  }
 }

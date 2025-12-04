@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import useReportingStore from '@/reporting/application/reporting.store.js'
@@ -13,30 +13,45 @@ const title = ref('')
 const type = ref('')
 const summary = ref('')
 const content = ref('')
-const status = ref('En Progreso')
+const tenantId = ref(null)
+const equipmentId = ref(null)
+const url = ref('')
 
-const typeOptions = [
-  { label: 'Historial de equipo', value: 'Historial de equipo' },
-  { label: 'Consumo de energía', value: 'Consumo de energía' },
-  { label: 'Servicio', value: 'Servicio' }
-]
+const typeOptions = computed(() => [
+  { label: t('reports.list.typesFilter.inspection'), value: 'Inspection' },
+  { label: t('reports.list.typesFilter.maintenance'), value: 'Maintenance' },
+  { label: t('reports.list.typesFilter.incident'), value: 'Incident' },
+  { label: t('reports.list.typesFilter.audit'), value: 'Audit' },
+])
 
 const errors = ref([])
 
 const saveReport = async () => {
   errors.value = []
-  if (!title.value || !type.value || !summary.value || !content.value || !status.value) {
+  if (!title.value || !type.value || !summary.value || !content.value) {
     errors.value.push({ message: t('reports.form.validation-required') })
     return
   }
 
+  if (!tenantId.value && !equipmentId.value) {
+    errors.value.push({ message: 'Debe ingresar TenantId o EquipmentId' })
+  }
+
+  if (!url.value) {
+    errors.value.push({ message: 'Debe ingresar la URL del reporte' })
+  }
+
+  if (errors.value.length > 0) return
+
   try {
     await addReport({
+      tenantId: tenantId.value ?? null,
+      equipmentId: equipmentId.value ?? null,
       title: title.value,
       type: type.value,
       summary: summary.value,
       content: content.value,
-      status: status.value,
+      url: url.value,
       generatedAt: new Date().toISOString()
     })
     router.push({ name: 'reporting-report' })
@@ -55,14 +70,23 @@ const saveReport = async () => {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <pv-select v-model="type" :options="typeOptions" optionLabel="label" :placeholder="t('reports.list.label.type')"
+      <pv-select v-model="type" :options="typeOptions" optionLabel="label" optionValue="value" :placeholder="t('reports.list.label.type')"
           :showClear="true" class="w-full"/>
       <pv-input-text v-model="summary" :placeholder="t('reports.list.detail.summary')" class="w-full"/>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <pv-input-number v-model="tenantId" :placeholder="t('reports.list.detail.tenantId')" class="w-full"/>
+      <pv-input-number v-model="equipmentId" :placeholder="t('reports.list.detail.equipmentId')" class="w-full"/>
     </div>
 
     <div class="mb-6">
       <pv-textarea v-model="content" :placeholder="t('reports.list.detail.content')" autoResize
                    rows="6" class="w-full"/>
+    </div>
+
+    <div class="mb-4">
+      <pv-input-text v-model="url" :placeholder="t('reports.list.detail.url')" class="w-full"/>
     </div>
 
     <div class="flex flex-wrap gap-3">

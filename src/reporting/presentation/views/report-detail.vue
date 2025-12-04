@@ -17,9 +17,9 @@ const editMode = ref(false)
 const id = route.params.id
 
 const statusOptions = [
-  { label: 'Cancelado', value: 'Cancelado' },
-  { label: 'En espera', value: 'En espera' },
-  { label: 'Listo', value: 'Listo' }
+  { label: 'Canceled', value: 'Canceled' },
+  { label: 'In Progress', value: 'In Progress' },
+  { label: 'Completed', value: 'Completed' }
 ]
 
 onMounted(async () => {
