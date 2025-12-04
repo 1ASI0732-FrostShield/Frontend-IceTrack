@@ -7,7 +7,6 @@
     "search": "Search",
     "status": { "open": "Open", "assigned": "Assigned", "inProgress": "In progress", "resolved": "Resolved", "closed": "Closed" },
     "severity": { "info": "Info", "warning": "Warning", "critical": "Critical" },
-
     "filter-by": "Filter by",
     "all": "All",
     "submit-request": "Submit Request",
@@ -16,9 +15,24 @@
   },
   "nav": { "dashboard": "Dashboard", "sites": "Sites", "equipments": "Equipments", "services": "Services", "alerts": "Alerts", "reports": "Reports", "admin": "Admin", "help": "Help" },
   "auth": {
-    "login": { "title": "Sign in", "email": "Email", "password": "Password", "cta": "Sign in" },
-    "register": { "title": "Create account" },
-    "errors": { "invalidCredentials": "Email or password is incorrect." }
+    "login": {
+      "title": "Sign in",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "cta": "Sign in",
+      "submit": "Sign In",
+      "error": "Invalid username or password"
+    },
+    "register": {
+      "title": "Create account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "occurred": "An error occurred"
+    }
   },
   "page-not-found": {
     "title": "Page Not Found",
@@ -27,15 +41,52 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "loading": "Loading dashboard...",
+    "refresh": "Refresh Dashboard",
+    "noConfig": "No dashboard configuration found",
+    "noCardsAdded": "No cards added to your dashboard yet",
+    "dataPoints": "data points",
     "demoBanner": "Demo mode: using tenant {id}",
+    "chartTitle": "Temperature Trend",
+    "recentAlerts": "Recent Alerts",
     "kpis": {
       "equipments": "Monitored Equipment",
       "alerts": "Open Alerts",
       "orders": "Active Orders",
       "avgTemp": "Average Temperature"
     },
-    "chartTitle": "Temperature (24h/7d)",
-    "recentAlerts": "Recent Alerts",
+    "errors": {
+      "title": "Errors occurred:"
+    },
+    "settings": {
+      "title": "Dashboard Settings",
+      "defaultSite": "Default Site",
+      "selectSite": "Select a site",
+      "defaultSiteHelp": "Data will be filtered by this site by default",
+      "temperatureRange": "Temperature Range",
+      "temperatureRangePlaceholder": "e.g., -20 to 5",
+      "temperatureRangeHelp": "Default temperature range for equipment monitoring"
+    },
+    "addCard": {
+      "title": "Add Card",
+      "selectType": "Select card type",
+      "add": "Add Card",
+      "allCardsAdded": "All available cards have been added"
+    },
+    "cardTypes": {
+      "AlertsCard": "Alerts",
+      "TemperatureMonitoringCard": "Temperature Monitoring",
+      "EquipmentStatusCard": "Equipment Status",
+      "RecentReportsCard": "Recent Reports",
+      "ServiceRequestsCard": "Service Requests"
+    },
+    "cardDescriptions": {
+      "AlertsCard": "View recent alerts and their status",
+      "TemperatureMonitoringCard": "Monitor temperature trends over time",
+      "EquipmentStatusCard": "View equipment status and KPIs",
+      "RecentReportsCard": "Access recent generated reports",
+      "ServiceRequestsCard": "Track active service requests"
+    },
     "alerts": {
       "noAlerts": "No recent alerts",
       "columns": {
@@ -85,7 +136,6 @@
       "title": "Service requests",
       "new": "New request",
       "detail": "Request detail",
-
       "my-requests": "My Service Requests",
       "new-request-title": "Create New Request",
       "success-message": "Request created successfully! We will contact you soon.",
@@ -116,19 +166,16 @@
     "problem-description": "Problem Description",
     "submit": "Submit Request",
     "cancel": "Cancel",
-
     "types": {
       "corrective": "Repair (Corrective)",
       "preventive": "Maintenance (Preventive)"
     },
-
     "priorities": {
       "low": "Low",
       "medium": "Medium",
       "high": "High"
     }
   },
-
   "alerts": {
     "list": {
       "title": "Alerts",
@@ -238,7 +285,7 @@
       "show": "Show"
     },
     "alert": {
-      "save" : "Profile successfully updated",
+      "save": "Profile successfully updated",
       "cancel": "Changes cancelled"
     },
     "settings": {
@@ -268,5 +315,8 @@
   "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
   "dates": { "today": "Today", "yesterday": "Yesterday", "period": "{start} – {end}" },
   "notifications": { "title": "Notifications", "empty": "You're all caught up!", "markAllRead": "Mark all as read" },
-  "table": { "rows": "{count, plural, one {# row} other {# rows}}" }
+  "table": { "rows": "{count, plural, one {# row} other {# rows}}" },
+  "errors": {
+    "occurred": "An error occurred"
+  }
 }

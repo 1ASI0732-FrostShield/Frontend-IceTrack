@@ -2,16 +2,15 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  snapshot: {
-    type: Object,
+  kpis: {
+    type: Object, // DashboardKpis entity
     default: null
   }
 })
 
 const formattedAvgTemperature = computed(() => {
-  if (!props.snapshot) return '-'
-  const avg = props.snapshot.avgTemperature
-  return avg ? `${avg.toFixed(1)} °C` : '-'
+  if (!props.kpis) return '-'
+  return props.kpis.getFormattedAvgTemp()
 })
 </script>
 
@@ -27,7 +26,7 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-primary">
-            {{ snapshot?.kpis?.totalEquipments ?? '-' }}
+            {{ kpis?.totalEquipments ?? '-' }}
           </div>
         </template>
       </pv-card>
@@ -43,7 +42,7 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-orange-500">
-            {{ snapshot?.kpis?.openAlerts ?? '-' }}
+            {{ kpis?.openAlerts ?? '-' }}
           </div>
         </template>
       </pv-card>
@@ -59,7 +58,7 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-green-500">
-            {{ snapshot?.kpis?.activeRequests ?? '-' }}
+            {{ kpis?.activeRequests ?? '-' }}
           </div>
         </template>
       </pv-card>
