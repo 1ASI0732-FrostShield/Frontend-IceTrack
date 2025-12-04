@@ -1,7 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { EquipmentAssembler } from "@/monitoring/infrastructure/equipments.assembler.js";
-import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js"; // 🔹 nuevo import
+import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const monitoringApi = new MonitoringApi();
@@ -13,20 +12,6 @@ const useMonitoringStore = defineStore("monitoring", () => {
 
     const equipmentsLoaded = ref(false);
     const alertsLoaded = ref(false);
-
-    function fetchEquipments() {
-        monitoringApi
-            .getEquipment()
-            .then((response) => {
-                equipments.value = EquipmentAssembler.toEntitiesFromResponse(response);
-                equipmentsLoaded.value = true;
-                console.log("Equipos cargados:", equipments.value);
-            })
-            .catch((error) => {
-                errors.value.push(error);
-                console.error("Error al cargar equipos:", error);
-            });
-    }
 
     function fetchAlerts() {
         monitoringApi
@@ -50,13 +35,22 @@ const useMonitoringStore = defineStore("monitoring", () => {
             .catch(error => errors.value.push(error));
     }
 
+    function acknowledgeAlert(alertId) {
+        return monitoringApi.acknowledgeAlert(alertId)
+            .then(() => {
+                const alert = alerts.value.find(a => a.id === alertId);
+                if (alert) alert.acknowledged = "acknowledged";
+            })
+            .catch(error => errors.value.push(error));
+    }
+
     return {
         equipments,
         alerts,
         errors,
         equipmentsLoaded,
         alertsLoaded,
-        fetchEquipments,
+        acknowledgeAlert,
         fetchAlerts,
         deleteAlert,
     };

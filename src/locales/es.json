@@ -5,15 +5,34 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "search": "Buscar",
-    "status": { "open": "Abierta", "assigned": "Asignada", "inProgress": "En progreso", "resolved": "Resuelta", "closed": "Cerrada" },
-    "severity": { "info": "Info", "warning": "Advertencia", "critical": "Crítica" },
+    "status": {
+      "open": "Abierta",
+      "assigned": "Asignada",
+      "inProgress": "En progreso",
+      "resolved": "Resuelta",
+      "closed": "Cerrada"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Advertencia",
+      "critical": "Crítica"
+    },
     "filter-by": "Filtrar por",
     "all": "Todos",
     "submit-request": "Enviar Solicitud",
     "cancel-tooltip": "Cancelar Solicitud",
     "error-occurred": "Ha ocurrido un error"
   },
-  "nav": { "dashboard": "Inicio", "sites": "Sitios", "equipments": "Equipos", "services": "Órdenes", "alerts": "Alertas", "reports": "Reportes", "admin": "Administración", "help": "Ayuda" },
+  "nav": {
+    "dashboard": "Inicio",
+    "sites": "Sitios",
+    "equipments": "Equipos",
+    "services": "Órdenes",
+    "alerts": "Alertas",
+    "reports": "Reportes",
+    "admin": "Administración",
+    "help": "Ayuda"
+  },
   "auth": {
     "login": {
       "title": "Iniciar sesión",
@@ -53,7 +72,10 @@
       "equipments": "Equipos monitoreados",
       "alerts": "Alertas abiertas",
       "orders": "Órdenes activas",
-      "avgTemp": "Temperatura promedio"
+      "avgTemp": "Temperatura promedio",
+      "totalEquipments": "Equipos totales",
+      "openAlerts": "Alertas abiertas",
+      "energyThisWeek": "Energía (esta semana)"
     },
     "errors": {
       "title": "Se encontraron errores:"
@@ -119,16 +141,53 @@
         "close": "Cerrar",
         "view": "Ver detalles"
       }
+    },
+    "charts": {
+      "temperatureTrend": "Tendencia de temperatura",
+      "energyUsage": "Uso de energía"
     }
   },
   "sites": {
-    "list": { "title": "Sitios", "empty": "Aún no hay sitios.", "id": "Id", "name": "Nombre", "address": "Dirección" },
-    "detail": {"title": "Detalle del sitio", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
+    "list": {
+      "title": "Sitios",
+      "empty": "Aún no hay sitios.",
+      "id": "Id",
+      "name": "Nombre",
+      "address": "Dirección"
+    },
+    "detail": {
+      "title": "Detalle del sitio",
+      "contactName": "Nombre de contacto",
+      "contactPhone": "Teléfono",
+      "createdAt": "Creado",
+      "updatedAt": "Actualizado"
+    }
   },
   "equipments": {
-    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
-    "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
-    "controls": { "info": "Informacion", "more": "Mas" ,"setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
+    "list": {
+      "title": "Equipos",
+      "id": "Id",
+      "model": "Modelo",
+      "type": "Tipo",
+      "serial": "Serie",
+      "status": "Estado"
+    },
+    "detail": {
+      "title": "Detalle del equipo",
+      "siteId": "Sitio Id",
+      "installedAt": "Instalado",
+      "lastSeenAt": "Última conexión",
+      "createdAt": "Creado",
+      "updatedAt": "Actualizado"
+    },
+    "controls": {
+      "info": "Informacion",
+      "more": "Mas",
+      "setpointC": "Punto de ajuste °C",
+      "name": "Nombre",
+      "manufacturer": "Fabricante",
+      "online": "En línea"
+    }
   },
   "services": {
     "requests": {
@@ -155,7 +214,14 @@
       "priority": "Prioridad",
       "problem-description": "Descripción del Problema"
     },
-    "status": { "scheduled": "Programada", "assigned": "Asignada", "inProgress": "En progreso", "done": "Completada", "pending": "Pendiente", "canceled": "Cancelada" }
+    "status": {
+      "scheduled": "Programada",
+      "assigned": "Asignada",
+      "inProgress": "En progreso",
+      "done": "Completada",
+      "pending": "Pendiente",
+      "canceled": "Cancelada"
+    }
   },
   "service-requests": {
     "types": {
@@ -169,18 +235,47 @@
       "type": "Tipo",
       "equipment": "Equipo",
       "site": "Sitio",
-      "tenant": "Tenant",
+      "tenant": "Inquilino",
       "timestamp": "Fecha",
       "actions": "Acciones",
       "dateFrom": "Desde",
       "dateTo": "Hasta",
-      "viewEquipment": "Ver equipo",
-      "clear": "Limpiar"
+      "viewEquipment": "Ver Equipo",
+      "clear": "Limpiar",
+      "status": "Estado"
     },
     "types": {
-      "highTemperature": "Alta temperatura",
-      "powerLoss": "Pérdida de energía",
-      "sensorOffline": "Sensor desconectado"
+      "highTemperature": "Alta Temperatura",
+      "powerLoss": "Fallo de Energía",
+      "sensorOffline": "Sensor Desconectado"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "resolved": "Resuelto",
+      "acknowledged": "Reconocido",
+      "open": "Abierto",
+      "closed": "Cerrado"
+    },
+    "actions": {
+      "acknowledge": "Reconocer",
+      "delete": "Eliminar",
+      "viewEquipment": "Ver Equipo"
+    },
+    "confirm": {
+      "header": "Reconocer Alerta",
+      "message": "¿Desea marcar esta alerta como reconocida?",
+      "deleteHeader": "Eliminar Alerta",
+      "deleteMessage": "¿Está seguro de que desea eliminar esta alerta?"
+    },
+    "success": {
+      "acknowledged": "Alerta reconocida exitosamente",
+      "deleted": "Alerta eliminada exitosamente"
+    },
+    "errors": {
+      "generic": "Error al cargar las alertas",
+      "invalidId": "ID de alerta inválido",
+      "acknowledge": "Error al reconocer la alerta",
+      "delete": "Error al eliminar la alerta"
     },
     "placeholders": {
       "selectType": "Seleccionar tipo",
@@ -253,10 +348,17 @@
         "start": "Nuevo Reporte"
       }
     },
+    "detail": {
+      "title": "Detalle de reporte"
+    },
     "types": {
       "equipmentHistory": "Historial del Equipo",
       "energyConsumption": "Consumo de Energía",
-      "Service": "Servicio"
+      "Service": "Servicio",
+      "performance": "Rendimiento"
+    },
+    "actions": {
+      "downloadPdf": "Descargar PDF"
     }
   },
   "admin": {
@@ -302,8 +404,23 @@
       }
     }
   },
-  "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },
-  "dates": { "today": "Hoy", "yesterday": "Ayer", "period": "{start} – {end}" },
-  "notifications": { "title": "Notificaciones", "empty": "¡No tienes pendientes!", "markAllRead": "Marcar todo como leído" },
-  "table": { "rows": "{count, plural, one {# fila} other {# filas}}" }
+  "validation": {
+    "required": "{field} es obligatorio",
+    "email": "Ingresa un correo válido",
+    "min": "Mínimo {min}",
+    "max": "Máximo {max}"
+  },
+  "dates": {
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "period": "{start} – {end}"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "¡No tienes pendientes!",
+    "markAllRead": "Marcar todo como leído"
+  },
+  "table": {
+    "rows": "{count, plural, one {# fila} other {# filas}}"
+  }
 }
