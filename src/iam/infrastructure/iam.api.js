@@ -18,17 +18,13 @@ export class IamApi extends BaseApi {
      * Realiza la autenticación llamando al endpoint POST /authentication/sign-in.
      * @param {string} username - El nombre de usuario para autenticar.
      * @param {string} password - La contraseña.
-     * @returns {Promise<Object>}
+     * @returns {Promise<import('axios').AxiosResponse>}
      */
     async login(username, password) {
-        // ✅ USAR EL ENDPOINT REAL DEL BACKEND
-        const response = await this.http.post(`${authEndpointPath}/sign-in`, {
-            username,
-            password
+        return this.http.post(`${authEndpointPath}/sign-in`, {
+            username: username,
+            password: password
         });
-
-        // El backend devuelve: { id, username, token, role }
-        return response;
     }
 
     /**
@@ -55,16 +51,10 @@ export class IamApi extends BaseApi {
         return this.http.get(usersEndpointPath, { params: { tenantId } });
     }
 
-    /**
-     * Obtiene un usuario por ID (requiere autenticación)
-     */
-    getUserById(id) {
-        return this.http.get(`${usersEndpointPath}/${id}`);
+    getUsersByRole(role) {
+        return this.http.get(`${usersEndpointPath}/role/${role}`);
     }
 
-    /**
-     * Actualiza un usuario (requiere autenticación)
-     */
     updateUser(id, resource) {
         return this.http.put(`${usersEndpointPath}/${id}`, resource);
     }

@@ -3,19 +3,38 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import PanelMenu from 'primevue/panelmenu'
+import { useAuthStore } from '@/iam/application/auth.store.js'
 
 const router = useRouter()
 const { t } = useI18n()
+const authStore = useAuthStore()
 
-const items = computed(() => [
-  { label: t('nav.dashboard'), icon: 'pi pi-home', command: () => router.push({ name: 'dashboard' }) },
-  { label: t('nav.sites'), icon: 'pi pi-building', command: () => router.push({ name: 'sites' }) },
-  { label: t('nav.equipments'), icon: 'pi pi-server', command: () => router.push({ name: 'equipments' }) },
-  { label: t('nav.services'), icon: 'pi pi-briefcase', command: () => router.push({ name: 'service-requests-list' }) },
-  { label: t('nav.alerts'), icon: 'pi pi-bell', command: () => router.push({ name: 'alerts' }) },
-  { label: t('nav.reports'), icon: 'pi pi-chart-line', command: () => router.push({ name: 'reporting-report' }) },
-  { label: t('nav.admin'), icon: 'pi pi-cog', command: () => router.push({ name: 'admin-users' }) },
-])
+const items = computed(() => {
+  if (authStore.currentUserRole === 'Provider') {
+    return [
+      { label: t('nav.provider_dashboard'), icon: 'pi pi-th-large', command: () => router.push({ name: 'provider-dashboard' }) },
+      {
+        label: t('nav.provider_services'),
+        icon: 'pi pi-briefcase',
+        items: [
+          { label: 'Services Hub', icon: 'pi pi-sitemap', command: () => router.push({ name: 'provider-services-hub' }) },
+          { label: 'All Services', icon: 'pi pi-list', command: () => router.push({ name: 'provider-services-list' }) },
+        ]
+      },
+      { label: t('nav.technician_management'), icon: 'pi pi-users', command: () => router.push({ name: 'provider-technicians' }) },
+    ];
+  }
+
+  // Default items for Owner
+  return [
+    { label: t('nav.dashboard'), icon: 'pi pi-home', command: () => router.push({ name: 'dashboard' }) },
+    { label: t('nav.sites'), icon: 'pi pi-building', command: () => router.push({ name: 'sites' }) },
+    { label: t('nav.equipments'), icon: 'pi pi-server', command: () => router.push({ name: 'equipments' }) },
+    { label: t('nav.services'), icon: 'pi pi-briefcase', command: () => router.push({ name: 'service-requests-list' }) },
+    { label: t('nav.alerts'), icon: 'pi pi-bell', command: () => router.push({ name: 'alerts' }) },
+    { label: t('nav.reports'), icon: 'pi pi-chart-line', command: () => router.push({ name: 'reporting-report' }) },
+  ];
+});
 </script>
 
 <template>

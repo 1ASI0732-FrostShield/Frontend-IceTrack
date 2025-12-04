@@ -1,104 +1,66 @@
-import { ServiceRequestsApi } from "../infrastructure/service-requests-api.js";
-import { ServiceRequestAssembler } from "../infrastructure/service-request.assembler.js";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { BaseApi} from "@/shared/infrastructure/base-api.js";
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
+import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
 
-const serviceRequestsApi = new ServiceRequestsApi();
-const baseApi = new BaseApi();
+const serviceDeliveryApi = new ServiceRequestsApi();
+const iamApi = new IamApi();
+const reviewsApi = new ReviewsApi();
 
-const useServiceRequestsStore = defineStore('service-requests', () => {
+export const useServiceRequestStore = defineStore('service-request-list', () => {
     const requests = ref([]);
     const requestsLoaded = ref(false);
     const errors = ref([]);
 
-    async function fetchAuxiliaryData() {
-        const extractArray = (response, key) => {
-            if (!response || !response.data) return [];
-            if (response.data[key]) return response.data[key];
-            if (Array.isArray(response.data)) return response.data;
-            return [];
-        };
-
-        const [usersResponse, sitesResponse, equipmentResponse, reportsResponse] = await Promise.all([
-            baseApi.http.get('/users'),
-            baseApi.http.get('/sites'),
-            baseApi.http.get('/equipments'),
-            baseApi.http.get('/reports')
-        ]);
-
-        return {
-            users: extractArray(usersResponse, 'users'),
-            sites: extractArray(sitesResponse, 'sites'),
-            equipments: extractArray(equipmentResponse, 'equipments'),
-            reports: extractArray(reportsResponse, 'reports')
-        };
-    }
-
-    async function fetchServiceRequests(currentTenantId) {
+    async function fetchContextAndRequests(requesterId) {
         requestsLoaded.value = false;
         errors.value = [];
         try {
-            const context = await fetchAuxiliaryData();
-            const response = await serviceRequestsApi.getAllRequests();
+            const [usersRes, techsRes, reviewsRes, requestsRes] = await Promise.all([
+                iamApi.http.get('/users'),
+                // iamApi.http.get('/sites'), // Not implemented yet
+                // iamApi.http.get('/equipments'), // Not implemented yet
+                iamApi.http.get('/technicians'),
+                reviewsApi.getAllReviews(),
+                serviceDeliveryApi.getRequestsByRequesterQuery(requesterId)
+            ]);
 
-            const allRequests = ServiceRequestAssembler.toEntitiesFromResponse(response, context);
-            requests.value = allRequests.filter(req => req.tenantId === currentTenantId);
+            const context = {
+                users: usersRes.data,
+                // sites: sitesRes.data,
+                // equipments: equipRes.data,
+                technicians: techsRes.data,
+                reviews: reviewsRes.data
+            };
 
+            requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
             requestsLoaded.value = true;
         } catch (error) {
             errors.value.push(error);
-            console.error("Error al cargar service requests:", error);
-        }
-    }
-
-    function getRequestById(id) {
-        return requests.value.find(req => req.id === id);
-    }
-
-    async function createRequest(requestData) {
-        errors.value = [];
-        try {
-            const response = await serviceRequestsApi.createRequest(requestData);
-
-            const context = await fetchAuxiliaryData();
-            const newRequest = ServiceRequestAssembler.toEntityFromResource(response.data, context);
-
-            if (newRequest.tenantId === requestData.tenantId) {
-                requests.value.unshift(newRequest);
-            }
-            return true;
-        } catch (error) {
-            errors.value.push(error);
-            return false;
+            console.error("Error loading service requests:", error);
         }
     }
 
     async function cancelRequest(id) {
         errors.value = [];
         try {
-            await serviceRequestsApi.cancelRequest(id);
-
+            await serviceDeliveryApi.sendCancelRequestCommand(id);
             const index = requests.value.findIndex(req => req.id === id);
             if (index !== -1) {
                 requests.value[index].status = 'canceled';
-                requests.value[index].canceledAt = new Date().toISOString();
             }
         } catch (error) {
             errors.value.push(error);
         }
     }
 
-
     return {
         requests,
         requestsLoaded,
         errors,
-        fetchServiceRequests,
-        getRequestById,
-        createRequest,
+        fetchContextAndRequests,
         cancelRequest
     };
 });
-
-export default useServiceRequestsStore;

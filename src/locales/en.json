@@ -5,15 +5,37 @@
     "cancel": "Cancel",
     "save": "Save",
     "search": "Search",
-    "status": { "open": "Open", "assigned": "Assigned", "inProgress": "In progress", "resolved": "Resolved", "closed": "Closed" },
-    "severity": { "info": "Info", "warning": "Warning", "critical": "Critical" },
+    "status": {
+      "open": "Open",
+      "assigned": "Assigned",
+      "inProgress": "In progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical"
+    },
     "filter-by": "Filter by",
     "all": "All",
     "submit-request": "Submit Request",
     "cancel-tooltip": "Cancel Request",
     "error-occurred": "An error occurred"
   },
-  "nav": { "dashboard": "Dashboard", "sites": "Sites", "equipments": "Equipments", "services": "Services", "alerts": "Alerts", "reports": "Reports", "admin": "Admin", "help": "Help" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "sites": "Sites",
+    "equipments": "Equipments",
+    "services": "Services",
+    "alerts": "Alerts",
+    "reports": "Reports",
+    "admin": "Admin",
+    "help": "Help",
+    "provider_dashboard": "Provider Dashboard",
+    "provider_services": "Provider Services",
+    "technician_management": "Technician Management"
+  },
   "auth": {
     "login": {
       "title": "Sign in",
@@ -27,7 +49,15 @@
     "register": {
       "title": "Create account",
       "alreadyHaveAccount": "Already have an account?",
-      "signIn": "Sign in"
+      "selectRole": "Select your role",
+      "cta": "Register",
+      "signIn": "Sign in",
+      "roles": {
+        "owner": "Owner",
+        "ownerDesc": "Manage your sites and equipment",
+        "provider": "Service Provider",
+        "providerDesc": "Provide services to owners"
+      }
     },
     "errors": {
       "invalidCredentials": "Email or password is incorrect.",
@@ -122,13 +152,46 @@
     }
   },
   "sites": {
-    "list": { "title": "Sites", "empty": "No sites yet.", "id": "Id", "name": "Name", "address": "Address" },
-    "detail": { "title": "Site detail", "contactName": "Contact Name", "contactPhone": "Phone", "createdAt": "Created", "updatedAt": "Updated" }
+    "list": {
+      "title": "Sites",
+      "empty": "No sites yet.",
+      "id": "Id",
+      "name": "Name",
+      "address": "Address"
+    },
+    "detail": {
+      "title": "Site detail",
+      "contactName": "Contact Name",
+      "contactPhone": "Phone",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    }
   },
   "equipments": {
-    "list": { "title": "Equipments", "id": "Id", "model": "Model", "type": "Type", "serial": "Serial", "status": "Status" },
-    "detail": { "title": "Equipment detail", "siteId": "Site Id", "installedAt": "Installed", "lastSeenAt": "last Seen", "createdAt": "Created", "updatedAt": "Updated" },
-    "controls": { "info": "Information", "more": "More", "setpointC": "Set Point °C", "name": "Name", "manufacturer": "Manufacturer", "online": "Online" }
+    "list": {
+      "title": "Equipments",
+      "id": "Id",
+      "model": "Model",
+      "type": "Type",
+      "serial": "Serial",
+      "status": "Status"
+    },
+    "detail": {
+      "title": "Equipment detail",
+      "siteId": "Site Id",
+      "installedAt": "Installed",
+      "lastSeenAt": "last Seen",
+      "createdAt": "Created",
+      "updatedAt": "Updated"
+    },
+    "controls": {
+      "info": "Information",
+      "more": "More",
+      "setpointC": "Set Point °C",
+      "name": "Name",
+      "manufacturer": "Manufacturer",
+      "online": "Online"
+    }
   },
   "services": {
     "requests": {
@@ -153,9 +216,20 @@
       "cancel-header": "Confirm Cancellation",
       "request-type": "Request Type",
       "priority": "Priority",
-      "problem-description": "Problem Description"
+      "problem-description": "Problem Description",
+      "provider": "Provider"
     },
-    "status": { "scheduled": "Scheduled", "assigned": "Assigned", "inProgress": "In progress", "done": "Done", "pending": "Pending", "canceled": "Canceled" }
+    "status": {
+      "scheduled": "Scheduled",
+      "assigned": "Assigned",
+      "inProgress": "In progress",
+      "done": "Done",
+      "pending": "Pending",
+      "canceled": "Canceled",
+      "completed": "Completed",
+      "rejected": "Rejected",
+      "accepted": "Accepted"
+    }
   },
   "service-requests": {
     "new-request-title": "New Service Request",
@@ -191,13 +265,11 @@
       "clear": "Clear",
       "status": "Status"
     },
-
     "types": {
       "highTemperature": "High Temperature",
       "powerLoss": "Power Loss",
       "sensorOffline": "Sensor Offline"
     },
-
     "status": {
       "pending": "Pending",
       "resolved": "Resolved",
@@ -205,33 +277,27 @@
       "open": "Open",
       "closed": "Closed"
     },
-
     "actions": {
       "acknowledge": "Acknowledge",
       "delete": "Delete",
       "viewEquipment": "View Equipment"
     },
-
     "confirm": {
       "header": "Acknowledge Alert",
       "message": "Do you want to mark this alert as acknowledged?",
-
       "deleteHeader": "Delete Alert",
       "deleteMessage": "Are you sure you want to delete this alert?"
     },
-
     "success": {
       "acknowledged": "Alert acknowledged successfully",
       "deleted": "Alert deleted successfully"
     },
-
     "errors": {
       "generic": "Error loading alerts",
       "invalidId": "Invalid alert ID",
       "acknowledge": "Failed to acknowledge alert",
       "delete": "Error deleting alert"
     },
-
     "placeholders": {
       "selectType": "Select type",
       "selectEquipment": "Select equipment"
@@ -349,10 +415,36 @@
       }
     }
   },
-  "validation": { "required": "{field} is required", "email": "Enter a valid email", "min": "Minimum {min}", "max": "Maximum {max}" },
-  "dates": { "today": "Today", "yesterday": "Yesterday", "period": "{start} – {end}" },
-  "notifications": { "title": "Notifications", "empty": "You're all caught up!", "markAllRead": "Mark all as read" },
-  "table": { "rows": "{count, plural, one {# row} other {# rows}}" },
+  "provider": {
+    "dashboard": {
+      "title": "Provider Dashboard"
+    },
+    "services": {
+      "title": "Provider Services"
+    },
+    "technicians": {
+      "title": "Technician Management"
+    }
+  },
+  "validation": {
+    "required": "{field} is required",
+    "email": "Enter a valid email",
+    "min": "Minimum {min}",
+    "max": "Maximum {max}"
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "period": "{start} – {end}"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "You're all caught up!",
+    "markAllRead": "Mark all as read"
+  },
+  "table": {
+    "rows": "{count, plural, one {# row} other {# rows}}"
+  },
   "errors": {
     "occurred": "An error occurred"
   }
