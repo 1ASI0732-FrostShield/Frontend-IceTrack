@@ -74,14 +74,13 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
      */
     async function loadKpis(siteId = null) {
         try {
-            // Call real APIs
             const [equipmentsResponse, alertsResponse] = await Promise.all([
-                dashboardDataApi.getEquipments(siteId),
-                dashboardDataApi.getOpenAlerts(siteId)
+                dashboardDataApi.getEquipments(),
+                dashboardDataApi.getOpenAlerts()
             ]);
 
             // TODO: Add service requests when API is ready
-            const serviceRequestsCount = 0; // Placeholder
+            const serviceRequestsCount = 0;
 
             // Transform to domain entity
             kpis.value = DashboardDataAssembler.toKpisFromResponses(
@@ -91,10 +90,16 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
             );
         } catch (error) {
             console.error('Error loading KPIs:', error);
-            errors.value.push('Error loading KPIs');
 
-            // Fallback to mock data if API fails
-            useMockKpis();
+            // No fallback to mocks - just set empty KPIs
+            kpis.value = new DashboardKpis({
+                totalEquipments: 0,
+                openAlerts: 0,
+                activeRequests: 0,
+                avgTemperature: 0,
+                minTemperature: 0,
+                maxTemperature: 0
+            });
         }
     }
 
@@ -105,14 +110,13 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         loadingAlerts.value = true;
 
         try {
-            const response = await dashboardDataApi.getRecentAlerts(siteId, 5);
+            const response = await dashboardDataApi.getRecentAlerts(siteId);
             alerts.value = DashboardDataAssembler.toAlertsFromResponse(response);
         } catch (error) {
             console.error('Error loading alerts:', error);
-            errors.value.push('Error loading alerts');
 
-            // Fallback to mock data
-            useMockAlerts();
+            // No fallback - just empty array
+            alerts.value = [];
         } finally {
             loadingAlerts.value = false;
         }
@@ -124,75 +128,19 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
     async function loadChartData(siteId = null) {
         try {
             const trendsResponse = await dashboardDataApi.getTemperatureTrends(siteId);
-            temperatureChartData.value = DashboardDataAssembler.toChartDataFromTrends(trendsResponse);
+
+            if (trendsResponse) {
+                temperatureChartData.value = DashboardDataAssembler.toChartDataFromTrends(trendsResponse);
+            } else {
+                // Endpoint no disponible - dejar en null
+                temperatureChartData.value = null;
+            }
         } catch (error) {
             console.error('Error loading chart data:', error);
-            errors.value.push('Error loading chart data');
 
-            // Fallback to mock data
-            useMockChartData();
+            // No fallback - just null
+            temperatureChartData.value = null;
         }
-    }
-
-    /**
-     * Fallback mock KPIs
-     */
-    function useMockKpis() {
-        // ✅ FIXED: Usar import directo en lugar de require
-        kpis.value = new DashboardKpis({
-            totalEquipments: 12,
-            openAlerts: 3,
-            activeRequests: 5,
-            avgTemperature: -15.5,
-            minTemperature: -20.0,
-            maxTemperature: -10.0
-        });
-    }
-
-    /**
-     * Fallback mock alerts
-     */
-    function useMockAlerts() {
-        alerts.value = [
-            {
-                id: 1,
-                equipmentName: 'Freezer A1',
-                siteName: 'Almacén Central',
-                severity: 'critical',
-                status: 'open',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                equipmentName: 'Cooler B3',
-                siteName: 'Sucursal Norte',
-                severity: 'warning',
-                status: 'acknowledged',
-                createdAt: new Date(Date.now() - 3600000).toISOString()
-            }
-        ];
-    }
-
-    /**
-     * Fallback mock chart data
-     */
-    function useMockChartData() {
-        const mockLabels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-        const mockData = Array.from({ length: 24 }, () => -20 + Math.random() * 10);
-
-        temperatureChartData.value = {
-            labels: mockLabels,
-            datasets: [
-                {
-                    label: 'Temperatura Promedio',
-                    data: mockData,
-                    borderColor: '#2196F3',
-                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }
-            ]
-        };
     }
 
     /**
@@ -242,11 +190,6 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         loadChartData,
         refresh,
         clearErrors,
-        $reset,
-
-        // Mock functions (exportadas para uso directo)
-        useMockKpis,
-        useMockAlerts,
-        useMockChartData
+        $reset
     };
 });

@@ -1,67 +1,58 @@
 import { BaseApi } from "@/shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "@/shared/infrastructure/base-endpoint.js";
 
 /**
  * Dashboard Data API Service
  * Handles requests for KPIs, alerts, and dashboard metrics
  */
 export class DashboardDataApi extends BaseApi {
-    #equipmentsEndpoint;
-    #alertsEndpoint;
-    #reportsEndpoint;
-
     constructor() {
         super();
-        this.#equipmentsEndpoint = new BaseEndpoint(this, '/equipments');
-        this.#alertsEndpoint = new BaseEndpoint(this, '/alert');
-        this.#reportsEndpoint = new BaseEndpoint(this, '/reports');
     }
 
     /**
      * Get equipments (for KPIs)
-     * GET /api/v1/equipments?siteId={siteId}
+     * GET /api/v1/equipment
      */
-    getEquipments(siteId = null) {
-        const params = siteId ? { siteId } : {};
-        return this.#equipmentsEndpoint.getAll(params);
+    getEquipments(tenantId = null, siteId = null) {
+        const params = {};
+        if (tenantId) params.tenantId = tenantId;
+        if (siteId) params.siteId = siteId;
+
+        return this.http.get('/equipment', { params });
     }
 
     /**
-     * Get open alerts (for KPIs)
-     * GET /api/v1/alert?status=open&siteId={siteId}
+     * Get alerts (for KPIs)
+     * GET /api/v1/alert
      */
-    getOpenAlerts(siteId = null) {
-        const params = { status: 'open' };
+    getOpenAlerts(tenantId = null, equipmentId = null, siteId = null) {
+        const params = {};
+        if (tenantId) params.tenantId = tenantId;
+        if (equipmentId) params.equipmentId = equipmentId;
         if (siteId) params.siteId = siteId;
-        return this.#alertsEndpoint.getAll(params);
+
+        return this.http.get('/alert', { params });
     }
 
     /**
      * Get recent alerts for table
-     * GET /api/v1/alert?siteId={siteId}&_limit=5&_sort=date&_order=desc
+     * GET /api/v1/alert
      */
-    getRecentAlerts(siteId = null, limit = 5) {
-        const params = {
-            _limit: limit,
-            _sort: 'date',
-            _order: 'desc'
-        };
+    getRecentAlerts(tenantId = null, siteId = null) {
+        const params = {};
+        if (tenantId) params.tenantId = tenantId;
         if (siteId) params.siteId = siteId;
-        return this.#alertsEndpoint.getAll(params);
+
+        return this.http.get('/alert', { params });
     }
 
     /**
-     * Get temperature trends (mock for now - replace with real endpoint)
-     * TODO: Replace with actual monitoring endpoint when available
+     * Get temperature trends
+     * ⚠️ Este endpoint NO existe en el backend actual
+     * Retorna null para indicar que no hay datos disponibles
      */
     async getTemperatureTrends(siteId = null) {
-        // Mock data for now
-        return {
-            status: 200,
-            data: {
-                labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
-                temperatures: Array.from({ length: 24 }, () => -20 + Math.random() * 10)
-            }
-        };
+        // Endpoint no implementado - retornar null
+        return null;
     }
 }

@@ -3,19 +3,24 @@ import { computed } from 'vue'
 
 const props = defineProps({
   kpis: {
-    type: Object, // DashboardKpis entity
+    type: Object,
     default: null
   }
 })
 
 const formattedAvgTemperature = computed(() => {
-  if (!props.kpis) return '-'
+  if (!props.kpis || props.kpis.avgTemperature === 0) return '--'
   return props.kpis.getFormattedAvgTemp()
+})
+
+const hasData = computed(() => {
+  return props.kpis && props.kpis.hasData()
 })
 </script>
 
 <template>
   <div class="grid">
+    <!-- Equipment Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
@@ -26,12 +31,16 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-primary">
-            {{ kpis?.totalEquipments ?? '-' }}
+            {{ kpis?.totalEquipments ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ $t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
+    <!-- Alerts Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
@@ -42,12 +51,16 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-orange-500">
-            {{ kpis?.openAlerts ?? '-' }}
+            {{ kpis?.openAlerts ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ $t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
+    <!-- Service Requests Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
@@ -58,12 +71,16 @@ const formattedAvgTemperature = computed(() => {
         </template>
         <template #content>
           <div class="text-3xl font-bold text-green-500">
-            {{ kpis?.activeRequests ?? '-' }}
+            {{ kpis?.activeRequests ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ $t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
+    <!-- Temperature Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
@@ -75,6 +92,9 @@ const formattedAvgTemperature = computed(() => {
         <template #content>
           <div class="text-3xl font-bold text-blue-500">
             {{ formattedAvgTemperature }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ $t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>

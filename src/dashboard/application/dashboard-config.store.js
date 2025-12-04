@@ -153,6 +153,60 @@ export const useDashboardConfigStore = defineStore('dashboardConfig', () => {
     }
 
     /**
+     * Remove card from dashboard
+     */
+    async function removeCard(cardId) {
+        if (!config.value) {
+            errors.value.push('No config available');
+            return false;
+        }
+
+        loading.value = true;
+        errors.value = [];
+
+        try {
+            await dashboardConfigApi.removeCard(config.value.id, cardId);
+
+            // Reload the configuration
+            const response = await dashboardConfigApi.getConfigById(config.value.id);
+            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+
+            return true;
+        } catch (error) {
+            console.error('Error removing card:', error);
+            errors.value.push(error.message || 'Error removing card');
+            return false;
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    /**
+     * Update card visibility
+     */
+    async function updateCardVisibility(cardId, isVisible) {
+        if (!config.value) {
+            errors.value.push('No config available');
+            return false;
+        }
+
+        loading.value = true;
+        errors.value = [];
+
+        try {
+            const response = await dashboardConfigApi.updateCardVisibility(config.value.id, cardId, isVisible);
+            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+            return true;
+        } catch (error) {
+            console.error('Error updating card visibility:', error);
+            errors.value.push(error.message || 'Error updating card visibility');
+            return false;
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    /**
      * Load available card types
      */
     async function loadAvailableCardTypes() {
@@ -200,6 +254,8 @@ export const useDashboardConfigStore = defineStore('dashboardConfig', () => {
         createDefaultConfig,
         updateConfig,
         addCard,
+        removeCard,
+        updateCardVisibility,
         loadAvailableCardTypes,
         clearErrors,
         $reset

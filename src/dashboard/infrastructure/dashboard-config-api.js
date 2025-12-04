@@ -61,6 +61,25 @@ export class DashboardConfigApi extends BaseApi {
     }
 
     /**
+     * Remove card from dashboard
+     * DELETE /api/v1/dashboard-configs/{id}/cards/{cardId}
+     */
+    removeCard(dashboardConfigId, cardId) {
+        return this.http.delete(`${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards/${cardId}`);
+    }
+
+    /**
+     * Update card visibility
+     * PATCH /api/v1/dashboard-configs/{id}/cards/{cardId}/visibility
+     */
+    updateCardVisibility(dashboardConfigId, cardId, isVisible) {
+        return this.http.patch(
+            `${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards/${cardId}/visibility`,
+            { isVisible }
+        );
+    }
+
+    /**
      * Get available card types
      * GET /api/v1/dashboard-configs/available-cards
      */

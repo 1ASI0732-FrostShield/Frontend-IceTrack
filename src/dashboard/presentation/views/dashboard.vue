@@ -1,133 +1,160 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { onMounted, computed } from 'vue'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import { useDashboardDataStore } from '@/dashboard/application/dashboard-data.store.js'
-import KpiCards from '../components/kpi-cards.vue'
-import TrendChart from '../components/trend-chart.vue'
 import DashboardConfigTable from '../components/dashboard-config-table.vue'
 
-const { t } = useI18n()
 const configStore = useDashboardConfigStore()
 const dataStore = useDashboardDataStore()
 
 onMounted(async () => {
-  // Cargar configuración del dashboard (API real)
   await configStore.loadConfigForCurrentUser()
   await configStore.loadAvailableCardTypes()
-
-  // Cargar datos mock para KPIs y gráfico
-  dataStore.useMockKpis()
-  dataStore.useMockChartData()
+  await dataStore.loadAll(configStore.defaultSiteId)
 })
 
 function refreshDashboard() {
   configStore.loadConfigForCurrentUser()
-  dataStore.useMockKpis()
-  dataStore.useMockChartData()
+  dataStore.loadAll(configStore.defaultSiteId)
 }
+
+const visibleCards = computed(() => {
+  if (!configStore.config) return []
+  return configStore.visibleCards
+})
+
+function getKpiValue(cardType) {
+  if (!dataStore.kpis) return '--'
+
+  const kpiMap = {
+    'MonitoredEquipment': dataStore.kpis.totalEquipments || '--',
+    'OpenAlerts': dataStore.kpis.openAlerts || '--',
+    'ActiveOrders': dataStore.kpis.activeRequests || '--',
+    'AverageTemperature': dataStore.kpis.getFormattedAvgTemp(),
+    'RecentReports': '--',
+    'EquipmentStatus': '--',
+    'SystemHealth': '--'
+  }
+
+  return kpiMap[cardType] ?? '--'
+}
+
+function getCardIcon(cardType) {
+  const iconMap = {
+    'MonitoredEquipment': 'pi-sitemap',
+    'OpenAlerts': 'pi-exclamation-triangle',
+    'ActiveOrders': 'pi-briefcase',
+    'AverageTemperature': 'pi-chart-scatter',
+    'TemperatureTrends': 'pi-chart-line',
+    'RecentReports': 'pi-file',
+    'EquipmentStatus': 'pi-server',
+    'SystemHealth': 'pi-heart'
+  }
+  return iconMap[cardType] || 'pi-th-large'
+}
+
+function getCardColor(cardType) {
+  const colorMap = {
+    'MonitoredEquipment': 'text-primary',
+    'OpenAlerts': 'text-orange-500',
+    'ActiveOrders': 'text-green-500',
+    'AverageTemperature': 'text-blue-500'
+  }
+  return colorMap[cardType] || 'text-gray-500'
+}
+
+function getCardTitle(cardType) {
+  const titleMap = {
+    'MonitoredEquipment': 'Monitored Equipment',
+    'OpenAlerts': 'Open Alerts',
+    'ActiveOrders': 'Active Orders',
+    'AverageTemperature': 'Average Temperature',
+    'TemperatureTrends': 'Temperature Trends',
+    'RecentReports': 'Recent Reports',
+    'EquipmentStatus': 'Equipment Status',
+    'SystemHealth': 'System Health'
+  }
+  return titleMap[cardType] || cardType
+}
+
+// Solo KPI cards (sin chart)
+const kpiCards = computed(() => {
+  return visibleCards.value.filter(card =>
+      card.cardType !== 'TemperatureTrends'
+  )
+})
 </script>
 
 <template>
   <div class="p-3">
     <!-- Header -->
     <div class="flex align-items-center justify-content-between mb-4">
-      <h1 class="text-3xl font-bold">{{ t('dashboard.title') }}</h1>
-
-      <div v-if="dataStore.kpis" class="flex gap-2">
-        <pv-tag severity="info">
-          Min: {{ dataStore.statistics.minTemperature?.toFixed(1) }}°C
-        </pv-tag>
-        <pv-tag severity="warning">
-          Max: {{ dataStore.statistics.maxTemperature?.toFixed(1) }}°C
-        </pv-tag>
-      </div>
+      <h1 class="text-3xl font-bold">Dashboard</h1>
+      <pv-button
+          icon="pi pi-refresh"
+          label="Refresh"
+          @click="refreshDashboard"
+          :loading="configStore.loading || dataStore.loading"
+          outlined
+      />
     </div>
 
-    <!-- Loading State -->
-    <div v-if="configStore.loading" class="text-center p-4">
+    <!-- Loading -->
+    <div v-if="configStore.loading || dataStore.loading" class="text-center p-4">
       <i class="pi pi-spin pi-spinner text-4xl"></i>
-      <p class="mt-2">{{ t('dashboard.loading') }}</p>
+      <p class="mt-2">Loading...</p>
     </div>
 
     <!-- Errors -->
-    <div v-if="configStore.errors.length > 0" class="mb-3">
+    <div v-if="configStore.errors.length > 0 || dataStore.errors.length > 0" class="mb-3">
       <div class="surface-100 border-1 border-red-500 border-round p-3">
         <div class="flex align-items-center justify-content-between">
           <div>
             <i class="pi pi-exclamation-triangle text-red-500 mr-2"></i>
-            <span class="font-semibold">{{ t('dashboard.errors.title') }}</span>
+            <span class="font-semibold">Errors</span>
           </div>
-          <pv-button
-              icon="pi pi-times"
-              text
-              severity="danger"
-              @click="configStore.clearErrors()"
-          />
+          <pv-button icon="pi pi-times" text severity="danger" @click="configStore.clearErrors(); dataStore.clearErrors()" />
         </div>
         <ul class="mt-2 mb-0">
-          <li v-for="(error, idx) in configStore.errors" :key="idx" class="text-red-600">
-            {{ error }}
-          </li>
+          <li v-for="(error, idx) in [...configStore.errors, ...dataStore.errors]" :key="idx" class="text-red-600">{{ error }}</li>
         </ul>
       </div>
     </div>
 
     <!-- Dashboard Content -->
-    <template v-if="!configStore.loading">
-      <!-- KPI Cards (Horizontales) -->
-      <div v-if="dataStore.kpis" class="mb-4">
-        <kpi-cards :kpis="dataStore.kpis" />
+    <template v-if="!configStore.loading && !dataStore.loading">
+
+      <!-- KPI Cards (respetando configuración del usuario) -->
+      <div v-if="kpiCards.length > 0" class="grid mb-4">
+        <div v-for="card in kpiCards" :key="card.id" class="col-12 md:col-6 lg:col-3">
+          <pv-card class="h-full">
+            <template #title>
+              <div class="flex align-items-center justify-content-between w-full">
+                <span class="text-lg">{{ getCardTitle(card.cardType) }}</span>
+                <i :class="`pi ${getCardIcon(card.cardType)}`"></i>
+              </div>
+            </template>
+            <template #content>
+              <div class="text-4xl font-bold" :class="getCardColor(card.cardType)">
+                {{ getKpiValue(card.cardType) }}
+              </div>
+              <div v-if="!dataStore.hasData" class="text-sm text-500 mt-2">
+                No data available
+              </div>
+            </template>
+          </pv-card>
+        </div>
       </div>
 
-      <div v-else-if="!configStore.errors.length" class="text-center p-4 mb-4 surface-100 border-round">
+      <!-- No Cards Message -->
+      <div v-if="kpiCards.length === 0" class="text-center p-4 mb-4 surface-100 border-round">
         <i class="pi pi-inbox text-4xl text-400"></i>
-        <p class="mt-2 text-600">{{ t('dashboard.noConfig') }}</p>
+        <p class="mt-2 text-600">No cards visible in your dashboard</p>
+        <p class="text-500">Use the configuration panel below to add cards</p>
       </div>
 
-      <!-- Temperature Chart -->
-      <pv-card v-if="dataStore.kpis" class="mb-4">
-        <template #title>
-          <div class="flex align-items-center justify-content-between">
-            <span>{{ t('dashboard.chartTitle') }}</span>
-            <pv-tag v-if="dataStore.statistics.totalDataPoints">
-              {{ dataStore.statistics.totalDataPoints }} puntos
-            </pv-tag>
-          </div>
-        </template>
-        <template #content>
-          <trend-chart :chartData="dataStore.temperatureChartData" />
-        </template>
-      </pv-card>
-
-      <!-- Dashboard Config CRUD Table -->
-      <div class="position-relative">
-        <dashboard-config-table v-if="configStore.config" :config="configStore.config" />
-      </div>
+      <!-- Dashboard Configuration CRUD Table -->
+      <dashboard-config-table v-if="configStore.config" :config="configStore.config" />
     </template>
-
-    <!-- Floating Refresh Button -->
-    <div class="fixed bottom-0 right-0 p-3">
-      <pv-button
-          icon="pi pi-refresh"
-          rounded
-          severity="secondary"
-          @click="refreshDashboard"
-          :loading="configStore.loading"
-          v-tooltip="t('dashboard.refresh')"
-      />
-    </div>
   </div>
 </template>
-
-<style scoped>
-.position-relative {
-  position: relative;
-}
-.absolute {
-  position: absolute;
-}
-.fixed {
-  position: fixed;
-}
-</style>
