@@ -45,4 +45,8 @@ export class DashboardDataApi extends BaseApi {
 
         return this.http.get('/alert', { params });
     }
+
+    getTemperatureTrends(siteId = null) {
+        return Promise.resolve(null);
+    }
 }

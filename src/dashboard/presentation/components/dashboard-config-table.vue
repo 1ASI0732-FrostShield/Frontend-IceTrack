@@ -17,32 +17,50 @@ const props = defineProps({
   }
 })
 
+// UI State
 const settingsDialogVisible = ref(false)
 const cardSelectorVisible = ref(false)
-const cardDetailDialogVisible = ref(false)
+const cardEditDialogVisible = ref(false)
 const selectedCard = ref(null)
 const selectedSiteId = ref(null)
 const temperatureRange = ref('-20 to 5')
 const saving = ref(false)
 
+// Card edit form
+const cardEditForm = ref({
+  order: 0,
+  isVisible: true
+})
+
+/**
+ * Load sites on mounted
+ */
 onMounted(() => {
-  // Cargar sites solo si no están cargados (sin .catch porque no retorna Promise)
+  // Load sites if not loaded - handle case where fetchSites might not return Promise
   if (!sitesStore.sitesLoaded) {
     try {
-      sitesStore.fetchSites()
+      const result = sitesStore.fetchSites()
+      // Check if result is a Promise
+      if (result && typeof result.catch === 'function') {
+        result.catch(err => {
+          console.warn('Sites not available:', err)
+        })
+      }
     } catch (err) {
       console.warn('Sites not available:', err)
     }
   }
 
-  // Inicializar valores
+  // Initialize form values
   if (props.config) {
     selectedSiteId.value = props.config.defaultSiteId
     temperatureRange.value = props.config.defaultTemperatureRange
   }
 })
 
-// Observar cambios en config
+/**
+ * Watch config changes
+ */
 watch(() => props.config, (newConfig) => {
   if (newConfig) {
     selectedSiteId.value = newConfig.defaultSiteId
@@ -50,70 +68,127 @@ watch(() => props.config, (newConfig) => {
   }
 }, { immediate: true })
 
+/**
+ * Open settings dialog
+ */
 function openSettings() {
   selectedSiteId.value = props.config.defaultSiteId
   temperatureRange.value = props.config.defaultTemperatureRange
   settingsDialogVisible.value = true
 }
 
-async function saveSettings() {
+/**
+ * Save dashboard settings
+ */
+function saveSettings() {
   saving.value = true
-  const success = await configStore.updateConfig({
+
+  configStore.updateConfig({
     defaultSiteId: selectedSiteId.value,
     defaultTemperatureRange: temperatureRange.value
-  })
-  saving.value = false
+  }).then(success => {
+    saving.value = false
 
-  if (success) {
-    settingsDialogVisible.value = false
-    toast.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Settings updated successfully',
-      life: 3000
-    })
-  } else {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to update settings',
-      life: 3000
-    })
-  }
+    if (success) {
+      settingsDialogVisible.value = false
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Settings updated successfully',
+        life: 3000
+      })
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to update settings',
+        life: 3000
+      })
+    }
+  })
 }
 
+/**
+ * Open card selector dialog
+ */
 function openCardSelector() {
   cardSelectorVisible.value = true
 }
 
-async function addCard(cardType) {
+/**
+ * Add card to dashboard
+ */
+function addCard(cardType) {
   const nextOrder = props.config.cards.length
-  const success = await configStore.addCard(cardType, nextOrder)
 
-  if (success) {
-    cardSelectorVisible.value = false
-    toast.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: `Card "${cardType}" added successfully`,
-      life: 3000
-    })
-  } else {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to add card',
-      life: 3000
-    })
-  }
+  configStore.addCard(cardType, nextOrder).then(success => {
+    if (success) {
+      cardSelectorVisible.value = false
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: `Card "${cardType}" added successfully`,
+        life: 3000
+      })
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to add card',
+        life: 3000
+      })
+    }
+  })
 }
 
-function viewCard(card) {
+/**
+ * Open edit card dialog
+ */
+function editCard(card) {
   selectedCard.value = card
-  cardDetailDialogVisible.value = true
+  cardEditForm.value = {
+    order: card.order,
+    isVisible: card.isVisible
+  }
+  cardEditDialogVisible.value = true
 }
 
-async function deleteCard(card) {
+/**
+ * Save card changes
+ */
+function saveCardChanges() {
+  if (!selectedCard.value) return
+
+  saving.value = true
+
+  configStore.updateCardVisibility(selectedCard.value.id, cardEditForm.value.isVisible)
+      .then(success => {
+        saving.value = false
+
+        if (success) {
+          cardEditDialogVisible.value = false
+          selectedCard.value = null
+          toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Card updated successfully',
+            life: 3000
+          })
+        } else {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to update card',
+            life: 3000
+          })
+        }
+      })
+}
+
+/**
+ * Delete card from dashboard
+ */
+function deleteCard(card) {
   confirm.require({
     message: `Are you sure you want to remove "${card.cardType}" from your dashboard?`,
     header: 'Delete Card',
@@ -121,33 +196,39 @@ async function deleteCard(card) {
     acceptLabel: 'Delete',
     rejectLabel: 'Cancel',
     acceptClass: 'p-button-danger',
-    accept: async () => {
-      const success = await configStore.removeCard(card.id)
-
-      if (success) {
-        toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: `Card "${card.cardType}" removed successfully`,
-          life: 3000
-        })
-      } else {
-        toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to remove card',
-          life: 3000
-        })
-      }
+    accept: () => {
+      configStore.removeCard(card.id).then(success => {
+        if (success) {
+          toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: `Card "${card.cardType}" removed successfully`,
+            life: 3000
+          })
+        } else {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to remove card',
+            life: 3000
+          })
+        }
+      })
     }
   })
 }
 
+/**
+ * Get severity color by order
+ */
 function getSeverityByOrder(order) {
   const severities = ['success', 'info', 'warning', 'danger', 'secondary']
   return severities[order % severities.length]
 }
 
+/**
+ * Get site name by ID
+ */
 function getSiteName(siteId) {
   if (!siteId) return 'No site selected'
   const site = sitesStore.sites.find(s => s.id === siteId)
@@ -196,6 +277,7 @@ function getSiteName(siteId) {
           <div class="surface-100 border-round p-3">
             <div class="text-sm text-500 mb-1">Temperature Range</div>
             <div class="text-xl font-semibold">{{ config.defaultTemperatureRange }}</div>
+            <small class="text-500">For temperature alerts</small>
           </div>
         </div>
       </div>
@@ -259,19 +341,19 @@ function getSiteName(siteId) {
           <template #body="{ data }">
             <div class="flex gap-2">
               <pv-button
-                  icon="pi pi-eye"
+                  icon="pi pi-pencil"
                   rounded
                   text
                   severity="info"
-                  v-tooltip="'View Details'"
-                  @click="viewCard(data)"
+                  v-tooltip="'Edit Card'"
+                  @click="editCard(data)"
               />
               <pv-button
                   icon="pi pi-trash"
                   rounded
                   text
                   severity="danger"
-                  v-tooltip="'Delete'"
+                  v-tooltip="'Delete Card'"
                   @click="deleteCard(data)"
               />
             </div>
@@ -291,7 +373,7 @@ function getSiteName(siteId) {
     <div class="flex flex-column gap-4 py-3">
       <div class="flex flex-column gap-2">
         <label for="defaultSite" class="font-semibold">Default Site</label>
-        <pv-dropdown
+        <pv-select
             id="defaultSite"
             v-model="selectedSiteId"
             :options="sitesStore.sites"
@@ -317,7 +399,7 @@ function getSiteName(siteId) {
             placeholder="e.g., -20 to 5"
             class="w-full"
         />
-        <small class="text-500">Default temperature range for monitoring</small>
+        <small class="text-500">Temperature range for monitoring thresholds (in °C)</small>
       </div>
 
       <div v-if="configStore.errors.length > 0" class="p-3 surface-100 border-round border-1 border-red-500">
@@ -375,39 +457,114 @@ function getSiteName(siteId) {
     </template>
   </pv-dialog>
 
-  <!-- Card Detail Dialog -->
+  <!-- Card Edit Dialog -->
   <pv-dialog
-      v-model:visible="cardDetailDialogVisible"
-      header="Card Details"
+      v-model:visible="cardEditDialogVisible"
+      header="Edit Card"
       modal
-      :style="{ width: '400px' }"
+      :style="{ width: '450px' }"
   >
-    <div v-if="selectedCard" class="flex flex-column gap-3 py-3">
+    <div v-if="selectedCard" class="flex flex-column gap-4 py-3">
+      <!-- Card Header -->
       <div class="flex align-items-center gap-3 pb-3 border-bottom-1 surface-border">
         <i :class="`pi ${selectedCard.getIcon()} text-4xl`" :style="{ color: selectedCard.getColor() }"></i>
-        <div>
+        <div class="flex-1">
           <div class="font-semibold text-xl">{{ selectedCard.cardType }}</div>
-          <small class="text-500">ID: {{ selectedCard.id }}</small>
+          <small class="text-500">Card ID: {{ selectedCard.id }}</small>
         </div>
       </div>
 
-      <div class="grid">
-        <div class="col-6">
-          <div class="text-500 text-sm mb-1">Order</div>
-          <div class="font-semibold">#{{ selectedCard.order }}</div>
-        </div>
-        <div class="col-6">
-          <div class="text-500 text-sm mb-1">Visibility</div>
-          <pv-tag
-              :value="selectedCard.isVisible ? 'Visible' : 'Hidden'"
-              :severity="selectedCard.isVisible ? 'success' : 'secondary'"
+      <!-- Form Fields -->
+      <div class="flex flex-column gap-3">
+        <!-- Order Field (Read-only) -->
+        <div class="flex flex-column gap-2">
+          <label for="cardOrder" class="font-semibold">Display Order</label>
+          <pv-input-number
+              id="cardOrder"
+              v-model="cardEditForm.order"
+              :min="0"
+              disabled
+              class="w-full"
           />
+          <small class="text-500">
+            <i class="pi pi-info-circle"></i> Card order is automatically managed
+          </small>
+        </div>
+
+        <!-- Visibility Toggle -->
+        <div class="flex flex-column gap-2">
+          <label class="font-semibold">Visibility Settings</label>
+          <div class="surface-100 border-round p-3">
+            <div class="flex align-items-center justify-content-between mb-2">
+              <div class="flex align-items-center gap-2">
+                <pv-checkbox
+                    v-model="cardEditForm.isVisible"
+                    :binary="true"
+                    input-id="cardVisible"
+                />
+                <label for="cardVisible" class="cursor-pointer">Show this card on dashboard</label>
+              </div>
+              <pv-tag
+                  :value="cardEditForm.isVisible ? 'Visible' : 'Hidden'"
+                  :severity="cardEditForm.isVisible ? 'success' : 'secondary'"
+                  :icon="cardEditForm.isVisible ? 'pi pi-eye' : 'pi pi-eye-slash'"
+              />
+            </div>
+            <small class="text-500">
+              When hidden, the card will not appear in your dashboard
+            </small>
+          </div>
+        </div>
+
+        <!-- Card Information -->
+        <div class="flex flex-column gap-2">
+          <label class="font-semibold">Card Information</label>
+          <div class="surface-100 border-round p-3">
+            <div class="grid">
+              <div class="col-6">
+                <div class="text-sm text-500 mb-1">Type</div>
+                <div class="font-medium">{{ selectedCard.cardType }}</div>
+              </div>
+              <div class="col-6">
+                <div class="text-sm text-500 mb-1">Current Order</div>
+                <div class="font-medium">#{{ selectedCard.order }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Display -->
+      <div v-if="configStore.errors.length > 0" class="p-3 surface-100 border-round border-1 border-red-500">
+        <div class="flex align-items-start gap-2">
+          <i class="pi pi-exclamation-triangle text-red-500 mt-1"></i>
+          <div class="flex-1">
+            <div class="font-semibold mb-1">Errors:</div>
+            <ul class="m-0 pl-3">
+              <li v-for="(error, idx) in configStore.errors" :key="idx" class="text-red-600 text-sm">
+                {{ error }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
 
     <template #footer>
-      <pv-button label="Close" text @click="cardDetailDialogVisible = false" />
+      <pv-button
+          label="Cancel"
+          icon="pi pi-times"
+          text
+          severity="secondary"
+          @click="cardEditDialogVisible = false"
+          :disabled="saving"
+      />
+      <pv-button
+          label="Save Changes"
+          icon="pi pi-check"
+          @click="saveCardChanges"
+          :loading="saving"
+      />
     </template>
   </pv-dialog>
 
