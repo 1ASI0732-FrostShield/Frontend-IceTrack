@@ -6,14 +6,34 @@ import {EquipmentAssembler} from "@/monitoring/infrastructure/equipments.assembl
 
 const monitoringApi = new MonitoringApi();
 
+/**
+ * Store for Monitoring context.
+ */
 const useMonitoringStore = defineStore("monitoring", () => {
+    /**
+     * List of equipment entities.
+     * @type {import('vue').Ref<Category[]>}
+     */
     const equipments = ref([]);
+    /**
+     * List of alert entities.
+     * @type {import('vue').Ref<Category[]>}
+     */
     const alerts = ref([]);
+    /**
+     * List of error entities.
+     * @type {import('vue').Ref<Category[]>}
+     */
     const errors = ref([]);
 
     const equipmentsLoaded = ref(false);
     const alertsLoaded = ref(false);
 
+    /**
+     * Fetches alerts from the API and updates state.
+     * @function
+     * @returns {void}
+     */
     function fetchAlerts() {
         monitoringApi
             .getAlerts()
@@ -28,6 +48,11 @@ const useMonitoringStore = defineStore("monitoring", () => {
             });
     }
 
+    /**
+     * Fetches equipments from the API and updates state.
+     * @function
+     * @returns {void}
+     */
     function fetchEquipments() {
         monitoringApi
             .getEquipment()
@@ -42,7 +67,12 @@ const useMonitoringStore = defineStore("monitoring", () => {
             });
     }
 
-
+    /**
+     * Deletes a alerts via the API and updates state.
+     * @function
+     * @param {Category} alert - The alert to delete.
+     * @returns {void}
+     */
     function deleteAlert(alertId) {
         return monitoringApi.deleteAlert(alertId)
             .then(() => {
@@ -74,3 +104,4 @@ const useMonitoringStore = defineStore("monitoring", () => {
 });
 
 export default useMonitoringStore;
+
