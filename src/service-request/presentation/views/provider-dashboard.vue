@@ -12,6 +12,8 @@ import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -19,6 +21,8 @@ const serviceRequestApi = new ServiceRequestsApi();
 const techniciansApi = new TechniciansApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 
 /** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
@@ -49,13 +53,15 @@ const fetchData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const [requestsRes, techsRes] = await Promise.all([
+    const [requestsRes, techsRes, sitesRes, equipmentsRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
       techniciansApi.getTechniciansByProvider(currentProviderId.value),
+      assetsManagementApi.getSites(),
+      monitoringApi.getEquipment()
     ]);
 
     const allRequests = requestsRes.data;
-    const context = { /* sites: sitesRes.data */ }; // sites not implemented yet
+    const context = { sites: sitesRes.data, equipments: equipmentsRes.data };
 
     pendingRequests.value = allRequests
         .filter(r => r.status === 'pending')
@@ -100,7 +106,7 @@ const handleReject = async (requestId) => {
  * @function navigateToList
  */
 const navigateToList = () => {
-  router.push({ name: 'provider-infrastructure-list' });
+  router.push({ name: 'provider-services-list' });
 };
 
 onMounted(fetchData);
@@ -172,6 +178,7 @@ onMounted(fetchData);
           <pv-column field="id" :header="t('provider.dashboard.id')" sortable style="width: 10%"></pv-column>
           <pv-column field="description" :header="t('provider.dashboard.description')" style="width: 40%"></pv-column>
           <pv-column field="siteName" :header="t('provider.dashboard.site')" sortable style="width: 20%"></pv-column>
+          <pv-column field="equipmentName" :header="t('services.requests.equipment')" sortable />
           <pv-column field="priority" :header="t('provider.dashboard.priority')" sortable style="width: 15%">
             <template #body="{ data }">
               <pv-tag :severity="data.priority === 'high' ? 'danger' : (data.priority === 'medium' ? 'warning' : 'info')" :value="data.priority"></pv-tag>

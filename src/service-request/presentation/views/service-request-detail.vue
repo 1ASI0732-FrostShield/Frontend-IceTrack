@@ -12,6 +12,7 @@ import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -20,6 +21,7 @@ const authStore = useAuthStore();
 const api = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const techniciansApi = new TechniciansApi();
+const monitoringApi = new MonitoringApi();
 
 /** @type {import('vue').Ref<object|null>} */
 const serviceRequest = ref(null);
@@ -89,9 +91,9 @@ async function fetchRequestDetails() {
  * @function openEquipmentDialog
  */
 async function openEquipmentDialog() {
-  if (!serviceRequest.value) return;
+  if (!serviceRequest.value || !serviceRequest.value.equipmentId) return;
   try {
-    const response = await iamApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`);
+    const response = await monitoringApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`);
     selectedEquipment.value = response.data;
     displayEquipmentDialog.value = true;
   } catch (error) {
@@ -187,8 +189,8 @@ onMounted(fetchRequestDetails);
                 <p><strong>{{ t('services.detail.description') }}</strong> {{ serviceRequest.description }}</p>
               </div>
               <div class="col-12 md:col-6">
-                <p><strong>{{ t('services.detail.site-id') }}</strong> {{ serviceRequest.siteId }}</p>
-                <p><strong>{{ t('services.detail.equipment-id') }}</strong> {{ serviceRequest.equipmentId }}</p>
+                <p><strong>{{ t('services.requests.site') }}:</strong> {{ serviceRequest.siteName }}</p>
+                <p><strong>{{ t('services.requests.equipment') }}:</strong> {{ serviceRequest.equipmentName }}</p>
                 <p><strong>{{ t('services.detail.created-at') }}</strong> {{ new Date(serviceRequest.createdAt).toLocaleString() }}</p>
               </div>
             </div>

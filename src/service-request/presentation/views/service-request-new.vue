@@ -50,15 +50,6 @@ const equipments = ref([]);
 /** @type {import('vue').Ref<Array<object>>} */
 const providers = ref([]);
 
-/**
- * Computed property to filter equipments based on the selected site.
- * @type {import('vue').ComputedRef<Array<object>>}
- */
-const filteredEquipments = computed(() => {
-  if (!form.value.siteId) return [];
-  return equipments.value.filter(eq => eq.siteId === form.value.siteId);
-});
-
 onMounted(async () => {
   try {
     const [providersRes, sitesRes, equipmentsRes] = await Promise.all([
@@ -75,11 +66,11 @@ onMounted(async () => {
 });
 
 /**
- * Handles the change event for site selection, resetting the equipment.
+ * Handles the change event for site selection.
  * @function handleSiteChange
  */
 const handleSiteChange = () => {
-  form.value.equipmentId = null;
+  // form.value.equipmentId = null;
 };
 
 /**
@@ -170,10 +161,9 @@ const navigateBack = () => {
                 <pv-select
                     id="equipment"
                     v-model="form.equipmentId"
-                    :options="filteredEquipments"
+                    :options="equipments"
                     optionLabel="name"
                     optionValue="id"
-                    :disabled="!form.siteId"
                     required
                     class="w-full"
                 />
