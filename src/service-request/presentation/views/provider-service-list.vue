@@ -11,12 +11,16 @@ import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 
 /** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
@@ -46,11 +50,13 @@ const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   try {
-    const [requestsRes, usersRes] = await Promise.all([
+    const [requestsRes, usersRes, sitesRes, equipmentsRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
-      iamApi.http.get('/users')
+      iamApi.http.get('/users'),
+      assetsManagementApi.getSites(),
+      monitoringApi.getEquipment()
     ]);
-    const context = { users: usersRes.data };
+    const context = { users: usersRes.data, sites: sitesRes.data, equipments: equipmentsRes.data };
     requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
   } catch (error) {
     console.error("Failed to fetch service requests:", error);
@@ -146,6 +152,7 @@ onMounted(fetchData);
       <pv-column field="orderNumber" :header="t('provider.services.list.order-number')" sortable />
       <pv-column field="requesterName" :header="t('provider.services.list.client')" sortable />
       <pv-column field="siteName" :header="t('provider.services.list.site')" sortable />
+      <pv-column field="equipmentName" :header="t('services.requests.equipment')" sortable />
       <pv-column field="status" :header="t('common.status.title')" sortable>
         <template #body="{ data }">
           <pv-tag :value="getStatusTranslation(data.status)" :severity="statusSeverity(data.status)" />

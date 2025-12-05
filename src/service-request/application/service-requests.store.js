@@ -4,10 +4,14 @@ import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requ
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const serviceDeliveryApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const reviewsApi = new ReviewsApi();
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 
 /**
  * @store useServiceRequestStore
@@ -21,7 +25,7 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
 
     /**
      * @function fetchContextAndRequests
-     * @description Fetches all necessary context (users, technicians, reviews) and the service requests for a given requester.
+     * @description Fetches all necessary context (users, technicians, reviews, sites, equipments) and the service requests for a given requester.
      * @param {number} requesterId - The ID of the user who made the requests.
      * @async
      */
@@ -29,17 +33,21 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
         requestsLoaded.value = false;
         errors.value = [];
         try {
-            const [usersRes, techsRes, reviewsRes, requestsRes] = await Promise.all([
+            const [usersRes, techsRes, reviewsRes, sitesRes, equipmentsRes, requestsRes] = await Promise.all([
                 iamApi.http.get('/users'),
                 iamApi.http.get('/technicians'),
                 reviewsApi.getAllReviews(),
+                assetsManagementApi.getSites(),
+                monitoringApi.getEquipment(),
                 serviceDeliveryApi.getRequestsByRequesterQuery(requesterId)
             ]);
 
             const context = {
                 users: usersRes.data,
                 technicians: techsRes.data,
-                reviews: reviewsRes.data
+                reviews: reviewsRes.data,
+                sites: sitesRes.data,
+                equipments: equipmentsRes.data
             };
 
             requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
