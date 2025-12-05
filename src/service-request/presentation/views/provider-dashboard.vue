@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file provider-dashboard.vue
+ * @description This component displays the provider's dashboard, including KPIs and pending service requests.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -15,17 +20,30 @@ const techniciansApi = new TechniciansApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
 
+/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
+/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
+/** @type {import('vue').Ref<Array<object>>} */
 const pendingRequests = ref([]);
+/** @type {import('vue').Ref<object>} */
 const kpis = ref({
   pending: 0,
   active: 0,
   technicians: 0,
 });
 
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Fetches data for the dashboard, including service requests and technicians.
+ * @async
+ * @function fetchData
+ */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
@@ -34,11 +52,10 @@ const fetchData = async () => {
     const [requestsRes, techsRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
       techniciansApi.getTechniciansByProvider(currentProviderId.value),
-      // iamApi.http.get('/sites') // Not implemented yet
     ]);
 
     const allRequests = requestsRes.data;
-    const context = { /* sites: sitesRes.data */ };
+    const context = { /* sites: sitesRes.data */ }; // sites not implemented yet
 
     pendingRequests.value = allRequests
         .filter(r => r.status === 'pending')
@@ -56,16 +73,32 @@ const fetchData = async () => {
   }
 };
 
+/**
+ * Handles accepting a service request.
+ * @param {number} requestId - The ID of the request to accept.
+ * @async
+ * @function handleAccept
+ */
 const handleAccept = async (requestId) => {
   await serviceRequestApi.sendAcceptRequestCommand(requestId);
   await fetchData();
 };
 
+/**
+ * Handles rejecting a service request.
+ * @param {number} requestId - The ID of the request to reject.
+ * @async
+ * @function handleReject
+ */
 const handleReject = async (requestId) => {
   await serviceRequestApi.sendRejectRequestCommand(requestId);
   await fetchData();
 };
 
+/**
+ * Navigates to the provider's service list.
+ * @function navigateToList
+ */
 const navigateToList = () => {
   router.push({ name: 'provider-infrastructure-list' });
 };

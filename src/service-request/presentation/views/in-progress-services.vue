@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file in-progress-services.vue
+ * @description This component displays a list of in-progress service requests for a provider, allowing them to assign technicians and complete services.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
@@ -11,14 +16,28 @@ const serviceRequestApi = new ServiceRequestsApi();
 const techniciansApi = new TechniciansApi();
 const authStore = useAuthStore();
 
+/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
+/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
+/** @type {import('vue').Ref<Array<object>>} */
 const activeRequests = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const technicians = ref([]);
+/** @type {import('vue').Ref<object>} */
 const selectedTechnicians = ref({});
 
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Fetches active service requests and available technicians for the current provider.
+ * @async
+ * @function fetchData
+ */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
@@ -45,6 +64,12 @@ const fetchData = async () => {
   }
 };
 
+/**
+ * Assigns a selected technician to a service request.
+ * @param {number} requestId - The ID of the service request.
+ * @async
+ * @function assignTechnician
+ */
 const assignTechnician = async (requestId) => {
   const technicianId = selectedTechnicians.value[requestId];
   if (!technicianId) return;
@@ -52,11 +77,23 @@ const assignTechnician = async (requestId) => {
   await fetchData();
 };
 
+/**
+ * Marks a service request as complete.
+ * @param {number} requestId - The ID of the service request to complete.
+ * @async
+ * @function completeService
+ */
 const completeService = async (requestId) => {
   await serviceRequestApi.sendCompleteRequestCommand(requestId);
   await fetchData();
 };
 
+/**
+ * Returns the translated status string.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function getStatusTranslation
+ */
 const getStatusTranslation = (status) => {
   return t(`services.status.${status}`);
 };

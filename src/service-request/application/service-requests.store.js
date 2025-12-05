@@ -9,19 +9,28 @@ const serviceDeliveryApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const reviewsApi = new ReviewsApi();
 
+/**
+ * @store useServiceRequestStore
+ * @description A Pinia store for managing service requests.
+ * @author Kenyi Ramirez
+ */
 export const useServiceRequestStore = defineStore('service-request-list', () => {
     const requests = ref([]);
     const requestsLoaded = ref(false);
     const errors = ref([]);
 
+    /**
+     * @function fetchContextAndRequests
+     * @description Fetches all necessary context (users, technicians, reviews) and the service requests for a given requester.
+     * @param {number} requesterId - The ID of the user who made the requests.
+     * @async
+     */
     async function fetchContextAndRequests(requesterId) {
         requestsLoaded.value = false;
         errors.value = [];
         try {
             const [usersRes, techsRes, reviewsRes, requestsRes] = await Promise.all([
                 iamApi.http.get('/users'),
-                // iamApi.http.get('/sites'), // Not implemented yet
-                // iamApi.http.get('/equipments'), // Not implemented yet
                 iamApi.http.get('/technicians'),
                 reviewsApi.getAllReviews(),
                 serviceDeliveryApi.getRequestsByRequesterQuery(requesterId)
@@ -29,8 +38,6 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
 
             const context = {
                 users: usersRes.data,
-                // sites: sitesRes.data,
-                // equipments: equipRes.data,
                 technicians: techsRes.data,
                 reviews: reviewsRes.data
             };
@@ -43,6 +50,12 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
         }
     }
 
+    /**
+     * @function cancelRequest
+     * @description Sends a command to cancel a service request and updates its status locally.
+     * @param {number} id - The ID of the service request to cancel.
+     * @async
+     */
     async function cancelRequest(id) {
         errors.value = [];
         try {

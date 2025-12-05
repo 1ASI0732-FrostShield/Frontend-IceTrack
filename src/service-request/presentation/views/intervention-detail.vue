@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file intervention-detail.vue
+ * @description This component displays the details of a specific intervention.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -11,12 +16,24 @@ const router = useRouter();
 const api = new ServiceRequestsApi();
 const iamApi = new IamApi();
 
+/** @type {import('vue').Ref<object|null>} */
 const intervention = ref(null);
+/** @type {import('vue').Ref<object|null>} */
 const technician = ref(null);
+/** @type {import('vue').Ref<boolean>} */
 const isLoading = ref(false);
 
+/**
+ * Computed property for the intervention ID from the route parameters.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const interventionId = computed(() => route.params.interventionId);
 
+/**
+ * Fetches the details of the intervention and the assigned technician.
+ * @async
+ * @function fetchData
+ */
 async function fetchData() {
   isLoading.value = true;
   try {
@@ -34,10 +51,20 @@ async function fetchData() {
   }
 }
 
+/**
+ * Navigates back to the previous page.
+ * @function goBack
+ */
 function goBack() {
   router.back();
 }
 
+/**
+ * Returns the translated status string.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function getStatusTranslation
+ */
 const getStatusTranslation = (status) => {
   if (!status) return '';
   const key = Object.keys(t('services.status')).find(k => k.toLowerCase() === status.toLowerCase());

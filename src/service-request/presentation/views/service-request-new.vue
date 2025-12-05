@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file service-request-new.vue
+ * @description This component allows users to create a new service request.
+ * @author Kenyi Ramirez
+ */
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
@@ -15,8 +20,16 @@ const { errors } = store;
 const iamApi = new IamApi();
 const serviceRequestApi = new ServiceRequestsApi();
 
+/**
+ * Computed property for the current requester's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentRequesterId = computed(() => authStore.currentUserId);
 
+/**
+ * Reactive form data for the new service request.
+ * @type {import('vue').Ref<object>}
+ */
 const form = ref({
   siteId: null,
   equipmentId: null,
@@ -26,10 +39,17 @@ const form = ref({
   description: '',
 });
 
+/** @type {import('vue').Ref<Array<object>>} */
 const sites = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const equipments = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const providers = ref([]);
 
+/**
+ * Computed property to filter equipments based on the selected site.
+ * @type {import('vue').ComputedRef<Array<object>>}
+ */
 const filteredEquipments = computed(() => {
   if (!form.value.siteId) return [];
   return equipments.value.filter(eq => eq.siteId === form.value.siteId);
@@ -38,22 +58,27 @@ const filteredEquipments = computed(() => {
 onMounted(async () => {
   try {
     const [providersRes] = await Promise.all([
-      // iamApi.http.get(`/sites`),
-      // iamApi.http.get(`/equipments`),
       iamApi.getUsersByRole('Provider')
     ]);
-    // sites.value = sitesRes.data;
-    // equipments.value = equipRes.data;
     providers.value = providersRes.data;
   } catch (error) {
     errors.value.push(error);
   }
 });
 
+/**
+ * Handles the change event for site selection, resetting the equipment.
+ * @function handleSiteChange
+ */
 const handleSiteChange = () => {
   form.value.equipmentId = null;
 };
 
+/**
+ * Saves the new service request.
+ * @async
+ * @function saveRequest
+ */
 const saveRequest = async () => {
   if (!form.value.description || !form.value.assignedTo) {
     alert(t('services.new.alert-required-fields'));
@@ -84,6 +109,10 @@ const saveRequest = async () => {
   }
 };
 
+/**
+ * Navigates back to the service requests list.
+ * @function navigateBack
+ */
 const navigateBack = () => {
   router.push({ name: 'service-requests-list' });
 };

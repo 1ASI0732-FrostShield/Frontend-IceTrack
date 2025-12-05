@@ -1,6 +1,17 @@
 import { ServiceRequest} from "@/service-request/domain/model/service-request.entity.js";
 
+/**
+ * @class ServiceRequestAssembler
+ * @description A class for assembling service request entities from data transfer objects (DTOs).
+ * @author Kenyi Ramirez
+ */
 export class ServiceRequestAssembler {
+    /**
+     * @description Converts a service request DTO to a ServiceRequest entity, enriching it with context data.
+     * @param {object} dto - The service request data transfer object.
+     * @param {object} context - The context data containing users, sites, equipment, etc.
+     * @returns {ServiceRequest} The assembled ServiceRequest entity.
+     */
     static toEntityFromResource(dto, context = {}) {
         const { users = [], sites = [], equipments = [], technicians = [], reviews = [] } = context;
 
@@ -23,6 +34,12 @@ export class ServiceRequestAssembler {
         });
     }
 
+    /**
+     * @description Converts an array of service request DTOs to an array of ServiceRequest entities.
+     * @param {Array<object>} dtos - The array of service request DTOs.
+     * @param {object} context - The context data.
+     * @returns {Array<ServiceRequest>} The array of assembled ServiceRequest entities.
+     */
     static toEntitiesFromResponse(dtos, context = {}) {
         return dtos.map(dto => this.toEntityFromResource(dto, context));
     }
