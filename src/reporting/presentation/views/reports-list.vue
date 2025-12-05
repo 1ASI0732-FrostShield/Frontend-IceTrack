@@ -110,8 +110,8 @@ function formatDate(dateStr) {
         </div>
       </template>
 
-      <template #empty> No se encontraron reportes. </template>
-      <template #loading> Cargando reportes... </template>
+      <template #empty> No reports were found. </template>
+      <template #loading> Loading reports... </template>
 
       <pv-column field="title" :header="t('reports.list.name')" style="min-width: 14rem">
         <template #filter="{ filterModel, filterCallback }">

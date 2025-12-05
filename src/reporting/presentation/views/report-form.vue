@@ -34,11 +34,11 @@ const saveReport = async () => {
   }
 
   if (!tenantId.value && !equipmentId.value) {
-    errors.value.push({ message: 'Debe ingresar TenantId o EquipmentId' })
+    errors.value.push({ message: 'You must enter TenantId or EquipmentId' })
   }
 
   if (!url.value) {
-    errors.value.push({ message: 'Debe ingresar la URL del reporte' })
+    errors.value.push({ message: 'You must enter the report URL' })
   }
 
   if (errors.value.length > 0) return
@@ -56,7 +56,7 @@ const saveReport = async () => {
     })
     router.push({ name: 'reporting-report' })
   } catch (err) {
-    errors.value.push({ message: err.message || 'Error al guardar el reporte' })
+    errors.value.push({ message: err.message || 'Error saving the report' })
   }
 }
 </script>

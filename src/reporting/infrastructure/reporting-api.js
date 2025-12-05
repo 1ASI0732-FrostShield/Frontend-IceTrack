@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const reportsEndpointPath = import.meta.env.VITE_REPORTS_ENDPOINT_PATH;
 
 /**
- * ReportingApi class to handle API operations for Publishing context.
+ * ReportingApi class to handle API operations for Reporting context.
  * Extends BaseApi and provides CRUD operations for reports.
  *
  * @class
