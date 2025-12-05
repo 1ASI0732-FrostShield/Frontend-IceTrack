@@ -56,7 +56,7 @@ const handleSiteChange = () => {
 
 const saveRequest = async () => {
   if (!form.value.description || !form.value.assignedTo) {
-    alert("Por favor complete todos los campos requeridos.");
+    alert(t('services.new.alert-required-fields'));
     return;
   }
 
@@ -76,11 +76,11 @@ const saveRequest = async () => {
   try {
     await serviceRequestApi.sendNewRequestCommand(newRequestData);
     await store.fetchContextAndRequests(currentRequesterId.value);
-    alert('Request created successfully!');
+    alert(t('services.new.alert-request-created'));
     navigateBack();
   } catch (error) {
     errors.value.push(error);
-    alert('Error creating request.');
+    alert(t('services.new.alert-create-error'));
   }
 };
 
@@ -91,7 +91,7 @@ const navigateBack = () => {
 
 <template>
   <div class="p-4">
-    <h1>{{ t('service-requests.new-request-title') }}</h1>
+    <h1>{{ t('services.new.title') }}</h1>
     <pv-card class="mt-4">
       <template #content>
         <form @submit.prevent="saveRequest">
@@ -108,22 +108,21 @@ const navigateBack = () => {
                     required
                     class="w-full"
                 />
-                <label for="provider">Service Provider *</label>
+                <label for="provider">{{ t('services.new.provider') }}</label>
               </pv-float-label>
             </div>
 
-            <!-- MODIFIED: Disabled Site and Equipment selection -->
             <div class="field col-12 md:col-6">
               <pv-float-label>
                 <pv-input-text id="site" value="Default Site (Not Implemented)" disabled class="w-full" />
-                <label for="site">{{ t('service-requests.site') }} *</label>
+                <label for="site">{{ t('services.new.site') }}</label>
               </pv-float-label>
             </div>
 
             <div class="field col-12 md:col-6">
               <pv-float-label>
                 <pv-input-text id="equipment" value="Default Equipment (Not Implemented)" disabled class="w-full" />
-                <label for="equipment">{{ t('service-requests.equipment') }} *</label>
+                <label for="equipment">{{ t('services.new.equipment') }}</label>
               </pv-float-label>
             </div>
 
@@ -132,13 +131,13 @@ const navigateBack = () => {
                 <pv-select
                     id="type"
                     v-model="form.type"
-                    :options="[{label: 'Reparación (Correctivo)', value: 'corrective'}, {label: 'Mantenimiento (Preventivo)', value: 'preventive'}]"
+                    :options="[{label: t('service-requests.types.corrective'), value: 'corrective'}, {label: t('service-requests.types.preventive'), value: 'preventive'}]"
                     optionLabel="label"
                     optionValue="value"
                     required
                     class="w-full"
                 />
-                <label for="type">{{ t('service-requests.request-type') }} *</label>
+                <label for="type">{{ t('services.new.request-type') }}</label>
               </pv-float-label>
             </div>
 
@@ -147,13 +146,13 @@ const navigateBack = () => {
                 <pv-select
                     id="priority"
                     v-model="form.priority"
-                    :options="[{label: 'Alta', value: 'high'}, {label: 'Media', value: 'medium'}, {label: 'Baja', value: 'low'}]"
+                    :options="[{label: t('service-requests.priorities.high'), value: 'high'}, {label: t('service-requests.priorities.medium'), value: 'medium'}, {label: t('service-requests.priorities.low'), value: 'low'}]"
                     optionLabel="label"
                     optionValue="value"
                     required
                     class="w-full"
                 />
-                <label for="priority">{{ t('service-requests.priority') }}</label>
+                <label for="priority">{{ t('services.new.priority') }}</label>
               </pv-float-label>
             </div>
 
@@ -166,7 +165,7 @@ const navigateBack = () => {
                     required
                     class="w-full"
                 />
-                <label for="description">{{ t('service-requests.problem-description') }} *</label>
+                <label for="description">{{ t('services.new.description') }}</label>
               </pv-float-label>
             </div>
 

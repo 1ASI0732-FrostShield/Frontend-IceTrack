@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 
+const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 const serviceRequestApi = new ServiceRequestsApi();
@@ -16,6 +18,8 @@ const requests = ref([]);
 const filters = ref({ status: '', clientName: '' });
 
 const currentProviderId = computed(() => authStore.currentUserId);
+
+const statusOptions = ['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected'];
 
 const fetchData = async () => {
   if (!currentProviderId.value) return;
@@ -64,45 +68,51 @@ const statusSeverity = (status) => ({
   rejected: 'secondary'
 }[status] || 'secondary');
 
+const getStatusTranslation = (status) => {
+  return status ? t(`services.status.${status}`) : t('common.all');
+};
+
 onMounted(fetchData);
 </script>
 
 <template>
   <div class="p-4">
-    <h1 class="text-3xl font-bold mb-4">My Service Requests</h1>
+    <h1 class="text-3xl font-bold mb-4">{{ t('provider.services.title') }}</h1>
 
     <!-- Filters -->
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-4 items-center">
       <div class="flex items-center gap-2">
-        <label for="status-filter" class="font-semibold">Status:</label>
+        <label for="status-filter" class="font-semibold">{{ t('provider.services.list.status') }}</label>
         <pv-select-button id="status-filter" v-model="filters.status"
-                          :options="['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected']"
+                          :options="statusOptions"
                           :allowEmpty="true">
-          <template #option="slotProps">{{ slotProps.option || 'All' }}</template>
+          <template #option="slotProps">
+            {{ getStatusTranslation(slotProps.option) }}
+          </template>
         </pv-select-button>
       </div>
       <div class="flex items-center gap-2">
-        <label for="client-search" class="font-semibold">Client:</label>
+        <label for="client-search" class="font-semibold">{{ t('provider.services.list.client') }}</label>
         <pv-icon-field iconPosition="left">
           <pv-input-icon class="pi pi-search" />
-          <pv-input-text id="client-search" v-model="filters.clientName" placeholder="Search by client name" />
+          <pv-input-text id="client-search" v-model="filters.clientName" :placeholder="t('provider.services.list.search-by-client')" />
         </pv-icon-field>
       </div>
     </div>
 
     <!-- Data Table -->
     <pv-data-table :value="filteredRequests" :loading="loading" paginator :rows="10" responsive-layout="scroll">
-      <pv-column field="orderNumber" header="Order #" sortable />
-      <pv-column field="requesterName" header="Client" sortable />
-      <pv-column field="siteName" header="Site" sortable />
-      <pv-column field="status" header="Status" sortable>
+      <pv-column field="orderNumber" :header="t('provider.services.list.order-number')" sortable />
+      <pv-column field="requesterName" :header="t('provider.services.list.client')" sortable />
+      <pv-column field="siteName" :header="t('provider.services.list.site')" sortable />
+      <pv-column field="status" :header="t('common.status.title')" sortable>
         <template #body="{ data }">
-          <pv-tag :value="data.status" :severity="statusSeverity(data.status)" />
+          <pv-tag :value="getStatusTranslation(data.status)" :severity="statusSeverity(data.status)" />
         </template>
       </pv-column>
-      <pv-column header="Actions">
+      <pv-column :header="t('provider.services.list.actions')">
         <template #body="{ data }">
-          <pv-button icon="pi pi-eye" text rounded severity="info" @click="navigateToDetail(data)" v-tooltip.top="'View Details'" />
+          <pv-button icon="pi pi-eye" text rounded severity="info" @click="navigateToDetail(data)" v-tooltip.top="t('provider.services.list.view-details')" />
         </template>
       </pv-column>
     </pv-data-table>

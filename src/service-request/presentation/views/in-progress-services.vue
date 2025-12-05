@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 
+const { t } = useI18n();
 const serviceRequestApi = new ServiceRequestsApi();
 const techniciansApi = new TechniciansApi();
 const authStore = useAuthStore();
@@ -29,7 +31,6 @@ const fetchData = async () => {
       techniciansApi.getTechniciansByProvider(currentProviderId.value)
     ]);
 
-    // MODIFIED: Removed sites from context
     const context = { technicians: techsRes.data };
     const accepted = ServiceRequestAssembler.toEntitiesFromResponse(acceptedRes.data, context);
     const inProgress = ServiceRequestAssembler.toEntitiesFromResponse(inProgressRes.data, context);
@@ -56,38 +57,42 @@ const completeService = async (requestId) => {
   await fetchData();
 };
 
+const getStatusTranslation = (status) => {
+  return t(`services.status.${status}`);
+};
+
 onMounted(fetchData);
 </script>
 
 <template>
   <div class="p-4">
-    <h1 class="text-3xl font-bold mb-4">In-Progress Services</h1>
+    <h1 class="text-3xl font-bold mb-4">{{ t('services.in-progress.title') }}</h1>
     <pv-card>
       <template #content>
         <pv-data-table :value="activeRequests" :loading="loading" responsive-layout="scroll">
-          <pv-column field="id" header="ID" sortable style="width: 10%"></pv-column>
-          <pv-column field="description" header="Description" style="width: 30%"></pv-column>
-          <pv-column field="status" header="Status" sortable style="width: 15%">
+          <pv-column field="id" :header="t('services.in-progress.id')" sortable style="width: 10%"></pv-column>
+          <pv-column field="description" :header="t('services.in-progress.description')" style="width: 30%"></pv-column>
+          <pv-column field="status" :header="t('services.in-progress.status')" sortable style="width: 15%">
             <template #body="{ data }">
-              <pv-tag :severity="data.status === 'accepted' ? 'warning' : 'info'" :value="data.status"></pv-tag>
+              <pv-tag :severity="data.status === 'accepted' ? 'warning' : 'info'" :value="getStatusTranslation(data.status)"></pv-tag>
             </template>
           </pv-column>
-          <pv-column field="technicianName" header="Assigned Technician" sortable style="width: 20%">
+          <pv-column field="technicianName" :header="t('services.in-progress.assigned-technician')" sortable style="width: 20%">
             <template #body="{ data }">
-              {{ data.technicianName || 'Not Assigned' }}
+              {{ data.technicianName || t('services.in-progress.not-assigned') }}
             </template>
           </pv-column>
-          <pv-column header="Actions" style="width: 25%">
+          <pv-column :header="t('services.in-progress.actions')" style="width: 25%">
             <template #body="{ data }">
               <div v-if="data.status === 'accepted'" class="flex align-items-center">
-                <pv-select v-model="selectedTechnicians[data.id]" :options="technicians" optionLabel="name" optionValue="id" placeholder="Assign Technician" class="mr-2" style="min-width: 150px;"/>
+                <pv-select v-model="selectedTechnicians[data.id]" :options="technicians" optionLabel="name" optionValue="id" :placeholder="t('services.in-progress.assign-technician')" class="mr-2" style="min-width: 150px;"/>
                 <pv-button icon="pi pi-user-plus" @click="assignTechnician(data.id)" :disabled="!selectedTechnicians[data.id]"/>
               </div>
-              <pv-button v-if="data.status === 'inProgress'" label="Complete" icon="pi pi-check-circle" class="p-button-success" @click="completeService(data.id)"/>
+              <pv-button v-if="data.status === 'inProgress'" :label="t('services.in-progress.complete')" icon="pi pi-check-circle" class="p-button-success" @click="completeService(data.id)"/>
             </template>
           </pv-column>
           <template #empty>
-            No active services found.
+            {{ t('services.in-progress.no-active-services') }}
           </template>
         </pv-data-table>
       </template>
