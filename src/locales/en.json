@@ -6,6 +6,7 @@
     "save": "Save",
     "search": "Search",
     "status": {
+      "title": "Status",
       "open": "Open",
       "assigned": "Assigned",
       "inProgress": "In progress",
@@ -237,6 +238,86 @@
       "completed": "Completed",
       "rejected": "Rejected",
       "accepted": "Accepted"
+    },
+    "detail": {
+      "title": "Request Information",
+      "description": "Description:",
+      "site-id": "Site ID:",
+      "equipment-id": "Equipment ID:",
+      "created-at": "Created At:",
+      "view-equipment-details": "View Equipment Details",
+      "interventions-log": "Interventions Log",
+      "technician-id": "Technician ID:",
+      "view-details": "View Details",
+      "register-intervention": "Register New Intervention",
+      "select-technician": "Select Technician",
+      "work-summary": "Work Summary",
+      "start-time": "Start Time",
+      "end-time": "End Time (optional)",
+      "add-photo-url": "Add Photo URL",
+      "register": "Register Intervention",
+      "not-found": "Service request not found.",
+      "equipment-details": "Equipment Details",
+      "name": "Name:",
+      "model": "Model:",
+      "serial": "Serial:",
+      "type": "Type:",
+      "installed": "Installed:",
+      "close": "Close"
+    },
+    "in-progress": {
+      "title": "In-Progress Services",
+      "id": "ID",
+      "description": "Description",
+      "status": "Status",
+      "assigned-technician": "Assigned Technician",
+      "not-assigned": "Not Assigned",
+      "actions": "Actions",
+      "assign-technician": "Assign Technician",
+      "complete": "Complete",
+      "no-active-services": "No active services found."
+    },
+    "completed": {
+      "title": "Completed Services",
+      "id": "ID",
+      "description": "Description",
+      "site": "Site",
+      "technician": "Technician",
+      "completed-at": "Completed At",
+      "no-completed-services": "No completed services found."
+    },
+    "rejected-canceled": {
+      "title": "Rejected / Canceled Services",
+      "id": "ID",
+      "description": "Description",
+      "site": "Site",
+      "status": "Status",
+      "date": "Date",
+      "no-rejected-canceled-services": "No rejected or canceled services found."
+    },
+    "intervention": {
+      "title": "Intervention",
+      "back-to-request": "Back to Request",
+      "details": "Details",
+      "technician": "Technician:",
+      "start-time": "Start Time:",
+      "end-time": "End Time:",
+      "work-summary": "Work Summary",
+      "evidence-photos": "Evidence Photos",
+      "no-photos": "No photos were uploaded for this intervention.",
+      "not-found": "Intervention not found."
+    },
+    "new": {
+      "title": "New Service Request",
+      "provider": "Service Provider *",
+      "site": "Site *",
+      "equipment": "Equipment *",
+      "request-type": "Request Type *",
+      "priority": "Priority",
+      "description": "Problem Description *",
+      "alert-required-fields": "Please complete all required fields.",
+      "alert-request-created": "Request created successfully!",
+      "alert-create-error": "Error creating request."
     }
   },
   "service-requests": {
@@ -433,13 +514,61 @@
   },
   "provider": {
     "dashboard": {
-      "title": "Provider Dashboard"
+      "title": "Dashboard",
+      "new-requests": "New Requests",
+      "active-services": "Active Services",
+      "my-technicians": "My Technicians",
+      "all-services": "All Services",
+      "all-services-description": "Go to the complete list of your services.",
+      "view-all-services": "View All Services",
+      "pending-requests": "Pending Requests",
+      "refresh-list": "Refresh List",
+      "id": "ID",
+      "description": "Description",
+      "site": "Site",
+      "priority": "Priority",
+      "actions": "Actions",
+      "accept": "Accept",
+      "reject": "Reject",
+      "no-pending-requests": "No pending requests found."
     },
     "services": {
-      "title": "Provider Services"
+      "title": "My Service Requests",
+      "hub": {
+        "title": "Service Management Hub",
+        "pending-requests": "Pending Requests",
+        "pending-requests-description": "Awaiting acceptance",
+        "in-progress": "In-Progress",
+        "in-progress-description": "Accepted or assigned",
+        "completed": "Completed",
+        "completed-description": "Finished services",
+        "rejected-canceled": "Rejected / Canceled",
+        "rejected-canceled-description": "Not proceeding"
+      },
+      "list": {
+        "status": "Status:",
+        "client": "Client:",
+        "search-by-client": "Search by client name",
+        "order-number": "Order #",
+        "site": "Site",
+        "actions": "Actions",
+        "view-details": "View Details"
+      }
     },
     "technicians": {
-      "title": "Technician Management"
+      "title": "Technician Management",
+      "register-new": "Register New Technician",
+      "name": "Name",
+      "specialty": "Specialty",
+      "phone": "Phone",
+      "register": "Register",
+      "my-technicians": "My Technicians",
+      "average-rating": "Average Rating",
+      "actions": "Actions",
+      "no-technicians": "No technicians found. Register one to get started.",
+      "edit-technician": "Edit Technician",
+      "confirm-delete": "Are you sure you want to delete {name}?",
+      "confirm-delete-header": "Confirm Deletion"
     }
   },
   "validation": {

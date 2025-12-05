@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file service-request-new.vue
+ * @description This component allows users to create a new service request.
+ * @author Kenyi Ramirez
+ */
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
@@ -15,8 +20,16 @@ const { errors } = store;
 const iamApi = new IamApi();
 const serviceRequestApi = new ServiceRequestsApi();
 
+/**
+ * Computed property for the current requester's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentRequesterId = computed(() => authStore.currentUserId);
 
+/**
+ * Reactive form data for the new service request.
+ * @type {import('vue').Ref<object>}
+ */
 const form = ref({
   siteId: null,
   equipmentId: null,
@@ -26,10 +39,17 @@ const form = ref({
   description: '',
 });
 
+/** @type {import('vue').Ref<Array<object>>} */
 const sites = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const equipments = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const providers = ref([]);
 
+/**
+ * Computed property to filter equipments based on the selected site.
+ * @type {import('vue').ComputedRef<Array<object>>}
+ */
 const filteredEquipments = computed(() => {
   if (!form.value.siteId) return [];
   return equipments.value.filter(eq => eq.siteId === form.value.siteId);
@@ -38,25 +58,30 @@ const filteredEquipments = computed(() => {
 onMounted(async () => {
   try {
     const [providersRes] = await Promise.all([
-      // iamApi.http.get(`/sites`),
-      // iamApi.http.get(`/equipments`),
       iamApi.getUsersByRole('Provider')
     ]);
-    // sites.value = sitesRes.data;
-    // equipments.value = equipRes.data;
     providers.value = providersRes.data;
   } catch (error) {
     errors.value.push(error);
   }
 });
 
+/**
+ * Handles the change event for site selection, resetting the equipment.
+ * @function handleSiteChange
+ */
 const handleSiteChange = () => {
   form.value.equipmentId = null;
 };
 
+/**
+ * Saves the new service request.
+ * @async
+ * @function saveRequest
+ */
 const saveRequest = async () => {
   if (!form.value.description || !form.value.assignedTo) {
-    alert("Por favor complete todos los campos requeridos.");
+    alert(t('services.new.alert-required-fields'));
     return;
   }
 
@@ -76,14 +101,18 @@ const saveRequest = async () => {
   try {
     await serviceRequestApi.sendNewRequestCommand(newRequestData);
     await store.fetchContextAndRequests(currentRequesterId.value);
-    alert('Request created successfully!');
+    alert(t('services.new.alert-request-created'));
     navigateBack();
   } catch (error) {
     errors.value.push(error);
-    alert('Error creating request.');
+    alert(t('services.new.alert-create-error'));
   }
 };
 
+/**
+ * Navigates back to the service requests list.
+ * @function navigateBack
+ */
 const navigateBack = () => {
   router.push({ name: 'service-requests-list' });
 };
@@ -91,7 +120,7 @@ const navigateBack = () => {
 
 <template>
   <div class="p-4">
-    <h1>{{ t('service-requests.new-request-title') }}</h1>
+    <h1>{{ t('services.new.title') }}</h1>
     <pv-card class="mt-4">
       <template #content>
         <form @submit.prevent="saveRequest">
@@ -108,22 +137,21 @@ const navigateBack = () => {
                     required
                     class="w-full"
                 />
-                <label for="provider">Service Provider *</label>
+                <label for="provider">{{ t('services.new.provider') }}</label>
               </pv-float-label>
             </div>
 
-            <!-- MODIFIED: Disabled Site and Equipment selection -->
             <div class="field col-12 md:col-6">
               <pv-float-label>
                 <pv-input-text id="site" value="Default Site (Not Implemented)" disabled class="w-full" />
-                <label for="site">{{ t('service-requests.site') }} *</label>
+                <label for="site">{{ t('services.new.site') }}</label>
               </pv-float-label>
             </div>
 
             <div class="field col-12 md:col-6">
               <pv-float-label>
                 <pv-input-text id="equipment" value="Default Equipment (Not Implemented)" disabled class="w-full" />
-                <label for="equipment">{{ t('service-requests.equipment') }} *</label>
+                <label for="equipment">{{ t('services.new.equipment') }}</label>
               </pv-float-label>
             </div>
 
@@ -132,13 +160,13 @@ const navigateBack = () => {
                 <pv-select
                     id="type"
                     v-model="form.type"
-                    :options="[{label: 'Reparación (Correctivo)', value: 'corrective'}, {label: 'Mantenimiento (Preventivo)', value: 'preventive'}]"
+                    :options="[{label: t('service-requests.types.corrective'), value: 'corrective'}, {label: t('service-requests.types.preventive'), value: 'preventive'}]"
                     optionLabel="label"
                     optionValue="value"
                     required
                     class="w-full"
                 />
-                <label for="type">{{ t('service-requests.request-type') }} *</label>
+                <label for="type">{{ t('services.new.request-type') }}</label>
               </pv-float-label>
             </div>
 
@@ -147,13 +175,13 @@ const navigateBack = () => {
                 <pv-select
                     id="priority"
                     v-model="form.priority"
-                    :options="[{label: 'Alta', value: 'high'}, {label: 'Media', value: 'medium'}, {label: 'Baja', value: 'low'}]"
+                    :options="[{label: t('service-requests.priorities.high'), value: 'high'}, {label: t('service-requests.priorities.medium'), value: 'medium'}, {label: t('service-requests.priorities.low'), value: 'low'}]"
                     optionLabel="label"
                     optionValue="value"
                     required
                     class="w-full"
                 />
-                <label for="priority">{{ t('service-requests.priority') }}</label>
+                <label for="priority">{{ t('services.new.priority') }}</label>
               </pv-float-label>
             </div>
 
@@ -166,7 +194,7 @@ const navigateBack = () => {
                     required
                     class="w-full"
                 />
-                <label for="description">{{ t('service-requests.problem-description') }} *</label>
+                <label for="description">{{ t('services.new.description') }}</label>
               </pv-float-label>
             </div>
 

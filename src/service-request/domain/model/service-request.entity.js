@@ -1,6 +1,15 @@
 import { Intervention } from './intervention.entity.js';
 
+/**
+ * @class ServiceRequest
+ * @description Represents a service request entity, including all its properties and related data.
+ * @author Kenyi Ramirez
+ */
 export class ServiceRequest {
+    /**
+     * @constructor
+     * @param {object} props - The properties of the service request.
+     */
     constructor({
                     id,
                     requesterId,

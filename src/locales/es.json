@@ -6,6 +6,7 @@
         "save": "Guardar",
         "search": "Buscar",
         "status": {
+            "title": "Estado",
             "open": "Abierta",
             "assigned": "Asignada",
             "inProgress": "En progreso",
@@ -31,7 +32,10 @@
         "alerts": "Alertas",
         "reports": "Reportes",
         "admin": "Administración",
-        "help": "Ayuda"
+        "help": "Ayuda",
+        "provider_dashboard": "Dashboard",
+        "provider_services": "Servicios",
+        "technician_management": "Técnicos"
     },
     "auth": {
         "login": {
@@ -228,7 +232,90 @@
             "inProgress": "En progreso",
             "done": "Completada",
             "pending": "Pendiente",
-            "canceled": "Cancelada"
+            "canceled": "Cancelada",
+            "completed": "Completado",
+            "rejected": "Rechazado",
+            "accepted": "Aceptado"
+        },
+        "detail": {
+            "title": "Información de la Solicitud",
+            "description": "Descripción:",
+            "site-id": "ID del Sitio:",
+            "equipment-id": "ID del Equipo:",
+            "created-at": "Creado el:",
+            "view-equipment-details": "Ver Detalles del Equipo",
+            "interventions-log": "Registro de Intervenciones",
+            "technician-id": "ID del Técnico:",
+            "view-details": "Ver Detalles",
+            "register-intervention": "Registrar Nueva Intervención",
+            "select-technician": "Seleccionar Técnico",
+            "work-summary": "Resumen del Trabajo",
+            "start-time": "Hora de Inicio",
+            "end-time": "Hora de Fin (opcional)",
+            "add-photo-url": "Añadir URL de Foto",
+            "register": "Registrar Intervención",
+            "not-found": "Solicitud de servicio no encontrada.",
+            "equipment-details": "Detalles del Equipo",
+            "name": "Nombre:",
+            "model": "Modelo:",
+            "serial": "Serial:",
+            "type": "Tipo:",
+            "installed": "Instalado:",
+            "close": "Cerrar"
+        },
+        "in-progress": {
+            "title": "Servicios en Progreso",
+            "id": "ID",
+            "description": "Descripción",
+            "status": "Estado",
+            "assigned-technician": "Técnico Asignado",
+            "not-assigned": "No Asignado",
+            "actions": "Acciones",
+            "assign-technician": "Asignar Técnico",
+            "complete": "Completar",
+            "no-active-services": "No se encontraron servicios activos."
+        },
+        "completed": {
+            "title": "Servicios Completados",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "technician": "Técnico",
+            "completed-at": "Completado el",
+            "no-completed-services": "No se encontraron servicios completados."
+        },
+        "rejected-canceled": {
+            "title": "Servicios Rechazados / Cancelados",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "status": "Estado",
+            "date": "Fecha",
+            "no-rejected-canceled-services": "No se encontraron servicios rechazados o cancelados."
+        },
+        "intervention": {
+            "title": "Intervención",
+            "back-to-request": "Volver a la Solicitud",
+            "details": "Detalles",
+            "technician": "Técnico:",
+            "start-time": "Hora de Inicio:",
+            "end-time": "Hora de Fin:",
+            "work-summary": "Resumen del Trabajo",
+            "evidence-photos": "Fotos de Evidencia",
+            "no-photos": "No se subieron fotos para esta intervención.",
+            "not-found": "Intervención no encontrada."
+        },
+        "new": {
+            "title": "Nueva Solicitud de Servicio",
+            "provider": "Proveedor de Servicios *",
+            "site": "Sitio *",
+            "equipment": "Equipo *",
+            "request-type": "Tipo de Solicitud *",
+            "priority": "Prioridad",
+            "description": "Descripción del Problema *",
+            "alert-required-fields": "Por favor complete todos los campos requeridos.",
+            "alert-request-created": "¡Solicitud creada exitosamente!",
+            "alert-create-error": "Error al crear la solicitud."
         }
     },
     "service-requests": {
@@ -415,13 +502,61 @@
     },
     "provider": {
         "dashboard": {
-            "title": "Dashboard del Proveedor"
+            "title": "Dashboard",
+            "new-requests": "Nuevas Solicitudes",
+            "active-services": "Servicios Activos",
+            "my-technicians": "Mis Técnicos",
+            "all-services": "Todos los Servicios",
+            "all-services-description": "Ir a la lista completa de tus servicios.",
+            "view-all-services": "Ver Todos los Servicios",
+            "pending-requests": "Solicitudes Pendientes",
+            "refresh-list": "Actualizar Lista",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "priority": "Prioridad",
+            "actions": "Acciones",
+            "accept": "Aceptar",
+            "reject": "Rechazar",
+            "no-pending-requests": "No se encontraron solicitudes pendientes."
         },
         "services": {
-            "title": "Servicios del Proveedor"
+            "title": "Mis Solicitudes de Servicio",
+            "hub": {
+                "title": "Centro de Gestión de Servicios",
+                "pending-requests": "Solicitudes Pendientes",
+                "pending-requests-description": "Esperando aceptación",
+                "in-progress": "En Progreso",
+                "in-progress-description": "Aceptado o asignado",
+                "completed": "Completado",
+                "completed-description": "Servicios finalizados",
+                "rejected-canceled": "Rechazado / Cancelado",
+                "rejected-canceled-description": "No proceder"
+            },
+            "list": {
+                "status": "Estado:",
+                "client": "Cliente:",
+                "search-by-client": "Buscar por nombre de cliente",
+                "order-number": "Orden #",
+                "site": "Sitio",
+                "actions": "Acciones",
+                "view-details": "Ver Detalles"
+            }
         },
         "technicians": {
-            "title": "Gestión de Técnicos"
+            "title": "Gestión de Técnicos",
+            "register-new": "Registrar Nuevo Técnico",
+            "name": "Nombre",
+            "specialty": "Especialidad",
+            "phone": "Teléfono",
+            "register": "Registrar",
+            "my-technicians": "Mis Técnicos",
+            "average-rating": "Calificación Promedio",
+            "actions": "Acciones",
+            "no-technicians": "No se encontraron técnicos. Registre uno para comenzar.",
+            "edit-technician": "Editar Técnico",
+            "confirm-delete": "¿Estás seguro de que quieres eliminar a {name}?",
+            "confirm-delete-header": "Confirmar Eliminación"
         }
     },
     "validation": {
