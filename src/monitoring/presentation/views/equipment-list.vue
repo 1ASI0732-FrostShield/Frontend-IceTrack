@@ -32,9 +32,6 @@ onMounted(() => {
             :rows-per-page-options="[5, 10, 20]"
         >
 
-          <!-- Id -->
-          <pv-column field="id" :header="t('equipments.list.id')" sortable />
-
           <!-- Model -->
           <pv-column field="model" :header="t('equipments.list.model')">
             <template #body="slotProps">

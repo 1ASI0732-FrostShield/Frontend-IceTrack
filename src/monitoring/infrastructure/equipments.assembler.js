@@ -1,8 +1,8 @@
-import { Equipment } from "@/monitoring/domain/model/equipments.entity.js";
+import { Equipments } from "@/monitoring/domain/model/equipments.entity.js";
 
 export class EquipmentAssembler {
     static toEntityFromResource(resources) {
-        return new Equipment({...resources});
+        return new Equipments({...resources});
     }
 
     static toEntitiesFromResponse(response) {

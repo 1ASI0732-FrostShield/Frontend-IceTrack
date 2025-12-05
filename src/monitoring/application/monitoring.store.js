@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import {EquipmentAssembler} from "@/monitoring/infrastructure/equipments.assembler.js";
 
 const monitoringApi = new MonitoringApi();
 
@@ -19,13 +20,28 @@ const useMonitoringStore = defineStore("monitoring", () => {
             .then((response) => {
                 alerts.value = AlertAssembler.toEntitiesFromResponse(response);
                 alertsLoaded.value = true;
-                console.log("Alertas cargadas:", alerts.value);
+                console.log("Alerts loaded:", alerts.value);
             })
             .catch((error) => {
                 errors.value.push(error);
-                console.error("Error al cargar alertas:", error);
+                console.error("Error loading alerts:", error);
             });
     }
+
+    function fetchEquipments() {
+        monitoringApi
+            .getEquipment()
+            .then((response) => {
+                equipments.value = EquipmentAssembler.toEntitiesFromResponse(response);
+                equipmentsLoaded.value = true;
+                console.log("Equipment loaded:", equipments.value);
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                console.error("Error loading equipment:", error);
+            });
+    }
+
 
     function deleteAlert(alertId) {
         return monitoringApi.deleteAlert(alertId)
@@ -52,6 +68,7 @@ const useMonitoringStore = defineStore("monitoring", () => {
         alertsLoaded,
         acknowledgeAlert,
         fetchAlerts,
+        fetchEquipments,
         deleteAlert,
     };
 });

@@ -45,23 +45,23 @@ function togglePower() {
         >
 
           <!-- Id -->
-          <pv-column field="tenantId" :header="t('equipments.detail.siteId')" sortable >
+          <pv-column field="id" :header="t('equipments.detail.siteId')" sortable >
           </pv-column>
 
           <!-- Installed At -->
-          <pv-column field="installedAt" :header="t('equipments.detail.installedAt')" >
+          <pv-column field="installed" :header="t('equipments.detail.installedAt')" >
           </pv-column>
 
           <!-- Last Seen At -->
-          <pv-column field="lastSeenAt" :header="t('equipments.detail.lastSeenAt')" >
+          <pv-column field="lastSeen" :header="t('equipments.detail.lastSeenAt')" >
           </pv-column>
 
           <!-- Created At -->
-          <pv-column field="createdAt" :header="t('equipments.detail.createdAt')" >
+          <pv-column field="created" :header="t('equipments.detail.createdAt')" >
           </pv-column>
 
           <!-- Updated At -->
-          <pv-column field="updatedAt" :header="t('equipments.detail.updatedAt')" >
+          <pv-column field="updated" :header="t('equipments.detail.updatedAt')" >
           </pv-column>
 
           <!-- Botton Alerts -->

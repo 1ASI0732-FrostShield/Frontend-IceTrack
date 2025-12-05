@@ -31,9 +31,6 @@ onMounted(() => {
             :rows-per-page-options="[5, 10, 20]"
         >
 
-          <!-- Id -->
-          <pv-column field="id" :header="t('sites.list.id')" sortable />
-
           <!-- Name -->
           <pv-column field="name" :header="t('sites.list.name')" />
 
