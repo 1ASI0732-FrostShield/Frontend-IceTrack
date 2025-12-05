@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file provider-services-hub.vue
+ * @description This component serves as a hub for service providers to view a summary of their service requests by status.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -9,8 +14,17 @@ const { t } = useI18n();
 const router = useRouter();
 const serviceApi = new ServiceRequestsApi();
 const authStore = useAuthStore();
+
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Reactive object to store the counts of service requests by status.
+ * @type {import('vue').Ref<object>}
+ */
 const counts = ref({
   pending: 0,
   accepted: 0,
@@ -34,6 +48,11 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Navigates to the appropriate service list view based on the selected status.
+ * @param {string} status - The status category to navigate to.
+ * @function navigate
+ */
 const navigate = (status) => {
   const routeNames = {
     'pending': 'provider-pending-services',

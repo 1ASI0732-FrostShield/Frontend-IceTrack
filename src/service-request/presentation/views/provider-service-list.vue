@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file provider-service-list.vue
+ * @description This component displays a list of service requests for a provider, allowing them to filter and view details.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -13,24 +18,39 @@ const authStore = useAuthStore();
 const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 
+/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
+/** @type {import('vue').Ref<Array<object>>} */
 const requests = ref([]);
+/** @type {import('vue').Ref<object>} */
 const filters = ref({ status: '', clientName: '' });
 
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Options for the status filter.
+ * @type {Array<string>}
+ */
 const statusOptions = ['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected'];
 
+/**
+ * Fetches service requests and user data for the current provider.
+ * @async
+ * @function fetchData
+ */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   try {
     const [requestsRes, usersRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value),
-      // iamApi.http.get('/sites'),
       iamApi.http.get('/users')
     ]);
-    const context = { users: usersRes.data /* sites: sitesRes.data */ };
+    const context = { users: usersRes.data };
     requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
   } catch (error) {
     console.error("Failed to fetch service requests:", error);
@@ -39,6 +59,10 @@ const fetchData = async () => {
   }
 };
 
+/**
+ * Computed property that returns a filtered and sorted list of service requests.
+ * @type {import('vue').ComputedRef<Array<object>>}
+ */
 const filteredRequests = computed(() => {
   let list = [...requests.value];
   list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -55,10 +79,21 @@ const filteredRequests = computed(() => {
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
+/**
+ * Navigates to the detail page of a specific service request.
+ * @param {object} request - The service request object.
+ * @function navigateToDetail
+ */
 const navigateToDetail = (request) => {
   router.push({ name: 'service-request-detail', params: { requestId: request.id } });
 };
 
+/**
+ * Determines the severity of the status tag for display.
+ * @param {string} status - The status of the service request.
+ * @returns {string} The severity string for the tag.
+ * @function statusSeverity
+ */
 const statusSeverity = (status) => ({
   pending: 'danger',
   accepted: 'warning',
@@ -68,6 +103,12 @@ const statusSeverity = (status) => ({
   rejected: 'secondary'
 }[status] || 'secondary');
 
+/**
+ * Returns the translated status string.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function getStatusTranslation
+ */
 const getStatusTranslation = (status) => {
   return status ? t(`services.status.${status}`) : t('common.all');
 };

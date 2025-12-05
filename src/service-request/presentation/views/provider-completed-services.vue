@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file provider-completed-services.vue
+ * @description This component displays a list of completed service requests for a provider.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
@@ -13,12 +18,24 @@ const techniciansApi = new TechniciansApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
 
+/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
+/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
+/** @type {import('vue').Ref<Array<object>>} */
 const completedRequests = ref([]);
 
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Fetches completed service requests for the current provider.
+ * @async
+ * @function fetchData
+ */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;

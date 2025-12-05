@@ -1,4 +1,10 @@
 <script setup>
+/**
+ * @file service-request-detail.vue
+ * @description This component displays the detailed information of a service request, including its status, priority, description, and a log of interventions.
+ * It also allows providers to register new interventions and view equipment details.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -15,9 +21,13 @@ const api = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const techniciansApi = new TechniciansApi();
 
+/** @type {import('vue').Ref<object|null>} */
 const serviceRequest = ref(null);
+/** @type {import('vue').Ref<Array<object>>} */
 const interventions = ref([]);
+/** @type {import('vue').Ref<Array<object>>} */
 const technicians = ref([]);
+/** @type {import('vue').Ref<object>} */
 const newIntervention = ref({
   technicianId: null,
   summary: '',
@@ -25,15 +35,33 @@ const newIntervention = ref({
   endTime: '',
   photoUrls: []
 });
+/** @type {import('vue').Ref<string>} */
 const newPhotoUrl = ref('');
 
+/** @type {import('vue').Ref<boolean>} */
 const isLoading = ref(false);
+/**
+ * Computed property to check if the current user is a provider.
+ * @type {import('vue').ComputedRef<boolean>}
+ */
 const isProvider = computed(() => authStore.currentUserRole === 'Provider');
+/**
+ * Computed property for the service request ID from the route parameters.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const requestId = computed(() => route.params.requestId);
 
+/** @type {import('vue').Ref<boolean>} */
 const displayEquipmentDialog = ref(false);
+/** @type {import('vue').Ref<object|null>} */
 const selectedEquipment = ref(null);
 
+/**
+ * Fetches the details of the service request and its interventions.
+ * If the user is a provider, it also fetches the available technicians.
+ * @async
+ * @function fetchRequestDetails
+ */
 async function fetchRequestDetails() {
   isLoading.value = true;
   try {
@@ -55,6 +83,11 @@ async function fetchRequestDetails() {
   }
 }
 
+/**
+ * Opens the equipment details dialog and fetches the equipment information.
+ * @async
+ * @function openEquipmentDialog
+ */
 async function openEquipmentDialog() {
   if (!serviceRequest.value) return;
   try {
@@ -66,6 +99,10 @@ async function openEquipmentDialog() {
   }
 }
 
+/**
+ * Adds a new photo URL to the new intervention form.
+ * @function addPhotoUrl
+ */
 function addPhotoUrl() {
   if (newPhotoUrl.value && !newIntervention.value.photoUrls.includes(newPhotoUrl.value)) {
     newIntervention.value.photoUrls.push(newPhotoUrl.value);
@@ -73,6 +110,11 @@ function addPhotoUrl() {
   }
 }
 
+/**
+ * Registers a new intervention for the current service request.
+ * @async
+ * @function registerIntervention
+ */
 async function registerIntervention() {
   if (!newIntervention.value.technicianId || !newIntervention.value.summary) {
     alert('Please select a technician and provide a summary.');
@@ -98,10 +140,21 @@ async function registerIntervention() {
   }
 }
 
+/**
+ * Navigates to the detail page of a specific intervention.
+ * @param {object} intervention - The intervention object.
+ * @function navigateToIntervention
+ */
 function navigateToIntervention(intervention) {
   router.push({ name: 'intervention-detail', params: { requestId: requestId.value, interventionId: intervention.id } });
 }
 
+/**
+ * Returns the translated status string, handling different casings.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function getStatusTranslation
+ */
 const getStatusTranslation = (status) => {
   if (!status) return '';
   const key = Object.keys(t('services.status')).find(k => k.toLowerCase() === status.toLowerCase());
@@ -117,7 +170,7 @@ onMounted(fetchRequestDetails);
     <router-view v-if="route.name === 'intervention-detail'"></router-view>
     <div v-else>
       <pv-card v-if="isLoading">
-        <template #content><p>Loading...</p></template>
+        <template #content><p>{{ t('common.loading') }}</p></template>
       </pv-card>
 
       <div v-else-if="serviceRequest">

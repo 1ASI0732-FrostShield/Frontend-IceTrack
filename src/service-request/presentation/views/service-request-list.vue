@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file service-request-list.vue
+ * @description This component displays a list of service requests for an owner, allowing them to create new requests, view details, cancel requests, and submit/view reviews.
+ * @author Kenyi Ramirez
+ */
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
@@ -18,19 +23,34 @@ const reviewsApi = new ReviewsApi();
 const { requests, requestsLoaded, errors } = storeToRefs(requestsStore);
 const { fetchContextAndRequests, cancelRequest } = requestsStore;
 
+/**
+ * Computed property for the current owner's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentOwnerId = computed(() => authStore.currentUserId);
 
+/**
+ * Watches for changes in currentOwnerId and fetches service requests.
+ */
 watch(currentOwnerId, (newId) => {
   if (newId) {
     fetchContextAndRequests(newId);
   }
 }, { immediate: true });
 
+/**
+ * Reactive object for filtering service requests.
+ * @type {import('vue').Ref<object>}
+ */
 const filters = ref({
   status: '',
   type: ''
 });
 
+/**
+ * Computed property that returns a filtered and sorted list of service requests.
+ * @type {import('vue').ComputedRef<Array<object>>}
+ */
 const filteredRequests = computed(() => {
   let list = Array.isArray(requests.value) ? [...requests.value] : [];
   list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -40,17 +60,51 @@ const filteredRequests = computed(() => {
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
+/**
+ * Determines the severity of the status tag for display.
+ * @param {string} status - The status of the service request.
+ * @returns {string} The severity string for the tag.
+ * @function statusSeverity
+ */
 const statusSeverity = (status) => ({
   pending: 'danger', accepted: 'warning', inProgress: 'info',
   completed: 'success', canceled: 'secondary', rejected: 'secondary'
 }[status] || 'secondary');
 
+/**
+ * Returns the translated status string.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function statusTranslation
+ */
 const statusTranslation = (status) => t(status ? `services.status.${status}` : 'common.all');
+
+/**
+ * Returns the translated service type string.
+ * @param {string} type - The type to translate.
+ * @returns {string} The translated type.
+ * @function typeTranslation
+ */
 const typeTranslation = (type) => t(type ? `service-requests.types.${type}` : 'common.all');
 
+/**
+ * Navigates to the new service request creation page.
+ * @function navigateToNew
+ */
 const navigateToNew = () => router.push({ name: 'service-requests-new' });
+
+/**
+ * Navigates to the detail page of a specific service request.
+ * @param {object} request - The service request object.
+ * @function navigateToDetail
+ */
 const navigateToDetail = (request) => router.push({ name: 'service-request-detail', params: { requestId: request.id } });
 
+/**
+ * Displays a confirmation dialog before canceling a service request.
+ * @param {object} request - The service request object to cancel.
+ * @function confirmCancel
+ */
 const confirmCancel = (request) => {
   confirm.require({
     message: t('services.requests.confirm-cancel', { id: request.id }),
@@ -61,11 +115,22 @@ const confirmCancel = (request) => {
 };
 
 // --- Review Logic ---
+/** @type {import('vue').Ref<boolean>} */
 const displayReviewDialog = ref(false);
+/** @type {import('vue').Ref<object|null>} */
 const currentServiceRequest = ref(null);
+/** @type {import('vue').Ref<object>} */
 const reviewForm = ref({ rating: 0, comment: '' });
+/** @type {import('vue').Ref<object|null>} */
 const existingReview = ref(null);
 
+/**
+ * Opens the review dialog for a specific service request.
+ * If a review already exists, it loads the existing review data.
+ * @param {object} request - The service request object for which to open the review dialog.
+ * @async
+ * @function openReviewDialog
+ */
 const openReviewDialog = async (request) => {
   currentServiceRequest.value = request;
   reviewForm.value = { rating: 0, comment: '' };
@@ -82,6 +147,11 @@ const openReviewDialog = async (request) => {
   displayReviewDialog.value = true;
 };
 
+/**
+ * Submits a new review or updates an existing one for a service request.
+ * @async
+ * @function submitReview
+ */
 const submitReview = async () => {
   if (!currentServiceRequest.value || reviewForm.value.rating === 0) return;
   try {
@@ -116,7 +186,7 @@ const submitReview = async () => {
       </pv-select-button>
     </div>
     <pv-data-table :value="filteredRequests" :loading="!requestsLoaded" striped-rows :rows="10" paginator table-style="min-width: 50rem">
-      <pv-column field="orderNumber" header="Order #" sortable style="width: 100px;"/>
+      <pv-column field="orderNumber" :header="t('services.requests.order-number')" sortable style="width: 100px;"/>
       <pv-column field="createdAt" :header="t('services.requests.date')" sortable>
         <template #body="{ data }">{{ new Date(data.createdAt).toLocaleDateString() }}</template>
       </pv-column>
@@ -136,8 +206,8 @@ const submitReview = async () => {
       <pv-column :header="t('services.requests.actions')" style="width: 220px;">
         <template #body="{ data }">
           <pv-button icon="pi pi-eye" text rounded severity="info" v-tooltip.top="t('services.requests.detail')" @click="navigateToDetail(data)" />
-          <pv-button v-if="data.status === 'completed' && !data.hasReview" label="Review" icon="pi pi-star" text rounded severity="warning" @click="openReviewDialog(data)" />
-          <pv-button v-if="data.status === 'completed' && data.hasReview" label="View Review" icon="pi pi-eye" text rounded severity="info" @click="openReviewDialog(data)" />
+          <pv-button v-if="data.status === 'completed' && !data.hasReview" :label="t('services.requests.review')" icon="pi pi-star" text rounded severity="warning" @click="openReviewDialog(data)" />
+          <pv-button v-if="data.status === 'completed' && data.hasReview" :label="t('services.requests.view-review')" icon="pi pi-eye" text rounded severity="info" @click="openReviewDialog(data)" />
           <pv-button v-if="data.status === 'completed' && data.reportUrl" icon="pi pi-file-pdf" text rounded severity="help" v-tooltip.top="t('services.requests.report-tooltip')" @click="openReport(data)" />
           <pv-button v-if="['pending', 'accepted'].includes(data.status)" icon="pi pi-times" text rounded severity="danger" v-tooltip.top="t('common.cancel-tooltip')" @click="confirmCancel(data)" />
         </template>
@@ -145,18 +215,18 @@ const submitReview = async () => {
     </pv-data-table>
     <div v-if="errors.length" class="text-red-500 mt-3">{{ t('common.error-occurred') }}: {{ errors.map(e => e.message).join(', ') }}</div>
     <pv-confirm-dialog/>
-    <pv-dialog v-model:visible="displayReviewDialog" :header="currentServiceRequest && currentServiceRequest.hasReview ? 'View Review' : 'Submit Review'" :modal="true" class="p-fluid">
+    <pv-dialog v-model:visible="displayReviewDialog" :header="currentServiceRequest && currentServiceRequest.hasReview ? t('services.requests.view-review-header') : t('services.requests.submit-review-header')" :modal="true" class="p-fluid">
       <div class="field">
-        <label for="rating">Rating</label>
+        <label for="rating">{{ t('services.requests.rating') }}</label>
         <pv-rating v-model="reviewForm.rating" :cancel="false" :readonly="currentServiceRequest && currentServiceRequest.hasReview" />
       </div>
       <div class="field mt-3">
-        <label for="comment">Comment</label>
+        <label for="comment">{{ t('services.requests.comment') }}</label>
         <pv-textarea id="comment" v-model="reviewForm.comment" rows="5" :readonly="currentServiceRequest && currentServiceRequest.hasReview" />
       </div>
       <template #footer>
-        <pv-button label="Cancel" icon="pi pi-times" class="p-button-text" @click="displayReviewDialog = false" />
-        <pv-button v-if="currentServiceRequest && !currentServiceRequest.hasReview" label="Submit" icon="pi pi-check" autofocus @click="submitReview" />
+        <pv-button :label="t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="displayReviewDialog = false" />
+        <pv-button v-if="currentServiceRequest && !currentServiceRequest.hasReview" :label="t('common.submit')" icon="pi pi-check" autofocus @click="submitReview" />
       </template>
     </pv-dialog>
   </div>

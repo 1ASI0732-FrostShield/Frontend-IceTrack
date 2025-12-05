@@ -1,4 +1,9 @@
 <script setup>
+/**
+ * @file provider-rejected-canceled-services.vue
+ * @description This component displays a list of rejected or canceled service requests for a provider.
+ * @author Kenyi Ramirez
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
@@ -11,12 +16,24 @@ const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
 
+/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
+/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
+/** @type {import('vue').Ref<Array<object>>} */
 const rejectedCanceledRequests = ref([]);
 
+/**
+ * Computed property for the current provider's ID.
+ * @type {import('vue').ComputedRef<number>}
+ */
 const currentProviderId = computed(() => authStore.currentUserId);
 
+/**
+ * Fetches rejected and canceled service requests for the current provider.
+ * @async
+ * @function fetchData
+ */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
@@ -42,6 +59,12 @@ const fetchData = async () => {
   }
 };
 
+/**
+ * Returns the translated status string.
+ * @param {string} status - The status to translate.
+ * @returns {string} The translated status.
+ * @function getStatusTranslation
+ */
 const getStatusTranslation = (status) => {
   return t(`services.status.${status}`);
 };
