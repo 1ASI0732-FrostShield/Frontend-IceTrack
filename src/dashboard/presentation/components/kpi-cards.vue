@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   kpis: {
@@ -20,13 +23,12 @@ const hasData = computed(() => {
 
 <template>
   <div class="grid">
-    <!-- Equipment Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.equipments') }}</span>
-            <i class="pi pi-sitemap" aria-hidden="true" title="Equipos"></i>
+            <span>{{ t('dashboard.kpis.equipments') }}</span>
+            <i class="pi pi-sitemap" aria-hidden="true" :title="t('dashboard.kpis.equipments')"></i>
           </div>
         </template>
         <template #content>
@@ -34,19 +36,18 @@ const hasData = computed(() => {
             {{ kpis?.totalEquipments ?? '--' }}
           </div>
           <div v-if="!hasData" class="text-sm text-500 mt-2">
-            {{ $t('dashboard.noData') }}
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
-    <!-- Alerts Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.alerts') }}</span>
-            <i class="pi pi-exclamation-triangle" aria-hidden="true" title="Alertas"></i>
+            <span>{{ t('dashboard.kpis.alerts') }}</span>
+            <i class="pi pi-exclamation-triangle" aria-hidden="true" :title="t('dashboard.kpis.alerts')"></i>
           </div>
         </template>
         <template #content>
@@ -54,19 +55,18 @@ const hasData = computed(() => {
             {{ kpis?.openAlerts ?? '--' }}
           </div>
           <div v-if="!hasData" class="text-sm text-500 mt-2">
-            {{ $t('dashboard.noData') }}
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
-    <!-- Service Requests Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.orders') }}</span>
-            <i class="pi pi-briefcase" aria-hidden="true" title="Órdenes"></i>
+            <span>{{ t('dashboard.kpis.orders') }}</span>
+            <i class="pi pi-briefcase" aria-hidden="true" :title="t('dashboard.kpis.orders')"></i>
           </div>
         </template>
         <template #content>
@@ -74,19 +74,18 @@ const hasData = computed(() => {
             {{ kpis?.activeRequests ?? '--' }}
           </div>
           <div v-if="!hasData" class="text-sm text-500 mt-2">
-            {{ $t('dashboard.noData') }}
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
     </div>
 
-    <!-- Temperature Card -->
     <div class="col-12 md:col-6 lg:col-3">
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.avgTemp') }}</span>
-            <i class="pi pi-chart-scatter" aria-hidden="true" title="Temperatura"></i>
+            <span>{{ t('dashboard.kpis.avgTemp') }}</span>
+            <i class="pi pi-chart-scatter" aria-hidden="true" :title="t('dashboard.kpis.avgTemp')"></i>
           </div>
         </template>
         <template #content>
@@ -94,7 +93,7 @@ const hasData = computed(() => {
             {{ formattedAvgTemperature }}
           </div>
           <div v-if="!hasData" class="text-sm text-500 mt-2">
-            {{ $t('dashboard.noData') }}
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>

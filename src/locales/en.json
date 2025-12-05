@@ -22,7 +22,9 @@
     "all": "All",
     "submit-request": "Submit Request",
     "cancel-tooltip": "Cancel Request",
-    "error-occurred": "An error occurred"
+    "error-occurred": "An error occurred",
+    "success": "Success",
+    "error": "Error"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -72,14 +74,21 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "subtitle": "Monitor your equipment and alerts",
     "loading": "Loading dashboard...",
+    "loadingData": "Loading data...",
     "refresh": "Refresh Dashboard",
     "noConfig": "No dashboard configuration found",
     "noCardsAdded": "No cards added to your dashboard yet",
+    "noCardsVisible": "No cards visible",
+    "useConfigPanel": "Use the configuration panel below to add cards.",
+    "noData": "No data available",
     "dataPoints": "data points",
     "demoBanner": "Demo mode: using tenant {id}",
     "chartTitle": "Temperature Trend",
     "recentAlerts": "Recent Alerts",
+    "filteredBySite": "Filtered by Site ID: {id}",
+    "showingAllSites": "Showing all sites",
     "kpis": {
       "equipments": "Monitored Equipment",
       "alerts": "Open Alerts",
@@ -88,6 +97,11 @@
       "totalEquipments": "Total Equipment",
       "openAlerts": "Open Alerts",
       "energyThisWeek": "Energy (This Week)"
+    },
+    "configCardSubtitles": {
+      "monitoredEquipment": "Total equipment being tracked",
+      "openAlerts": "Alerts requiring attention",
+      "default": "Dashboard metric"
     },
     "errors": {
       "title": "Errors occurred:"
@@ -103,9 +117,63 @@
     },
     "addCard": {
       "title": "Add Card",
+      "dialogTitle": "Add Card to Dashboard",
       "selectType": "Select card type",
       "add": "Add Card",
-      "allCardsAdded": "All available cards have been added"
+      "allCardsAdded": "All available cards have been added",
+      "loading": "Loading available cards...",
+      "widgetType": "Dashboard widget type",
+      "added": "Added"
+    },
+    "config": {
+      "title": "Dashboard Configuration",
+      "fields": {
+        "userId": "User ID"
+      },
+      "temperatureRangeNote": "For temperature alerts",
+      "noSiteSelected": "No site selected",
+      "unnamedSite": "Site {id}",
+      "table": {
+        "id": "ID",
+        "cardType": "Card Type",
+        "order": "Order",
+        "visible": "Visible",
+        "actions": "Actions"
+      },
+      "visibility": {
+        "label": "Visibility",
+        "visible": "Visible",
+        "hidden": "Hidden",
+        "showOnDashboard": "Show this card on dashboard"
+      },
+      "actions": {
+        "settings": "Settings",
+        "addCard": "Add Card",
+        "editCard": "Edit Card",
+        "deleteCard": "Delete Card"
+      },
+      "tooltips": {
+        "editCard": "Edit Card",
+        "deleteCard": "Delete Card"
+      },
+      "confirm": {
+        "removeHeader": "Delete Card",
+        "removeMessage": "Are you sure you want to remove \"{cardType}\" from your dashboard?",
+        "accept": "Delete"
+      },
+      "editVisibility": {
+        "title": "Edit Card Visibility"
+      },
+      "messages": {
+        "settingsUpdated": "Settings updated successfully",
+        "settingsUpdateFailed": "Failed to update settings",
+        "cardAdded": "Card \"{cardType}\" added successfully",
+        "cardAddFailed": "Failed to add card",
+        "cardUpdated": "Card updated successfully",
+        "cardUpdateFailed": "Failed to update card",
+        "cardRemoved": "Card \"{cardType}\" removed successfully",
+        "cardRemoveFailed": "Failed to remove card"
+      }
     },
     "cardTypes": {
       "AlertsCard": "Alerts",

@@ -1,23 +1,18 @@
 <script setup>
 import { onMounted, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import { useDashboardDataStore } from '@/dashboard/application/dashboard-data.store.js'
 import DashboardConfigTable from '../components/dashboard-config-table.vue'
 
+const { t } = useI18n()
 const configStore = useDashboardConfigStore()
 const dataStore = useDashboardDataStore()
 
-/**
- * Load dashboard on mount
- */
 onMounted(() => {
   loadDashboard()
 })
 
-/**
- * Watch for config changes to auto-refresh dashboard
- * Triggers when cards are added, removed, or visibility changes
- */
 watch(
     () => configStore.config?.cards,
     (newCards, oldCards) => {
@@ -29,9 +24,6 @@ watch(
     { deep: true }
 )
 
-/**
- * Load all dashboard data
- */
 function loadDashboard() {
   configStore.loadConfigForCurrentUser()
       .then(() => {
@@ -43,9 +35,6 @@ function loadDashboard() {
       })
 }
 
-/**
- * Refresh dashboard data
- */
 function refreshDashboard() {
   dataStore.loadAll(configStore.defaultSiteId)
 }
@@ -84,18 +73,18 @@ function getCardColor(cardType) {
 
 function getCardTitle(cardType) {
   const titleMap = {
-    'MonitoredEquipment': 'Monitored Equipment',
-    'OpenAlerts': 'Open Alerts'
+    'MonitoredEquipment': t('dashboard.kpis.equipments'),
+    'OpenAlerts': t('dashboard.kpis.alerts')
   }
   return titleMap[cardType] || cardType
 }
 
 function getCardSubtitle(cardType) {
   const subtitleMap = {
-    'MonitoredEquipment': 'Total equipment being tracked',
-    'OpenAlerts': 'Alerts requiring attention'
+    'MonitoredEquipment': t('dashboard.configCardSubtitles.monitoredEquipment'),
+    'OpenAlerts': t('dashboard.configCardSubtitles.openAlerts')
   }
-  return subtitleMap[cardType] || 'Dashboard metric'
+  return subtitleMap[cardType] || t('dashboard.configCardSubtitles.default')
 }
 
 const kpiCards = computed(() => {
@@ -111,18 +100,18 @@ const hasAnyData = computed(() => {
   <div class="p-3">
     <div class="flex align-items-center justify-content-between mb-4">
       <div>
-        <h1 class="text-3xl font-bold m-0">Dashboard</h1>
-        <p class="text-500 mt-1">Monitor your equipment and alerts</p>
+        <h1 class="text-3xl font-bold m-0">{{ t('dashboard.title') }}</h1>
+        <p class="text-500 mt-1">{{ t('dashboard.subtitle') }}</p>
         <small v-if="configStore.defaultSiteId" class="text-400">
-          Filtered by Site ID: {{ configStore.defaultSiteId }}
+          {{ t('dashboard.filteredBySite', { id: configStore.defaultSiteId }) }}
         </small>
         <small v-else class="text-400">
-          Showing all sites
+          {{ t('dashboard.showingAllSites') }}
         </small>
       </div>
       <pv-button
           icon="pi pi-refresh"
-          label="Refresh"
+          :label="t('dashboard.refresh')"
           @click="refreshDashboard"
           :loading="dataStore.loading"
           outlined
@@ -131,7 +120,7 @@ const hasAnyData = computed(() => {
 
     <div v-if="configStore.loading && !configStore.config" class="text-center p-5">
       <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
-      <p class="mt-3 text-600">Loading dashboard...</p>
+      <p class="mt-3 text-600">{{ t('dashboard.loading') }}</p>
     </div>
 
     <div v-if="configStore.errors.length > 0 || dataStore.errors.length > 0" class="mb-3">
@@ -140,7 +129,7 @@ const hasAnyData = computed(() => {
           <div class="flex align-items-start gap-3">
             <i class="pi pi-exclamation-triangle text-red-500 text-2xl"></i>
             <div class="flex-1">
-              <div class="font-semibold text-lg mb-2">Errors Occurred</div>
+              <div class="font-semibold text-lg mb-2">{{ t('dashboard.errors.title') }}</div>
               <ul class="m-0 pl-3">
                 <li v-for="(error, idx) in [...configStore.errors, ...dataStore.errors]" :key="idx" class="text-red-600 mb-1">
                   {{ error }}
@@ -179,11 +168,11 @@ const hasAnyData = computed(() => {
                 </div>
                 <div v-if="dataStore.loading" class="text-xs text-400 flex align-items-center gap-1">
                   <i class="pi pi-spin pi-spinner"></i>
-                  <span>Loading data...</span>
+                  <span>{{ t('dashboard.loadingData') }}</span>
                 </div>
                 <div v-else-if="!hasAnyData" class="text-xs text-orange-500 flex align-items-center gap-1">
                   <i class="pi pi-exclamation-circle"></i>
-                  <span>No data available</span>
+                  <span>{{ t('dashboard.noData') }}</span>
                 </div>
               </div>
             </template>
@@ -196,9 +185,9 @@ const hasAnyData = computed(() => {
           <template #content>
             <div class="text-center p-4">
               <i class="pi pi-inbox text-6xl text-400 mb-3"></i>
-              <div class="text-xl font-semibold mb-2">No Cards Visible</div>
-              <p class="text-600 mb-3">You haven't added any cards to your dashboard yet.</p>
-              <p class="text-500 mb-4">Use the configuration panel below to add cards.</p>
+              <div class="text-xl font-semibold mb-2">{{ t('dashboard.noCardsVisible') }}</div>
+              <p class="text-600 mb-3">{{ t('dashboard.noCardsAdded') }}</p>
+              <p class="text-500 mb-4">{{ t('dashboard.useConfigPanel') }}</p>
             </div>
           </template>
         </pv-card>

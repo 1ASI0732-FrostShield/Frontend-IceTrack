@@ -22,7 +22,9 @@
         "all": "Todos",
         "submit-request": "Enviar Solicitud",
         "cancel-tooltip": "Cancelar Solicitud",
-        "error-occurred": "Ha ocurrido un error"
+        "error-occurred": "Ha ocurrido un error",
+        "success": "Éxito",
+        "error": "Error"
     },
     "nav": {
         "dashboard": "Inicio",
@@ -72,14 +74,21 @@
     },
     "dashboard": {
         "title": "Panel de Control",
+        "subtitle": "Monitorea tus equipos y alertas",
         "loading": "Cargando panel...",
+        "loadingData": "Cargando datos...",
         "refresh": "Actualizar Panel",
         "noConfig": "No se encontró configuración del dashboard",
         "noCardsAdded": "No has agregado tarjetas a tu dashboard aún",
+        "noCardsVisible": "Sin tarjetas visibles",
+        "useConfigPanel": "Usa el panel de configuración de abajo para agregar tarjetas.",
+        "noData": "Sin datos disponibles",
         "dataPoints": "puntos de datos",
         "demoBanner": "Modo demo: usando tenant {id}",
         "chartTitle": "Tendencia de Temperatura",
         "recentAlerts": "Alertas recientes",
+        "filteredBySite": "Filtrado por ID de sitio: {id}",
+        "showingAllSites": "Mostrando todos los sitios",
         "kpis": {
             "equipments": "Equipos monitoreados",
             "alerts": "Alertas abiertas",
@@ -88,6 +97,11 @@
             "totalEquipments": "Equipos totales",
             "openAlerts": "Alertas abiertas",
             "energyThisWeek": "Energía (esta semana)"
+        },
+        "configCardSubtitles": {
+            "monitoredEquipment": "Total de equipos monitoreados",
+            "openAlerts": "Alertas que requieren atención",
+            "default": "Métrica de dashboard"
         },
         "errors": {
             "title": "Se encontraron errores:"
@@ -98,14 +112,68 @@
             "selectSite": "Seleccione un sitio",
             "defaultSiteHelp": "Los datos se filtrarán por este sitio por defecto",
             "temperatureRange": "Rango de Temperatura",
-            "temperatureRangePlaceholder": "ej., -20 to 5",
+            "temperatureRangePlaceholder": "ej., -20 a 5",
             "temperatureRangeHelp": "Rango de temperatura predeterminado para monitoreo de equipos"
         },
         "addCard": {
             "title": "Agregar Tarjeta",
+            "dialogTitle": "Agregar tarjeta al dashboard",
             "selectType": "Seleccione el tipo de tarjeta",
             "add": "Agregar Tarjeta",
-            "allCardsAdded": "Todas las tarjetas disponibles han sido agregadas"
+            "allCardsAdded": "Todas las tarjetas disponibles han sido agregadas",
+            "loading": "Cargando tarjetas disponibles...",
+            "widgetType": "Tipo de widget del dashboard",
+            "added": "Agregada"
+        },
+        "config": {
+            "title": "Configuración del Dashboard",
+            "fields": {
+                "userId": "ID de usuario"
+            },
+            "temperatureRangeNote": "Para alertas de temperatura",
+            "noSiteSelected": "Ningún sitio seleccionado",
+            "unnamedSite": "Sitio {id}",
+            "table": {
+                "id": "ID",
+                "cardType": "Tipo de tarjeta",
+                "order": "Orden",
+                "visible": "Visible",
+                "actions": "Acciones"
+            },
+            "visibility": {
+                "label": "Visibilidad",
+                "visible": "Visible",
+                "hidden": "Oculta",
+                "showOnDashboard": "Mostrar esta tarjeta en el dashboard"
+            },
+            "actions": {
+                "settings": "Configuración",
+                "addCard": "Agregar tarjeta",
+                "editCard": "Editar tarjeta",
+                "deleteCard": "Eliminar tarjeta"
+            },
+            "tooltips": {
+                "editCard": "Editar tarjeta",
+                "deleteCard": "Eliminar tarjeta"
+            },
+            "confirm": {
+                "removeHeader": "Eliminar tarjeta",
+                "removeMessage": "¿Seguro que quieres quitar \"{cardType}\" de tu dashboard?",
+                "accept": "Eliminar"
+            },
+            "editVisibility": {
+                "title": "Editar visibilidad de la tarjeta"
+            },
+            "messages": {
+                "settingsUpdated": "Configuración actualizada correctamente",
+                "settingsUpdateFailed": "No se pudo actualizar la configuración",
+                "cardAdded": "Tarjeta \"{cardType}\" agregada correctamente",
+                "cardAddFailed": "No se pudo agregar la tarjeta",
+                "cardUpdated": "Tarjeta actualizada correctamente",
+                "cardUpdateFailed": "No se pudo actualizar la tarjeta",
+                "cardRemoved": "Tarjeta \"{cardType}\" eliminada correctamente",
+                "cardRemoveFailed": "No se pudo eliminar la tarjeta"
+            }
         },
         "cardTypes": {
             "AlertsCard": "Alertas",

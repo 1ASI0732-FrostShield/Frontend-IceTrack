@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import useAssetsManagementStore from '@/assets-management/application/assets-management.store.js'
 
+const { t } = useI18n()
 const confirm = useConfirm()
 const toast = useToast()
 const configStore = useDashboardConfigStore()
@@ -75,15 +77,15 @@ function saveSettings() {
       settingsDialogVisible.value = false
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: 'Settings updated successfully',
+        summary: t('common.success'),
+        detail: t('dashboard.config.messages.settingsUpdated'),
         life: 3000
       })
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to update settings',
+        summary: t('common.error'),
+        detail: configStore.errors.length > 0 ? configStore.errors[0] : t('dashboard.config.messages.settingsUpdateFailed'),
         life: 3000
       })
     }
@@ -102,15 +104,15 @@ function addCard(cardType) {
       cardSelectorVisible.value = false
       toast.add({
         severity: 'success',
-        summary: 'Success',
-        detail: `Card "${cardType}" added successfully`,
+        summary: t('common.success'),
+        detail: t('dashboard.config.messages.cardAdded', { cardType }),
         life: 3000
       })
     } else {
       toast.add({
         severity: 'error',
-        summary: 'Error',
-        detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to add card',
+        summary: t('common.error'),
+        detail: configStore.errors.length > 0 ? configStore.errors[0] : t('dashboard.config.messages.cardAddFailed'),
         life: 3000
       })
     }
@@ -139,15 +141,15 @@ function saveCardChanges() {
           selectedCard.value = null
           toast.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Card updated successfully',
+            summary: t('common.success'),
+            detail: t('dashboard.config.messages.cardUpdated'),
             life: 3000
           })
         } else {
           toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to update card',
+            summary: t('common.error'),
+            detail: configStore.errors.length > 0 ? configStore.errors[0] : t('dashboard.config.messages.cardUpdateFailed'),
             life: 3000
           })
         }
@@ -156,26 +158,26 @@ function saveCardChanges() {
 
 function deleteCard(card) {
   confirm.require({
-    message: `Are you sure you want to remove "${card.cardType}" from your dashboard?`,
-    header: 'Delete Card',
+    message: t('dashboard.config.confirm.removeMessage', { cardType: card.cardType }),
+    header: t('dashboard.config.confirm.removeHeader'),
     icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Delete',
-    rejectLabel: 'Cancel',
+    acceptLabel: t('dashboard.config.confirm.accept'),
+    rejectLabel: t('common.cancel'),
     acceptClass: 'p-button-danger',
     accept: () => {
       configStore.removeCard(card.id).then(success => {
         if (success) {
           toast.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `Card "${card.cardType}" removed successfully`,
+            summary: t('common.success'),
+            detail: t('dashboard.config.messages.cardRemoved', { cardType: card.cardType }),
             life: 3000
           })
         } else {
           toast.add({
             severity: 'error',
-            summary: 'Error',
-            detail: configStore.errors.length > 0 ? configStore.errors[0] : 'Failed to remove card',
+            summary: t('common.error'),
+            detail: configStore.errors.length > 0 ? configStore.errors[0] : t('dashboard.config.messages.cardRemoveFailed'),
             life: 3000
           })
         }
@@ -190,9 +192,9 @@ function getSeverityByOrder(order) {
 }
 
 function getSiteName(siteId) {
-  if (!siteId) return 'No site selected'
+  if (!siteId) return t('dashboard.config.noSiteSelected')
   const site = sitesStore.sites.find(s => s.id === siteId)
-  return site?.name || `Site ${siteId}`
+  return site?.name || t('dashboard.config.unnamedSite', { id: siteId })
 }
 </script>
 
@@ -200,16 +202,16 @@ function getSiteName(siteId) {
   <pv-card>
     <template #title>
       <div class="flex align-items-center justify-content-between">
-        <span>Dashboard Configuration</span>
+        <span>{{ t('dashboard.config.title') }}</span>
         <div class="flex gap-2">
           <pv-button
-              label="Settings"
+              :label="t('dashboard.config.actions.settings')"
               icon="pi pi-cog"
               @click="openSettings"
               outlined
           />
           <pv-button
-              label="Add Card"
+              :label="t('dashboard.config.actions.addCard')"
               icon="pi pi-plus"
               @click="openCardSelector"
               severity="success"
@@ -222,21 +224,21 @@ function getSiteName(siteId) {
       <div class="grid mb-4">
         <div class="col-12 md:col-4">
           <div class="surface-100 border-round p-3">
-            <div class="text-sm text-500 mb-1">User ID</div>
+            <div class="text-sm text-500 mb-1">{{ t('dashboard.config.fields.userId') }}</div>
             <div class="text-xl font-semibold">{{ config.userId }}</div>
           </div>
         </div>
         <div class="col-12 md:col-4">
           <div class="surface-100 border-round p-3">
-            <div class="text-sm text-500 mb-1">Default Site</div>
+            <div class="text-sm text-500 mb-1">{{ t('dashboard.settings.defaultSite') }}</div>
             <div class="text-xl font-semibold">{{ getSiteName(config.defaultSiteId) }}</div>
           </div>
         </div>
         <div class="col-12 md:col-4">
           <div class="surface-100 border-round p-3">
-            <div class="text-sm text-500 mb-1">Temperature Range</div>
+            <div class="text-sm text-500 mb-1">{{ t('dashboard.settings.temperatureRange') }}</div>
             <div class="text-xl font-semibold">{{ config.defaultTemperatureRange }}</div>
-            <small class="text-500">For temperature alerts</small>
+            <small class="text-500">{{ t('dashboard.config.temperatureRangeNote') }}</small>
           </div>
         </div>
       </div>
@@ -251,9 +253,9 @@ function getSiteName(siteId) {
         <template #empty>
           <div class="text-center p-4">
             <i class="pi pi-inbox text-4xl text-400 mb-3"></i>
-            <p class="text-600">No cards added yet</p>
+            <p class="text-600">{{ t('dashboard.noCardsAdded') }}</p>
             <pv-button
-                label="Add Card"
+                :label="t('dashboard.addCard.title')"
                 icon="pi pi-plus"
                 @click="openCardSelector"
                 class="mt-2"
@@ -261,13 +263,13 @@ function getSiteName(siteId) {
           </div>
         </template>
 
-        <pv-column field="id" header="ID" sortable style="width: 10%">
+        <pv-column :field="'id'" :header="t('dashboard.config.table.id')" sortable style="width: 10%">
           <template #body="{ data }">
             <pv-tag :value="data.id" severity="info" />
           </template>
         </pv-column>
 
-        <pv-column field="cardType" header="Card Type" sortable style="width: 40%">
+        <pv-column :field="'cardType'" :header="t('dashboard.config.table.cardType')" sortable style="width: 40%">
           <template #body="{ data }">
             <div class="flex align-items-center gap-2">
               <i :class="`pi ${data.getIcon()}`"></i>
@@ -276,7 +278,7 @@ function getSiteName(siteId) {
           </template>
         </pv-column>
 
-        <pv-column field="order" header="Order" sortable style="width: 15%">
+        <pv-column :field="'order'" :header="t('dashboard.config.table.order')" sortable style="width: 15%">
           <template #body="{ data }">
             <pv-tag
                 :value="`#${data.order}`"
@@ -285,17 +287,17 @@ function getSiteName(siteId) {
           </template>
         </pv-column>
 
-        <pv-column field="isVisible" header="Visible" sortable style="width: 15%">
+        <pv-column :field="'isVisible'" :header="t('dashboard.config.table.visible')" sortable style="width: 15%">
           <template #body="{ data }">
             <pv-tag
-                :value="data.isVisible ? 'Visible' : 'Hidden'"
+                :value="t(data.isVisible ? 'dashboard.config.visibility.visible' : 'dashboard.config.visibility.hidden')"
                 :severity="data.isVisible ? 'success' : 'secondary'"
                 :icon="data.isVisible ? 'pi pi-eye' : 'pi pi-eye-slash'"
             />
           </template>
         </pv-column>
 
-        <pv-column header="Actions" style="width: 20%">
+        <pv-column :header="t('dashboard.config.table.actions')" style="width: 20%">
           <template #body="{ data }">
             <div class="flex gap-2">
               <pv-button
@@ -303,7 +305,7 @@ function getSiteName(siteId) {
                   rounded
                   text
                   severity="info"
-                  v-tooltip="'Edit Card'"
+                  :tooltip="t('dashboard.config.tooltips.editCard')"
                   @click="editCard(data)"
               />
               <pv-button
@@ -311,7 +313,7 @@ function getSiteName(siteId) {
                   rounded
                   text
                   severity="danger"
-                  v-tooltip="'Delete Card'"
+                  :tooltip="t('dashboard.config.tooltips.deleteCard')"
                   @click="deleteCard(data)"
               />
             </div>
@@ -323,56 +325,56 @@ function getSiteName(siteId) {
 
   <pv-dialog
       v-model:visible="settingsDialogVisible"
-      header="Dashboard Settings"
+      :header="t('dashboard.settings.title')"
       modal
       :style="{ width: '500px' }"
   >
     <div class="flex flex-column gap-4 py-3">
       <div class="flex flex-column gap-2">
-        <label for="defaultSite" class="font-semibold">Default Site</label>
+        <label for="defaultSite" class="font-semibold">{{ t('dashboard.settings.defaultSite') }}</label>
         <pv-select
             id="defaultSite"
             v-model="selectedSiteId"
             :options="sitesStore.sites"
             option-label="name"
             option-value="id"
-            placeholder="Select a site"
+            :placeholder="t('dashboard.settings.selectSite')"
             :loading="!sitesStore.sitesLoaded"
             show-clear
             class="w-full"
             :disabled="!sitesStore.sitesLoaded || sitesStore.sites.length === 0"
         />
-        <small class="text-500">Default site for filtering dashboard data</small>
+        <small class="text-500">{{ t('dashboard.settings.defaultSiteHelp') }}</small>
       </div>
 
       <div class="flex flex-column gap-2">
-        <label for="tempRange" class="font-semibold">Temperature Range</label>
+        <label for="tempRange" class="font-semibold">{{ t('dashboard.settings.temperatureRange') }}</label>
         <pv-input-text
             id="tempRange"
             v-model="temperatureRange"
-            placeholder="e.g., -20 to 5"
+            :placeholder="t('dashboard.settings.temperatureRangePlaceholder')"
             class="w-full"
         />
-        <small class="text-500">Temperature range for monitoring thresholds (in °C)</small>
+        <small class="text-500">{{ t('dashboard.settings.temperatureRangeHelp') }}</small>
       </div>
     </div>
 
     <template #footer>
-      <pv-button label="Cancel" text severity="secondary" @click="settingsDialogVisible = false" :disabled="saving" />
-      <pv-button label="Save" @click="saveSettings" :loading="saving" />
+      <pv-button :label="t('common.cancel')" text severity="secondary" @click="settingsDialogVisible = false" :disabled="saving" />
+      <pv-button :label="t('common.save')" @click="saveSettings" :loading="saving" />
     </template>
   </pv-dialog>
 
   <pv-dialog
       v-model:visible="cardSelectorVisible"
-      header="Add Card to Dashboard"
+      :header="t('dashboard.addCard.title')"
       modal
       :style="{ width: '500px' }"
   >
     <div class="flex flex-column gap-3 py-3">
       <div v-if="configStore.availableCardTypes.length === 0" class="text-center p-4">
         <i class="pi pi-spin pi-spinner text-4xl"></i>
-        <p class="mt-2">Loading available cards...</p>
+        <p class="mt-2">{{ t('dashboard.addCard.loading') }}</p>
       </div>
 
       <div
@@ -386,13 +388,13 @@ function getSiteName(siteId) {
           <div class="flex align-items-center gap-3">
             <i class="pi pi-th-large text-2xl"></i>
             <div>
-              <div class="font-semibold">{{ cardType }}</div>
-              <small class="text-500">Dashboard widget type</small>
+              <div class="font-semibold">{{ t(`dashboard.cardTypes.${cardType}`) || cardType }}</div>
+              <small class="text-500">{{ t('dashboard.addCard.widgetType') }}</small>
             </div>
           </div>
           <pv-tag
               v-if="config.cards.some(c => c.cardType === cardType)"
-              value="Added"
+              :value="t('dashboard.addCard.added')"
               severity="success"
           />
         </div>
@@ -400,13 +402,13 @@ function getSiteName(siteId) {
     </div>
 
     <template #footer>
-      <pv-button label="Cancel" text @click="cardSelectorVisible = false" />
+      <pv-button :label="t('common.cancel')" text @click="cardSelectorVisible = false" />
     </template>
   </pv-dialog>
 
   <pv-dialog
       v-model:visible="cardEditDialogVisible"
-      header="Edit Card Visibility"
+      :header="t('dashboard.config.editVisibility.title')"
       modal
       :style="{ width: '400px' }"
   >
@@ -415,12 +417,12 @@ function getSiteName(siteId) {
         <i :class="`pi ${selectedCard.getIcon()} text-3xl`" :style="{ color: selectedCard.getColor() }"></i>
         <div class="flex-1">
           <div class="font-semibold text-lg">{{ selectedCard.cardType }}</div>
-          <small class="text-500">Order: #{{ selectedCard.order }}</small>
+          <small class="text-500">{{ t('dashboard.config.table.order') }}: #{{ selectedCard.order }}</small>
         </div>
       </div>
 
       <div class="flex flex-column gap-2">
-        <label class="font-semibold">Visibility</label>
+        <label class="font-semibold">{{ t('dashboard.config.visibility.label') }}</label>
         <div class="surface-100 border-round p-3">
           <div class="flex align-items-center justify-content-between">
             <div class="flex align-items-center gap-2">
@@ -429,10 +431,10 @@ function getSiteName(siteId) {
                   :binary="true"
                   input-id="cardVisible"
               />
-              <label for="cardVisible" class="cursor-pointer">Show this card on dashboard</label>
+              <label for="cardVisible" class="cursor-pointer">{{ t('dashboard.config.visibility.showOnDashboard') }}</label>
             </div>
             <pv-tag
-                :value="cardEditForm.isVisible ? 'Visible' : 'Hidden'"
+                :value="t(cardEditForm.isVisible ? 'dashboard.config.visibility.visible' : 'dashboard.config.visibility.hidden')"
                 :severity="cardEditForm.isVisible ? 'success' : 'secondary'"
                 :icon="cardEditForm.isVisible ? 'pi pi-eye' : 'pi pi-eye-slash'"
             />
@@ -443,7 +445,7 @@ function getSiteName(siteId) {
 
     <template #footer>
       <pv-button
-          label="Cancel"
+          :label="t('common.cancel')"
           icon="pi pi-times"
           text
           severity="secondary"
@@ -451,7 +453,7 @@ function getSiteName(siteId) {
           :disabled="saving"
       />
       <pv-button
-          label="Save"
+          :label="t('common.save')"
           icon="pi pi-check"
           @click="saveCardChanges"
           :loading="saving"
