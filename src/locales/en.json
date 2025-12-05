@@ -439,7 +439,19 @@
       "title": "Provider Services"
     },
     "technicians": {
-      "title": "Technician Management"
+      "title": "Technician Management",
+      "register-new": "Register New Technician",
+      "name": "Name",
+      "specialty": "Specialty",
+      "phone": "Phone",
+      "register": "Register",
+      "my-technicians": "My Technicians",
+      "average-rating": "Average Rating",
+      "actions": "Actions",
+      "no-technicians": "No technicians found. Register one to get started.",
+      "edit-technician": "Edit Technician",
+      "confirm-delete": "Are you sure you want to delete {name}?",
+      "confirm-delete-header": "Confirm Deletion"
     }
   },
   "validation": {

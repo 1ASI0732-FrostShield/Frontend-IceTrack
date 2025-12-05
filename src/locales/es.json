@@ -421,7 +421,19 @@
             "title": "Servicios del Proveedor"
         },
         "technicians": {
-            "title": "Gestión de Técnicos"
+            "title": "Gestión de Técnicos",
+            "register-new": "Registrar Nuevo Técnico",
+            "name": "Nombre",
+            "specialty": "Especialidad",
+            "phone": "Teléfono",
+            "register": "Registrar",
+            "my-technicians": "Mis Técnicos",
+            "average-rating": "Calificación Promedio",
+            "actions": "Acciones",
+            "no-technicians": "No se encontraron técnicos. Registre uno para comenzar.",
+            "edit-technician": "Editar Técnico",
+            "confirm-delete": "¿Estás seguro de que quieres eliminar a {name}?",
+            "confirm-delete-header": "Confirmar Eliminación"
         }
     },
     "validation": {
