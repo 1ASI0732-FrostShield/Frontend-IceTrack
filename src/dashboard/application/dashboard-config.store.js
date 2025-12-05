@@ -7,17 +7,18 @@ import { useAuthStore } from "@/iam/application/auth.store.js";
 const dashboardConfigApi = new DashboardConfigApi();
 
 /**
- * Dashboard Configuration Store
- * Manages dashboard configuration state and operations
+ * Pinia store for managing Dashboard Configuration bounded context state.
+ * Handles dashboard configuration data fetching, creation, update, and deletion.
+ * @returns {Object} The store object with state and actions.
  */
 export const useDashboardConfigStore = defineStore('dashboardConfig', () => {
-    // State
+    // STATE
     const config = ref(null);
     const availableCardTypes = ref([]);
     const loading = ref(false);
     const errors = ref([]);
 
-    // Getters
+    // COMPUTED
     const hasConfig = computed(() => config.value !== null);
 
     const visibleCards = computed(() => {
@@ -33,201 +34,224 @@ export const useDashboardConfigStore = defineStore('dashboardConfig', () => {
         return config.value?.defaultTemperatureRange || '-20 to 5';
     });
 
-    // Actions
+    // ACTIONS
 
     /**
-     * Load dashboard config for current user
+     * Load dashboard config for current user.
+     * @returns {Promise} A promise that resolves when config is loaded.
      */
-    async function loadConfigForCurrentUser() {
+    function loadConfigForCurrentUser() {
         const authStore = useAuthStore();
         const userId = authStore.currentUserId;
 
         if (!userId) {
             errors.value.push('No user ID available');
-            return;
+            return Promise.reject('No user ID available');
         }
 
         loading.value = true;
         errors.value = [];
 
-        try {
-            const response = await dashboardConfigApi.getConfigByUserId(userId);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+        return dashboardConfigApi.getConfigByUserId(userId)
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
 
-            if (!config.value) {
-                // Dashboard config doesn't exist, create default one
-                await createDefaultConfig(userId);
-            }
-        } catch (error) {
-            if (error.response?.status === 404) {
-                // Config doesn't exist, create it
-                await createDefaultConfig(userId);
-            } else {
-                console.error('Error loading dashboard config:', error);
-                errors.value.push(error.message || 'Error loading dashboard configuration');
-            }
-        } finally {
-            loading.value = false;
-        }
+                if (!config.value) {
+                    return createDefaultConfig(userId);
+                }
+            })
+            .catch(error => {
+                if (error.response?.status === 404) {
+                    return createDefaultConfig(userId);
+                } else {
+                    console.error('Error loading dashboard config:', error);
+                    errors.value.push(error.message || 'Error loading dashboard configuration');
+                }
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     /**
-     * Create default dashboard config for user
+     * Create default dashboard config for user.
+     * @param {number} userId - The user ID.
+     * @returns {Promise} A promise that resolves when config is created.
      */
-    async function createDefaultConfig(userId) {
-        try {
-            const createData = {
-                userId: userId,
-                defaultSiteId: null,
-                defaultTemperatureRangeValue: '-20 to 5'
-            };
+    function createDefaultConfig(userId) {
+        const createData = {
+            userId: userId,
+            defaultSiteId: null,
+            defaultTemperatureRangeValue: '-20 to 5'
+        };
 
-            const response = await dashboardConfigApi.createConfig(createData);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
-        } catch (error) {
-            console.error('Error creating default config:', error);
-            errors.value.push('Error creating dashboard configuration');
-        }
+        return dashboardConfigApi.createConfig(createData)
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+            })
+            .catch(error => {
+                console.error('Error creating default config:', error);
+                errors.value.push('Error creating dashboard configuration');
+            });
     }
 
     /**
-     * Update dashboard configuration
+     * Update dashboard configuration.
+     * @param {Object} updates - The updates to apply.
+     * @returns {Promise<boolean>} A promise that resolves to true if successful.
      */
-    async function updateConfig(updates) {
+    function updateConfig(updates) {
         if (!config.value) {
             errors.value.push('No config to update');
-            return false;
+            return Promise.resolve(false);
         }
 
         loading.value = true;
         errors.value = [];
 
-        try {
-            const updateData = {
-                defaultSiteId: updates.defaultSiteId ?? config.value.defaultSiteId,
-                defaultTemperatureRangeValue: updates.defaultTemperatureRange ?? config.value.defaultTemperatureRange
-            };
+        const updateData = {
+            defaultSiteId: updates.defaultSiteId ?? config.value.defaultSiteId,
+            defaultTemperatureRangeValue: updates.defaultTemperatureRange ?? config.value.defaultTemperatureRange
+        };
 
-            const response = await dashboardConfigApi.updateConfig(config.value.id, updateData);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
-            return true;
-        } catch (error) {
-            console.error('Error updating config:', error);
-            errors.value.push(error.message || 'Error updating configuration');
-            return false;
-        } finally {
-            loading.value = false;
-        }
+        return dashboardConfigApi.updateConfig(config.value.id, updateData)
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+                return true;
+            })
+            .catch(error => {
+                console.error('Error updating config:', error);
+                errors.value.push(error.message || 'Error updating configuration');
+                return false;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     /**
-     * Add card to dashboard
+     * Add card to dashboard.
+     * @param {string} cardType - The card type to add.
+     * @param {number} order - The card order.
+     * @returns {Promise<boolean>} A promise that resolves to true if successful.
      */
-    async function addCard(cardType, order) {
+    function addCard(cardType, order) {
         if (!config.value) {
             errors.value.push('No config available');
-            return false;
+            return Promise.resolve(false);
         }
 
-        // Check if card already exists
         if (config.value.hasCard(cardType)) {
             errors.value.push('Card already exists in dashboard');
-            return false;
+            return Promise.resolve(false);
         }
 
         loading.value = true;
         errors.value = [];
 
-        try {
-            const cardData = DashboardConfigAssembler.toAddCardResource(cardType, order, true);
-            const response = await dashboardConfigApi.addCard(config.value.id, cardData);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
-            return true;
-        } catch (error) {
-            console.error('Error adding card:', error);
-            errors.value.push(error.message || 'Error adding card');
-            return false;
-        } finally {
-            loading.value = false;
-        }
+        const cardData = DashboardConfigAssembler.toAddCardResource(cardType, order, true);
+
+        return dashboardConfigApi.addCard(config.value.id, cardData)
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+                return true;
+            })
+            .catch(error => {
+                console.error('Error adding card:', error);
+                errors.value.push(error.message || 'Error adding card');
+                return false;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     /**
-     * Remove card from dashboard
+     * Remove card from dashboard.
+     * @param {number} cardId - The card ID to remove.
+     * @returns {Promise<boolean>} A promise that resolves to true if successful.
      */
-    async function removeCard(cardId) {
+    function removeCard(cardId) {
         if (!config.value) {
             errors.value.push('No config available');
-            return false;
+            return Promise.resolve(false);
         }
 
         loading.value = true;
         errors.value = [];
 
-        try {
-            await dashboardConfigApi.removeCard(config.value.id, cardId);
-
-            // Reload the configuration
-            const response = await dashboardConfigApi.getConfigById(config.value.id);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
-
-            return true;
-        } catch (error) {
-            console.error('Error removing card:', error);
-            errors.value.push(error.message || 'Error removing card');
-            return false;
-        } finally {
-            loading.value = false;
-        }
+        return dashboardConfigApi.removeCard(config.value.id, cardId)
+            .then(() => {
+                return dashboardConfigApi.getConfigById(config.value.id);
+            })
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+                return true;
+            })
+            .catch(error => {
+                console.error('Error removing card:', error);
+                errors.value.push(error.message || 'Error removing card');
+                return false;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     /**
-     * Update card visibility
+     * Update card visibility.
+     * @param {number} cardId - The card ID.
+     * @param {boolean} isVisible - The visibility state.
+     * @returns {Promise<boolean>} A promise that resolves to true if successful.
      */
-    async function updateCardVisibility(cardId, isVisible) {
+    function updateCardVisibility(cardId, isVisible) {
         if (!config.value) {
             errors.value.push('No config available');
-            return false;
+            return Promise.resolve(false);
         }
 
         loading.value = true;
         errors.value = [];
 
-        try {
-            const response = await dashboardConfigApi.updateCardVisibility(config.value.id, cardId, isVisible);
-            config.value = DashboardConfigAssembler.toEntityFromResponse(response);
-            return true;
-        } catch (error) {
-            console.error('Error updating card visibility:', error);
-            errors.value.push(error.message || 'Error updating card visibility');
-            return false;
-        } finally {
-            loading.value = false;
-        }
+        return dashboardConfigApi.updateCardVisibility(config.value.id, cardId, isVisible)
+            .then(response => {
+                config.value = DashboardConfigAssembler.toEntityFromResponse(response);
+                return true;
+            })
+            .catch(error => {
+                console.error('Error updating card visibility:', error);
+                errors.value.push(error.message || 'Error updating card visibility');
+                return false;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
     }
 
     /**
-     * Load available card types
+     * Load available card types.
+     * @returns {Promise} A promise that resolves when card types are loaded.
      */
-    async function loadAvailableCardTypes() {
-        try {
-            const response = await dashboardConfigApi.getAvailableCardTypes();
-            availableCardTypes.value = DashboardConfigAssembler.toCardTypesFromResponse(response);
-        } catch (error) {
-            console.error('Error loading card types:', error);
-            errors.value.push('Error loading available card types');
-        }
+    function loadAvailableCardTypes() {
+        return dashboardConfigApi.getAvailableCardTypes()
+            .then(response => {
+                availableCardTypes.value = DashboardConfigAssembler.toCardTypesFromResponse(response);
+            })
+            .catch(error => {
+                console.error('Error loading card types:', error);
+                errors.value.push('Error loading available card types');
+            });
     }
 
     /**
-     * Clear errors
+     * Clear errors.
      */
     function clearErrors() {
         errors.value = [];
     }
 
     /**
-     * Reset store
+     * Reset store to initial state.
      */
     function $reset() {
         config.value = null;
@@ -242,13 +266,11 @@ export const useDashboardConfigStore = defineStore('dashboardConfig', () => {
         availableCardTypes,
         loading,
         errors,
-
-        // Getters
+        // Computed
         hasConfig,
         visibleCards,
         defaultSiteId,
         defaultTemperatureRange,
-
         // Actions
         loadConfigForCurrentUser,
         createDefaultConfig,

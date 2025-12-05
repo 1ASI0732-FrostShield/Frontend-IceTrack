@@ -7,12 +7,13 @@ import { DashboardDataAssembler } from "@/dashboard/infrastructure/dashboard-dat
 const dashboardDataApi = new DashboardDataApi();
 
 /**
- * Dashboard Data Store
- * Manages KPIs, alerts, and other dashboard data
- * This is separate from configuration to follow separation of concerns
+ * Pinia store for managing Dashboard Data bounded context state.
+ * Handles KPIs, alerts, and other dashboard data fetching and management.
+ * This is separate from configuration to follow separation of concerns.
+ * @returns {Object} The store object with state and actions.
  */
 export const useDashboardDataStore = defineStore('dashboardData', () => {
-    // State
+    // STATE
     const kpis = ref(null);
     const alerts = ref([]);
     const temperatureChartData = ref(null);
@@ -20,7 +21,7 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
     const loadingAlerts = ref(false);
     const errors = ref([]);
 
-    // Getters
+    // COMPUTED
     const hasData = computed(() => {
         return kpis.value && kpis.value.hasData();
     });
@@ -46,119 +47,127 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
             temperatureChartData.value.datasets?.[0]?.data?.length > 0;
     });
 
-    // Actions
+    // ACTIONS
 
     /**
-     * Load all dashboard data (KPIs, alerts, chart data)
+     * Load all dashboard data (KPIs, alerts, chart data).
+     * @param {number|null} siteId - Optional site ID filter.
+     * @returns {Promise} A promise that resolves when all data is loaded.
      */
-    async function loadAll(siteId = null) {
+    function loadAll(siteId = null) {
         loading.value = true;
         errors.value = [];
 
-        try {
-            await Promise.all([
-                loadKpis(siteId),
-                loadAlerts(siteId),
-                loadChartData(siteId)
-            ]);
-        } catch (error) {
-            console.error('Error loading dashboard data:', error);
-            errors.value.push('Error loading dashboard data');
-        } finally {
-            loading.value = false;
-        }
-    }
-
-    /**
-     * Load KPIs data from real APIs
-     */
-    async function loadKpis(siteId = null) {
-        try {
-            const [equipmentsResponse, alertsResponse] = await Promise.all([
-                dashboardDataApi.getEquipments(),
-                dashboardDataApi.getOpenAlerts()
-            ]);
-
-            // TODO: Add service requests when API is ready
-            const serviceRequestsCount = 0;
-
-            // Transform to domain entity
-            kpis.value = DashboardDataAssembler.toKpisFromResponses(
-                equipmentsResponse,
-                alertsResponse,
-                serviceRequestsCount
-            );
-        } catch (error) {
-            console.error('Error loading KPIs:', error);
-
-            // No fallback to mocks - just set empty KPIs
-            kpis.value = new DashboardKpis({
-                totalEquipments: 0,
-                openAlerts: 0,
-                activeRequests: 0,
-                avgTemperature: 0,
-                minTemperature: 0,
-                maxTemperature: 0
+        return Promise.all([
+            loadKpis(siteId),
+            loadAlerts(siteId),
+            loadChartData(siteId)
+        ])
+            .then(() => {
+                console.log('All dashboard data loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading dashboard data:', error);
+                errors.value.push('Error loading dashboard data');
+            })
+            .finally(() => {
+                loading.value = false;
             });
-        }
     }
 
     /**
-     * Load recent alerts from real API
+     * Load KPIs data from real APIs.
+     * @param {number|null} siteId - Optional site ID filter.
+     * @returns {Promise} A promise that resolves when KPIs are loaded.
      */
-    async function loadAlerts(siteId = null) {
+    function loadKpis(siteId = null) {
+        return Promise.all([
+            dashboardDataApi.getEquipments(),
+            dashboardDataApi.getOpenAlerts()
+        ])
+            .then(([equipmentsResponse, alertsResponse]) => {
+                const serviceRequestsCount = 0; // TODO: Add service requests when API is ready
+
+                kpis.value = DashboardDataAssembler.toKpisFromResponses(
+                    equipmentsResponse,
+                    alertsResponse,
+                    serviceRequestsCount
+                );
+            })
+            .catch(error => {
+                console.error('Error loading KPIs:', error);
+
+                // Set empty KPIs on error
+                kpis.value = new DashboardKpis({
+                    totalEquipments: 0,
+                    openAlerts: 0,
+                    activeRequests: 0,
+                    avgTemperature: 0,
+                    minTemperature: 0,
+                    maxTemperature: 0
+                });
+            });
+    }
+
+    /**
+     * Load recent alerts from real API.
+     * @param {number|null} siteId - Optional site ID filter.
+     * @returns {Promise} A promise that resolves when alerts are loaded.
+     */
+    function loadAlerts(siteId = null) {
         loadingAlerts.value = true;
 
-        try {
-            const response = await dashboardDataApi.getRecentAlerts(siteId);
-            alerts.value = DashboardDataAssembler.toAlertsFromResponse(response);
-        } catch (error) {
-            console.error('Error loading alerts:', error);
-
-            // No fallback - just empty array
-            alerts.value = [];
-        } finally {
-            loadingAlerts.value = false;
-        }
+        return dashboardDataApi.getRecentAlerts(siteId)
+            .then(response => {
+                alerts.value = DashboardDataAssembler.toAlertsFromResponse(response);
+            })
+            .catch(error => {
+                console.error('Error loading alerts:', error);
+                alerts.value = [];
+            })
+            .finally(() => {
+                loadingAlerts.value = false;
+            });
     }
 
     /**
-     * Load temperature chart data
+     * Load temperature chart data.
+     * @param {number|null} siteId - Optional site ID filter.
+     * @returns {Promise} A promise that resolves when chart data is loaded.
      */
-    async function loadChartData(siteId = null) {
-        try {
-            const trendsResponse = await dashboardDataApi.getTemperatureTrends(siteId);
-
-            if (trendsResponse) {
-                temperatureChartData.value = DashboardDataAssembler.toChartDataFromTrends(trendsResponse);
-            } else {
-                // Endpoint no disponible - dejar en null
+    function loadChartData(siteId = null) {
+        return dashboardDataApi.getTemperatureTrends(siteId)
+            .then(trendsResponse => {
+                if (trendsResponse) {
+                    temperatureChartData.value = DashboardDataAssembler.toChartDataFromTrends(trendsResponse);
+                } else {
+                    temperatureChartData.value = null;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading chart data:', error);
                 temperatureChartData.value = null;
-            }
-        } catch (error) {
-            console.error('Error loading chart data:', error);
-
-            // No fallback - just null
-            temperatureChartData.value = null;
-        }
+            });
     }
 
     /**
-     * Refresh all data
+     * Refresh all dashboard data.
+     * @param {number|null} siteId - Optional site ID filter.
+     * @returns {Promise} A promise that resolves when data is refreshed.
      */
-    async function refresh(siteId = null) {
-        await loadAll(siteId);
+    function refresh(siteId = null) {
+        return loadAll(siteId);
     }
 
     /**
-     * Clear errors
+     * Clear errors.
      */
     function clearErrors() {
         errors.value = [];
     }
 
     /**
-     * Reset store
+     * Reset store to initial state.
      */
     function $reset() {
         kpis.value = null;
@@ -177,12 +186,10 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         loading,
         loadingAlerts,
         errors,
-
-        // Getters
+        // Computed
         hasData,
         statistics,
         hasValidChartData,
-
         // Actions
         loadAll,
         loadKpis,

@@ -1,15 +1,14 @@
 import { BaseApi } from "@/shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "@/shared/infrastructure/base-endpoint.js";
 
-const dashboardConfigsEndpointPath = '/dashboard-configs';
+const dashboardConfigsEndpointPath = import.meta.env.VITE_DASHBOARD_CONFIGS_ENDPOINT_PATH || '/dashboard-configs';
 
-/**
- * Dashboard Configuration API Service
- * Handles all HTTP requests related to dashboard configuration
- */
 export class DashboardConfigApi extends BaseApi {
+    #dashboardConfigsEndpoint;
 
     constructor() {
         super();
+        this.#dashboardConfigsEndpoint = new BaseEndpoint(this, dashboardConfigsEndpointPath);
     }
 
     /**
@@ -25,7 +24,7 @@ export class DashboardConfigApi extends BaseApi {
      * GET /api/v1/dashboard-configs/{id}
      */
     getConfigById(id) {
-        return this.http.get(`${dashboardConfigsEndpointPath}/${id}`);
+        return this.#dashboardConfigsEndpoint.getById(id);
     }
 
     /**
@@ -33,7 +32,7 @@ export class DashboardConfigApi extends BaseApi {
      * POST /api/v1/dashboard-configs
      */
     createConfig(data) {
-        return this.http.post(dashboardConfigsEndpointPath, data);
+        return this.#dashboardConfigsEndpoint.create(data);
     }
 
     /**
@@ -41,7 +40,7 @@ export class DashboardConfigApi extends BaseApi {
      * PUT /api/v1/dashboard-configs/{id}
      */
     updateConfig(id, data) {
-        return this.http.put(`${dashboardConfigsEndpointPath}/${id}`, data);
+        return this.#dashboardConfigsEndpoint.update(id, data);
     }
 
     /**
@@ -49,11 +48,11 @@ export class DashboardConfigApi extends BaseApi {
      * DELETE /api/v1/dashboard-configs/{id}
      */
     deleteConfig(id) {
-        return this.http.delete(`${dashboardConfigsEndpointPath}/${id}`);
+        return this.#dashboardConfigsEndpoint.delete(id);
     }
 
     /**
-     * Add card to dashboard
+     * Add card to dashboard (custom endpoint)
      * POST /api/v1/dashboard-configs/{id}/cards
      */
     addCard(dashboardConfigId, cardData) {
@@ -61,7 +60,7 @@ export class DashboardConfigApi extends BaseApi {
     }
 
     /**
-     * Remove card from dashboard
+     * Remove card from dashboard (custom endpoint)
      * DELETE /api/v1/dashboard-configs/{id}/cards/{cardId}
      */
     removeCard(dashboardConfigId, cardId) {
@@ -69,7 +68,7 @@ export class DashboardConfigApi extends BaseApi {
     }
 
     /**
-     * Update card visibility
+     * Update card visibility (custom endpoint)
      * PATCH /api/v1/dashboard-configs/{id}/cards/{cardId}/visibility
      */
     updateCardVisibility(dashboardConfigId, cardId, isVisible) {
@@ -80,7 +79,7 @@ export class DashboardConfigApi extends BaseApi {
     }
 
     /**
-     * Get available card types
+     * Get available card types (custom endpoint)
      * GET /api/v1/dashboard-configs/available-cards
      */
     getAvailableCardTypes() {

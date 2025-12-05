@@ -7,11 +7,15 @@ import DashboardConfigTable from '../components/dashboard-config-table.vue'
 const configStore = useDashboardConfigStore()
 const dataStore = useDashboardDataStore()
 
-onMounted(async () => {
-  await configStore.loadConfigForCurrentUser()
-  await configStore.loadAvailableCardTypes()
-  await dataStore.loadAll(configStore.defaultSiteId)
-})
+onMounted(() => {
+  if (!configStore.hasConfig) {
+    configStore.loadConfigForCurrentUser();
+  }
+  configStore.loadAvailableCardTypes();
+  if (configStore.defaultSiteId) {
+    dataStore.loadAll(configStore.defaultSiteId);
+  }
+});
 
 function refreshDashboard() {
   configStore.loadConfigForCurrentUser()

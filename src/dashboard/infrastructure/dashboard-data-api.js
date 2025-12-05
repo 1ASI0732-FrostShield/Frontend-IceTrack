@@ -45,14 +45,4 @@ export class DashboardDataApi extends BaseApi {
 
         return this.http.get('/alert', { params });
     }
-
-    /**
-     * Get temperature trends
-     * ⚠️ Este endpoint NO existe en el backend actual
-     * Retorna null para indicar que no hay datos disponibles
-     */
-    async getTemperatureTrends(siteId = null) {
-        // Endpoint no implementado - retornar null
-        return null;
-    }
 }
