@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { AlertAssembler } from "@/monitoring/infrastructure/alerts.assembler.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import {EquipmentAssembler} from "@/monitoring/infrastructure/equipments.assembler.js";
 
 const monitoringApi = new MonitoringApi();
 
@@ -12,6 +13,32 @@ const useMonitoringStore = defineStore("monitoring", () => {
 
     const equipmentsLoaded = ref(false);
     const alertsLoaded = ref(false);
+
+    function fetchEquipments() {
+        monitoringApi.getEquipment().then(response => {
+            equipments.value = EquipmentAssembler.toEntitiesFromResponse(response);
+            equipmentsLoaded.value = true;
+            console.log(equipmentsLoaded.value);
+            console.log(equipments.value);
+        }).catch(error => {
+            errors.value.push(error);
+        });
+    }
+
+    /**
+     * Deletes a equipment via the API and updates state.
+     * @function
+     * @param {Equipment} equipment - The equipment to delete.
+     * @returns {void}
+     */
+    function deleteEquipment(equipment) {
+        monitoringApi.deleteEquipment(equipment.id).then(() => {
+            const index = equipments.value.findIndex(e => e["id"] === equipment.id);
+            if (index !== -1) equipments.value.splice(index, 1);
+        }).catch(error => {
+            errors.value.push(error);
+        });
+    }
 
     function fetchAlerts() {
         monitoringApi
@@ -45,6 +72,8 @@ const useMonitoringStore = defineStore("monitoring", () => {
     }
 
     return {
+        fetchEquipments,
+        deleteEquipment,
         equipments,
         alerts,
         errors,
