@@ -1,4 +1,7 @@
 export class Equipments {
+    /**
+     * Creates a new Equipment instance.
+     */
     constructor({
                     id = null, equipmentId = null, model = '', type = '', serial = '',
                     status = '', installed = '', lastSeen = '',  setPoint = 0,
@@ -21,3 +24,4 @@ export class Equipments {
         this.updated = updated;
     }
 }
+

@@ -1,4 +1,7 @@
 export class Alert {
+    /**
+     * Creates a new Alert instance.
+     */
     constructor({
                     id,
                     tenantId,
@@ -33,3 +36,4 @@ export class Alert {
         this.createdBy = createdBy;
     }
 }
+
