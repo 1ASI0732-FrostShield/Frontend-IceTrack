@@ -26,7 +26,15 @@ const useMonitoringStore = defineStore("monitoring", () => {
      */
     const errors = ref([]);
 
+    /**
+     * Whether equipments have been loaded from the API.
+     * @type {import('vue').Ref<boolean>}
+     */
     const equipmentsLoaded = ref(false);
+    /**
+     * Whether alerts have been loaded from the API.
+     * @type {import('vue').Ref<boolean>}
+     */
     const alertsLoaded = ref(false);
 
     /**
@@ -104,4 +112,3 @@ const useMonitoringStore = defineStore("monitoring", () => {
 });
 
 export default useMonitoringStore;
-
