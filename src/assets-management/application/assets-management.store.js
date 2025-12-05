@@ -41,11 +41,29 @@ const useAssetsManagementStore = defineStore('assetsManagement', () => {
         });
     }
 
+    /**
+     * Creates a new site via the API and updates the sites list.
+     * @param {object} siteData - The data for the new site.
+     * @returns {Promise<void>}
+     */
+    async function createSite(siteData) {
+        errors.value = [];
+        try {
+            const response = await assetsManagementApi.createSite(siteData);
+            const newSite = SitesAssembler.toEntityFromResource(response.data);
+            sites.value.push(newSite);
+        } catch (error) {
+            errors.value.push(error);
+            throw error;
+        }
+    }
+
     return {
         sites,
         errors,
         sitesLoaded,
         fetchSites,
+        createSite,
     }
 });
 

@@ -242,6 +242,18 @@
       "contactPhone": "Phone",
       "createdAt": "Created",
       "updatedAt": "Updated"
+    },
+    "new": {
+      "title": "Register New Site",
+      "name": "Site Name",
+      "address": "Address",
+      "contact-name": "Contact Name",
+      "phone": "Phone",
+      "register": "Register Site",
+      "toggle-map": "Toggle Map for Address Selection",
+      "alert-required-fields": "Please fill in all required fields.",
+      "alert-site-created": "Site created successfully!",
+      "alert-create-error": "Error creating site."
     }
   },
   "equipments": {
@@ -539,7 +551,7 @@
       "performance": "Performance"
     },
     "actions": {
-      "downloadPdf": "Download PDF"
+      "downloadPdf": "Download Pdf"
     }
   },
   "admin": {
@@ -665,5 +677,10 @@
   },
   "errors": {
     "occurred": "An error occurred"
+  },
+  "map": {
+    "selected-location": "Selected Location",
+    "address": "Address",
+    "coordinates": "Coordinates"
   }
 }

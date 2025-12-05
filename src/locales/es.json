@@ -241,6 +241,18 @@
             "contactPhone": "Teléfono",
             "createdAt": "Creado",
             "updatedAt": "Actualizado"
+        },
+        "new": {
+            "title": "Registrar Nuevo Sitio",
+            "name": "Nombre del Sitio",
+            "address": "Dirección",
+            "contact-name": "Nombre de Contacto",
+            "phone": "Teléfono",
+            "register": "Registrar Sitio",
+            "toggle-map": "Alternar Mapa para Selección de Dirección",
+            "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
+            "alert-site-created": "¡Sitio creado exitosamente!",
+            "alert-create-error": "Error al crear el sitio."
         }
     },
     "equipments": {
@@ -651,5 +663,10 @@
     },
     "table": {
         "rows": "{count, plural, one {# fila} other {# filas}}"
+    },
+    "map": {
+        "selected-location": "Ubicación Seleccionada",
+        "address": "Dirección",
+        "coordinates": "Coordenadas"
     }
 }

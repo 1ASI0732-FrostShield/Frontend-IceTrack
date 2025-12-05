@@ -26,5 +26,13 @@ export class AssetsManagementApi extends BaseApi {
     getSites() {
         return this.#sitesEndpointPath.getAll();
     }
-}
 
+    /**
+     * Creates a new site.
+     * @param {object} siteData - The data for the new site.
+     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the new site's response.
+     */
+    createSite(siteData) {
+        return this.http.post(sitesEndpointPath, siteData);
+    }
+}
