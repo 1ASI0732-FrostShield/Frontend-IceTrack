@@ -223,10 +223,15 @@
       "report-tooltip": "Download completed service report",
       "confirm-cancel": "Are you sure you want to cancel Request {id}?",
       "cancel-header": "Confirm Cancellation",
-      "request-type": "Request Type",
-      "priority": "Priority",
-      "problem-description": "Problem Description",
-      "provider": "Provider"
+      "provider": "Provider",
+      "order-number": "Order #",
+      "review": "Review",
+      "view-review": "View Review",
+      "view-review-header": "View Review",
+      "submit-review-header": "Submit Review",
+      "rating": "Rating",
+      "comment": "Comment",
+      "submit": "Submit"
     },
     "status": {
       "scheduled": "Scheduled",

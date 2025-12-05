@@ -11,6 +11,8 @@ import { useServiceRequestStore} from "@/service-request/application/service-req
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { useAuthStore } from "@/iam/application/auth.store.js";
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -19,6 +21,8 @@ const authStore = useAuthStore();
 const { errors } = store;
 const iamApi = new IamApi();
 const serviceRequestApi = new ServiceRequestsApi();
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 
 /**
  * Computed property for the current requester's ID.
@@ -57,10 +61,14 @@ const filteredEquipments = computed(() => {
 
 onMounted(async () => {
   try {
-    const [providersRes] = await Promise.all([
-      iamApi.getUsersByRole('Provider')
+    const [providersRes, sitesRes, equipmentsRes] = await Promise.all([
+      iamApi.getUsersByRole('Provider'),
+      assetsManagementApi.getSites(),
+      monitoringApi.getEquipment()
     ]);
     providers.value = providersRes.data;
+    sites.value = sitesRes.data;
+    equipments.value = equipmentsRes.data;
   } catch (error) {
     errors.value.push(error);
   }
@@ -80,15 +88,15 @@ const handleSiteChange = () => {
  * @function saveRequest
  */
 const saveRequest = async () => {
-  if (!form.value.description || !form.value.assignedTo) {
+  if (!form.value.description || !form.value.assignedTo || !form.value.siteId || !form.value.equipmentId) {
     alert(t('services.new.alert-required-fields'));
     return;
   }
 
   const newRequestData = {
     requesterId: currentRequesterId.value,
-    siteId: 1, // Using a placeholder ID
-    equipmentId: 1, // Using a placeholder ID
+    siteId: form.value.siteId,
+    equipmentId: form.value.equipmentId,
     assignedTo: form.value.assignedTo,
     origin: 'Manual',
     type: form.value.type,
@@ -143,14 +151,32 @@ const navigateBack = () => {
 
             <div class="field col-12 md:col-6">
               <pv-float-label>
-                <pv-input-text id="site" value="Default Site (Not Implemented)" disabled class="w-full" />
+                <pv-select
+                    id="site"
+                    v-model="form.siteId"
+                    :options="sites"
+                    optionLabel="name"
+                    optionValue="id"
+                    required
+                    class="w-full"
+                    @change="handleSiteChange"
+                />
                 <label for="site">{{ t('services.new.site') }}</label>
               </pv-float-label>
             </div>
 
             <div class="field col-12 md:col-6">
               <pv-float-label>
-                <pv-input-text id="equipment" value="Default Equipment (Not Implemented)" disabled class="w-full" />
+                <pv-select
+                    id="equipment"
+                    v-model="form.equipmentId"
+                    :options="filteredEquipments"
+                    optionLabel="name"
+                    optionValue="id"
+                    :disabled="!form.siteId"
+                    required
+                    class="w-full"
+                />
                 <label for="equipment">{{ t('services.new.equipment') }}</label>
               </pv-float-label>
             </div>

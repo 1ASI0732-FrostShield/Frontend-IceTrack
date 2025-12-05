@@ -222,9 +222,15 @@
             "report-tooltip": "Descargar el informe de servicio completado",
             "confirm-cancel": "¿Está seguro de que desea cancelar la Solicitud {id}?",
             "cancel-header": "Confirmar Cancelación",
-            "request-type": "Tipo de Solicitud",
-            "priority": "Prioridad",
-            "problem-description": "Descripción del Problema"
+            "provider": "Proveedor",
+            "order-number": "Orden #",
+            "review": "Revisar",
+            "view-review": "Ver Reseña",
+            "view-review-header": "Ver Reseña",
+            "submit-review-header": "Enviar Reseña",
+            "rating": "Calificación",
+            "comment": "Comentario",
+            "submit": "Enviar"
         },
         "status": {
             "scheduled": "Programada",
