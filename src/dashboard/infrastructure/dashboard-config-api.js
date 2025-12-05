@@ -1,14 +1,19 @@
+// src/dashboard/infrastructure/dashboard-config-api.js
 import { BaseApi } from "@/shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "@/shared/infrastructure/base-endpoint.js";
 
-const dashboardConfigsEndpointPath = import.meta.env.VITE_DASHBOARD_CONFIGS_ENDPOINT_PATH || '/dashboard-configs';
+const dashboardConfigsEndpointPath =
+    import.meta.env.VITE_DASHBOARD_CONFIGS_ENDPOINT_PATH || "/dashboard-configs";
 
 export class DashboardConfigApi extends BaseApi {
     #dashboardConfigsEndpoint;
 
     constructor() {
         super();
-        this.#dashboardConfigsEndpoint = new BaseEndpoint(this, dashboardConfigsEndpointPath);
+        this.#dashboardConfigsEndpoint = new BaseEndpoint(
+            this,
+            dashboardConfigsEndpointPath
+        );
     }
 
     /**
@@ -56,7 +61,10 @@ export class DashboardConfigApi extends BaseApi {
      * POST /api/v1/dashboard-configs/{id}/cards
      */
     addCard(dashboardConfigId, cardData) {
-        return this.http.post(`${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards`, cardData);
+        return this.http.post(
+            `${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards`,
+            cardData
+        );
     }
 
     /**
@@ -64,7 +72,9 @@ export class DashboardConfigApi extends BaseApi {
      * DELETE /api/v1/dashboard-configs/{id}/cards/{cardId}
      */
     removeCard(dashboardConfigId, cardId) {
-        return this.http.delete(`${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards/${cardId}`);
+        return this.http.delete(
+            `${dashboardConfigsEndpointPath}/${dashboardConfigId}/cards/${cardId}`
+        );
     }
 
     /**
