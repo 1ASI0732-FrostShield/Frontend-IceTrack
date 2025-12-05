@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, watch } from 'vue'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import { useDashboardDataStore } from '@/dashboard/application/dashboard-data.store.js'
 import DashboardConfigTable from '../components/dashboard-config-table.vue'
@@ -9,14 +9,28 @@ const dataStore = useDashboardDataStore()
 
 /**
  * Load dashboard on mount
- * Follows professor's pattern: no async/await in components
  */
 onMounted(() => {
   loadDashboard()
 })
 
 /**
- * Load all dashboard data in sequence
+ * Watch for config changes to auto-refresh dashboard
+ * Triggers when cards are added, removed, or visibility changes
+ */
+watch(
+    () => configStore.config?.cards,
+    (newCards, oldCards) => {
+      if (oldCards && newCards && newCards.length !== oldCards.length) {
+        console.log('Cards changed, refreshing dashboard...')
+        refreshDashboard()
+      }
+    },
+    { deep: true }
+)
+
+/**
+ * Load all dashboard data
  */
 function loadDashboard() {
   configStore.loadConfigForCurrentUser()
@@ -36,115 +50,58 @@ function refreshDashboard() {
   dataStore.loadAll(configStore.defaultSiteId)
 }
 
-/**
- * Get visible cards from configuration
- */
 const visibleCards = computed(() => {
   if (!configStore.config) return []
   return configStore.visibleCards
 })
 
-/**
- * Get KPI value for a specific card type
- * @param {string} cardType - The card type
- * @returns {string|number} The KPI value
- */
 function getKpiValue(cardType) {
   if (!dataStore.kpis) return '--'
 
   const kpiMap = {
     'MonitoredEquipment': dataStore.kpis.totalEquipments ?? 0,
-    'OpenAlerts': dataStore.kpis.openAlerts ?? 0,
-    'ActiveOrders': dataStore.kpis.activeRequests ?? 0,
-    'AverageTemperature': dataStore.kpis.avgTemperature !== null && dataStore.kpis.avgTemperature !== undefined
-        ? dataStore.kpis.getFormattedAvgTemp()
-        : '--',
-    'RecentReports': 0,
-    'EquipmentStatus': 0,
-    'SystemHealth': '--'
+    'OpenAlerts': dataStore.kpis.openAlerts ?? 0
   }
 
   return kpiMap[cardType] ?? '--'
 }
 
-/**
- * Get icon for a specific card type
- */
 function getCardIcon(cardType) {
   const iconMap = {
     'MonitoredEquipment': 'pi-sitemap',
-    'OpenAlerts': 'pi-exclamation-triangle',
-    'ActiveOrders': 'pi-briefcase',
-    'AverageTemperature': 'pi-chart-scatter',
-    'TemperatureTrends': 'pi-chart-line',
-    'RecentReports': 'pi-file',
-    'EquipmentStatus': 'pi-server',
-    'SystemHealth': 'pi-heart'
+    'OpenAlerts': 'pi-exclamation-triangle'
   }
   return iconMap[cardType] || 'pi-th-large'
 }
 
-/**
- * Get color for a specific card type
- */
 function getCardColor(cardType) {
   const colorMap = {
     'MonitoredEquipment': 'text-primary',
-    'OpenAlerts': 'text-orange-500',
-    'ActiveOrders': 'text-green-500',
-    'AverageTemperature': 'text-blue-500',
-    'RecentReports': 'text-purple-500',
-    'EquipmentStatus': 'text-cyan-500',
-    'SystemHealth': 'text-teal-500'
+    'OpenAlerts': 'text-orange-500'
   }
   return colorMap[cardType] || 'text-gray-500'
 }
 
-/**
- * Get title for a specific card type
- */
 function getCardTitle(cardType) {
   const titleMap = {
     'MonitoredEquipment': 'Monitored Equipment',
-    'OpenAlerts': 'Open Alerts',
-    'ActiveOrders': 'Active Orders',
-    'AverageTemperature': 'Average Temperature',
-    'TemperatureTrends': 'Temperature Trends',
-    'RecentReports': 'Recent Reports',
-    'EquipmentStatus': 'Equipment Status',
-    'SystemHealth': 'System Health'
+    'OpenAlerts': 'Open Alerts'
   }
   return titleMap[cardType] || cardType
 }
 
-/**
- * Get subtitle for a specific card type
- */
 function getCardSubtitle(cardType) {
   const subtitleMap = {
     'MonitoredEquipment': 'Total equipment being tracked',
-    'OpenAlerts': 'Alerts requiring attention',
-    'ActiveOrders': 'Service requests in progress',
-    'AverageTemperature': 'Current average temperature',
-    'RecentReports': 'Reports generated recently',
-    'EquipmentStatus': 'Equipment health status',
-    'SystemHealth': 'Overall system status'
+    'OpenAlerts': 'Alerts requiring attention'
   }
   return subtitleMap[cardType] || 'Dashboard metric'
 }
 
-/**
- * Get only KPI cards (filter out chart cards)
- */
 const kpiCards = computed(() => {
-  return visibleCards.value.filter(card =>
-      card.cardType !== 'TemperatureTrends'
-  )
+  return visibleCards.value
 })
 
-/**
- * Check if we have any data loaded
- */
 const hasAnyData = computed(() => {
   return dataStore.kpis !== null
 })
@@ -152,11 +109,16 @@ const hasAnyData = computed(() => {
 
 <template>
   <div class="p-3">
-    <!-- Header -->
     <div class="flex align-items-center justify-content-between mb-4">
       <div>
         <h1 class="text-3xl font-bold m-0">Dashboard</h1>
         <p class="text-500 mt-1">Monitor your equipment and alerts</p>
+        <small v-if="configStore.defaultSiteId" class="text-400">
+          Filtered by Site ID: {{ configStore.defaultSiteId }}
+        </small>
+        <small v-else class="text-400">
+          Showing all sites
+        </small>
       </div>
       <pv-button
           icon="pi pi-refresh"
@@ -167,13 +129,11 @@ const hasAnyData = computed(() => {
       />
     </div>
 
-    <!-- Loading State -->
     <div v-if="configStore.loading && !configStore.config" class="text-center p-5">
       <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
       <p class="mt-3 text-600">Loading dashboard...</p>
     </div>
 
-    <!-- Error Display -->
     <div v-if="configStore.errors.length > 0 || dataStore.errors.length > 0" class="mb-3">
       <pv-card>
         <template #content>
@@ -199,10 +159,7 @@ const hasAnyData = computed(() => {
       </pv-card>
     </div>
 
-    <!-- Dashboard Content -->
     <template v-if="configStore.config && !configStore.loading">
-
-      <!-- KPI Cards -->
       <div v-if="kpiCards.length > 0" class="grid mb-4">
         <div v-for="card in kpiCards" :key="card.id" class="col-12 md:col-6 lg:col-3">
           <pv-card class="h-full">
@@ -234,7 +191,6 @@ const hasAnyData = computed(() => {
         </div>
       </div>
 
-      <!-- No Cards Message -->
       <div v-if="kpiCards.length === 0" class="mb-4">
         <pv-card>
           <template #content>
@@ -248,7 +204,6 @@ const hasAnyData = computed(() => {
         </pv-card>
       </div>
 
-      <!-- Dashboard Configuration CRUD Table -->
       <dashboard-config-table v-if="configStore.config" :config="configStore.config" />
     </template>
   </div>

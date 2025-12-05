@@ -10,13 +10,13 @@ const dashboardDataApi = new DashboardDataApi();
  * Pinia store for managing Dashboard Data bounded context state.
  * Handles KPIs, alerts, and other dashboard data fetching and management.
  * This is separate from configuration to follow separation of concerns.
+ * ONLY loads data for cards with available endpoints
  * @returns {Object} The store object with state and actions.
  */
 export const useDashboardDataStore = defineStore('dashboardData', () => {
     // STATE
     const kpis = ref(null);
     const alerts = ref([]);
-    const temperatureChartData = ref(null);
     const loading = ref(false);
     const loadingAlerts = ref(false);
     const errors = ref([]);
@@ -26,31 +26,11 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         return kpis.value && kpis.value.hasData();
     });
 
-    const statistics = computed(() => {
-        if (!kpis.value) {
-            return {
-                minTemperature: 0,
-                maxTemperature: 0,
-                totalDataPoints: 0
-            };
-        }
-
-        return {
-            minTemperature: kpis.value.minTemperature,
-            maxTemperature: kpis.value.maxTemperature,
-            totalDataPoints: temperatureChartData.value?.datasets?.[0]?.data?.length || 0
-        };
-    });
-
-    const hasValidChartData = computed(() => {
-        return temperatureChartData.value &&
-            temperatureChartData.value.datasets?.[0]?.data?.length > 0;
-    });
-
     // ACTIONS
 
     /**
-     * Load all dashboard data (KPIs, alerts, chart data).
+     * Load all dashboard data (KPIs and alerts).
+     * REMOVED: temperature chart data (no endpoint available)
      * @param {number|null} siteId - Optional site ID filter.
      * @returns {Promise} A promise that resolves when all data is loaded.
      */
@@ -60,8 +40,7 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
 
         return Promise.all([
             loadKpis(siteId),
-            loadAlerts(siteId),
-            loadChartData(siteId)
+            loadAlerts(siteId)
         ])
             .then(() => {
                 console.log('All dashboard data loaded successfully');
@@ -77,27 +56,26 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
 
     /**
      * Load KPIs data from real APIs.
+     * ONLY loads MonitoredEquipment and OpenAlerts (available endpoints)
      * @param {number|null} siteId - Optional site ID filter.
      * @returns {Promise} A promise that resolves when KPIs are loaded.
      */
     function loadKpis(siteId = null) {
         return Promise.all([
-            dashboardDataApi.getEquipments(),
-            dashboardDataApi.getOpenAlerts()
+            dashboardDataApi.getEquipments(null, siteId),
+            dashboardDataApi.getOpenAlerts(null, null, siteId)
         ])
             .then(([equipmentsResponse, alertsResponse]) => {
-                const serviceRequestsCount = 0; // TODO: Add service requests when API is ready
-
                 kpis.value = DashboardDataAssembler.toKpisFromResponses(
                     equipmentsResponse,
                     alertsResponse,
-                    serviceRequestsCount
+                    0 // serviceRequestsCount - not available
                 );
             })
             .catch(error => {
                 console.error('Error loading KPIs:', error);
 
-                // Set empty KPIs on error
+                // Set empty KPIs on error - dashboard doesn't break
                 kpis.value = new DashboardKpis({
                     totalEquipments: 0,
                     openAlerts: 0,
@@ -117,7 +95,7 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
     function loadAlerts(siteId = null) {
         loadingAlerts.value = true;
 
-        return dashboardDataApi.getRecentAlerts(siteId)
+        return dashboardDataApi.getRecentAlerts(null, siteId)
             .then(response => {
                 alerts.value = DashboardDataAssembler.toAlertsFromResponse(response);
             })
@@ -127,26 +105,6 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
             })
             .finally(() => {
                 loadingAlerts.value = false;
-            });
-    }
-
-    /**
-     * Load temperature chart data.
-     * @param {number|null} siteId - Optional site ID filter.
-     * @returns {Promise} A promise that resolves when chart data is loaded.
-     */
-    function loadChartData(siteId = null) {
-        return dashboardDataApi.getTemperatureTrends(siteId)
-            .then(trendsResponse => {
-                if (trendsResponse) {
-                    temperatureChartData.value = DashboardDataAssembler.toChartDataFromTrends(trendsResponse);
-                } else {
-                    temperatureChartData.value = null;
-                }
-            })
-            .catch(error => {
-                console.error('Error loading chart data:', error);
-                temperatureChartData.value = null;
             });
     }
 
@@ -172,7 +130,6 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
     function $reset() {
         kpis.value = null;
         alerts.value = [];
-        temperatureChartData.value = null;
         loading.value = false;
         loadingAlerts.value = false;
         errors.value = [];
@@ -182,19 +139,15 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         // State
         kpis,
         alerts,
-        temperatureChartData,
         loading,
         loadingAlerts,
         errors,
         // Computed
         hasData,
-        statistics,
-        hasValidChartData,
         // Actions
         loadAll,
         loadKpis,
         loadAlerts,
-        loadChartData,
         refresh,
         clearErrors,
         $reset

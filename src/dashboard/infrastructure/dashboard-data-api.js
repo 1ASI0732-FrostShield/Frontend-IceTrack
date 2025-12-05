@@ -3,6 +3,7 @@ import { BaseApi } from "@/shared/infrastructure/base-api.js";
 /**
  * Dashboard Data API Service
  * Handles requests for KPIs, alerts, and dashboard metrics
+ * ONLY includes endpoints that exist in the backend
  */
 export class DashboardDataApi extends BaseApi {
     constructor() {
@@ -10,8 +11,9 @@ export class DashboardDataApi extends BaseApi {
     }
 
     /**
-     * Get equipments (for KPIs)
+     * Get equipments (for MonitoredEquipment KPI)
      * GET /api/v1/equipment
+     * ✅ Endpoint exists and works
      */
     getEquipments(tenantId = null, siteId = null) {
         const params = {};
@@ -22,8 +24,9 @@ export class DashboardDataApi extends BaseApi {
     }
 
     /**
-     * Get alerts (for KPIs)
+     * Get alerts (for OpenAlerts KPI)
      * GET /api/v1/alert
+     * ✅ Endpoint exists (currently returns 500 - needs backend fix)
      */
     getOpenAlerts(tenantId = null, equipmentId = null, siteId = null) {
         const params = {};
@@ -35,8 +38,9 @@ export class DashboardDataApi extends BaseApi {
     }
 
     /**
-     * Get recent alerts for table
+     * Get recent alerts for table display
      * GET /api/v1/alert
+     * ✅ Same endpoint as above
      */
     getRecentAlerts(tenantId = null, siteId = null) {
         const params = {};
@@ -44,9 +48,5 @@ export class DashboardDataApi extends BaseApi {
         if (siteId) params.siteId = siteId;
 
         return this.http.get('/alert', { params });
-    }
-
-    getTemperatureTrends(siteId = null) {
-        return Promise.resolve(null);
     }
 }
