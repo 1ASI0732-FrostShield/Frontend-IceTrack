@@ -1,24 +1,27 @@
-export class Equipment {
-    constructor({id = null, tenantId = '', siteId = '', name = '', type = '',
-                    manufacturer = '',  model = '',  serial = '',  installedAt = '',
-                    status = '',  powerState = '',  setpointC = null,  lastSeenAt = '',
-                    online = false, createdAt = '', updatedAt = ''
-                    }) {
+export class Equipments {
+    /**
+     * Creates a new Equipment instance.
+     */
+    constructor({
+                    id = null, equipmentId = null, model = '', type = '', serial = '',
+                    status = '', installed = '', lastSeen = '',  setPoint = 0,
+                    name = '',  manufacturer = '', online = false,
+                    created = '', updated = ''
+                }) {
         this.id = id;
-        this.tenantId = tenantId;
-        this.siteId = siteId;
-        this.name = name;
-        this.type = type;
-        this.manufacturer = manufacturer;
+        this.equipmentId = equipmentId;
         this.model = model;
+        this.type = type;
         this.serial = serial;
-        this.installedAt = installedAt;
         this.status = status;
-        this.powerState = powerState;
-        this.setpointC = setpointC;
-        this.lastSeenAt = lastSeenAt;
+        this.installed = installed;
+        this.lastSeen = lastSeen;
+        this.setPoint = setPoint;
+        this.name = name;
+        this.manufacturer = manufacturer;
         this.online = online;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.created = created;
+        this.updated = updated;
     }
 }
+

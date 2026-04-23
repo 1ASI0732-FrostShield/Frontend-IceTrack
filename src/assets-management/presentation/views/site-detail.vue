@@ -32,32 +32,29 @@ onMounted(() => {
             :rows-per-page-options="[5, 10, 20]"
         >
 
-          <!-- Id -->
-          <pv-column field="tenantId" :header="t('sites.list.id')" sortable />
-
           <!-- Contact Name -->
           <pv-column field="contactName" :header="t('sites.detail.contactName')">
           </pv-column>
 
           <!-- Contact Phone -->
-          <pv-column field="contactPhone" :header="t('sites.detail.contactPhone')">
+          <pv-column field="phone" :header="t('sites.detail.contactPhone')">
             <template #body="slotProps">
               <span
                   :style="{
                   fontWeight: 'bold'
                 }"
               >
-                {{ slotProps.data.contactPhone }}
+                {{ slotProps.data.phone }}
               </span>
             </template>
           </pv-column>
 
           <!-- Created At -->
-          <pv-column field="createdAt" :header="t('sites.detail.createdAt')">
+          <pv-column field="created" :header="t('sites.detail.createdAt')">
           </pv-column>
 
           <!-- Updated At -->
-          <pv-column field="updatedAt" :header="t('sites.detail.updatedAt')">
+          <pv-column field="updated" :header="t('sites.detail.updatedAt')">
           </pv-column>
         </pv-data-table>
 

@@ -17,9 +17,9 @@ const editMode = ref(false)
 const id = route.params.id
 
 const statusOptions = [
-  { label: 'Cancelado', value: 'Cancelado' },
-  { label: 'En espera', value: 'En espera' },
-  { label: 'Listo', value: 'Listo' }
+  { label: 'Canceled', value: 'Canceled' },
+  { label: 'In Progress', value: 'In Progress' },
+  { label: 'Completed', value: 'Completed' }
 ]
 
 onMounted(async () => {
@@ -34,7 +34,7 @@ onMounted(async () => {
   if (found) {
     report.value = new Report(found)
   } else {
-    console.warn('Reporte no encontrado')
+    console.warn('Report not found')
   }
 
   loading.value = false
@@ -52,8 +52,8 @@ const saveChanges = () => {
 
     <br>
 
-    <div v-if="loading">Cargando...</div>
-    <div v-else-if="!report">Reporte no encontrado</div>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="!report">Report not found</div>
     <div v-else>
 
       <div v-if="!editMode">
@@ -113,7 +113,7 @@ const saveChanges = () => {
               class="w-full" style="font-size: 1.05rem; padding: 1rem; min-height: 14rem;"/>
         </div>
 
-        <!-- Botones -->
+        <!-- Buttons -->
         <div class="mt-8">
           <pv-button :label="t('reports.list.detail.save')" icon="pi pi-check" class="p-button-success" @click="saveChanges"/>
           <pv-button :label="t('reports.list.detail.cancel')" icon="pi pi-times" class="ml-2 p-button-secondary" @click="editMode = false"/>

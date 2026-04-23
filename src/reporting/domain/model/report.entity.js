@@ -4,10 +4,11 @@
  */
 export class Report {
     /**
-     * Creates a new Category instance.
+     * Creates a new Report instance.
      * @param {Object} params - The parameters for the report.
      * @param {?number} [params.id=null] - The unique identifier for the report.
      * @param {?number} [params.tenantId=null] - The unique identifier for the tenant.
+     * @param {?number} [params.equipmentId=null] - The unique identifier for the equipment.
      */
     constructor({ id = null, tenantId = null, type = '',
                 equipmentId = null, generatedAt = '', title = '',

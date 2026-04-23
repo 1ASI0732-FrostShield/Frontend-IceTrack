@@ -1,17 +1,23 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
-  snapshot: {
+  kpis: {
     type: Object,
     default: null
   }
 })
 
 const formattedAvgTemperature = computed(() => {
-  if (!props.snapshot) return '-'
-  const avg = props.snapshot.avgTemperature
-  return avg ? `${avg.toFixed(1)} °C` : '-'
+  if (!props.kpis || props.kpis.avgTemperature === 0) return '--'
+  return props.kpis.getFormattedAvgTemp()
+})
+
+const hasData = computed(() => {
+  return props.kpis && props.kpis.hasData()
 })
 </script>
 
@@ -21,13 +27,16 @@ const formattedAvgTemperature = computed(() => {
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.equipments') }}</span>
-            <i class="pi pi-sitemap" aria-hidden="true" title="Equipos"></i>
+            <span>{{ t('dashboard.kpis.equipments') }}</span>
+            <i class="pi pi-sitemap" aria-hidden="true" :title="t('dashboard.kpis.equipments')"></i>
           </div>
         </template>
         <template #content>
           <div class="text-3xl font-bold text-primary">
-            {{ snapshot?.kpis?.totalEquipments ?? '-' }}
+            {{ kpis?.totalEquipments ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
@@ -37,13 +46,16 @@ const formattedAvgTemperature = computed(() => {
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.alerts') }}</span>
-            <i class="pi pi-exclamation-triangle" aria-hidden="true" title="Alertas"></i>
+            <span>{{ t('dashboard.kpis.alerts') }}</span>
+            <i class="pi pi-exclamation-triangle" aria-hidden="true" :title="t('dashboard.kpis.alerts')"></i>
           </div>
         </template>
         <template #content>
           <div class="text-3xl font-bold text-orange-500">
-            {{ snapshot?.kpis?.openAlerts ?? '-' }}
+            {{ kpis?.openAlerts ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
@@ -53,13 +65,16 @@ const formattedAvgTemperature = computed(() => {
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.orders') }}</span>
-            <i class="pi pi-briefcase" aria-hidden="true" title="Órdenes"></i>
+            <span>{{ t('dashboard.kpis.orders') }}</span>
+            <i class="pi pi-briefcase" aria-hidden="true" :title="t('dashboard.kpis.orders')"></i>
           </div>
         </template>
         <template #content>
           <div class="text-3xl font-bold text-green-500">
-            {{ snapshot?.kpis?.activeRequests ?? '-' }}
+            {{ kpis?.activeRequests ?? '--' }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>
@@ -69,13 +84,16 @@ const formattedAvgTemperature = computed(() => {
       <pv-card>
         <template #title>
           <div class="flex align-items-center justify-content-between w-full">
-            <span>{{ $t('dashboard.kpis.avgTemp') }}</span>
-            <i class="pi pi-chart-scatter" aria-hidden="true" title="Temperatura"></i>
+            <span>{{ t('dashboard.kpis.avgTemp') }}</span>
+            <i class="pi pi-chart-scatter" aria-hidden="true" :title="t('dashboard.kpis.avgTemp')"></i>
           </div>
         </template>
         <template #content>
           <div class="text-3xl font-bold text-blue-500">
             {{ formattedAvgTemperature }}
+          </div>
+          <div v-if="!hasData" class="text-sm text-500 mt-2">
+            {{ t('dashboard.noData') }}
           </div>
         </template>
       </pv-card>

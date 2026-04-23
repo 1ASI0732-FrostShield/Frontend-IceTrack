@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useConfirm } from 'primevue/useconfirm'
@@ -28,21 +28,24 @@ const filters = ref({
   status: { value: null, matchMode: FilterMatchMode.EQUALS }
 })
 
-const statusOptions = ref([
-  { label: 'Listo', value: 'Listo' },
-  { label: 'En espera', value: 'En espera' }
+const statusOptions = computed(() => [
+  { label: t('reports.list.statusFilter.completed'), value: 'Completed' },
+  { label: t('reports.list.statusFilter.inProgress'), value: 'InProgress' },
+  { label: t('reports.list.statusFilter.canceled'), value: 'Canceled' }
 ])
 
-const typeOptions = ref([
-  { label: 'Historial de equipo', value: 'Historial de equipo' },
-  { label: 'Consumo de energía', value: 'Consumo de energía' },
-  { label: 'Servicio', value: 'Servicio' }
+const typeOptions = computed(() => [
+  { label: t('reports.list.typesFilter.inspection'), value: 'Inspection' },
+  { label: t('reports.list.typesFilter.maintenance'), value: 'Maintenance' },
+  { label: t('reports.list.typesFilter.incident'), value: 'Incident' },
+  { label: t('reports.list.typesFilter.audit'), value: 'Audit' },
 ])
 
 const getSeverity = (status) => {
   switch (status) {
-    case 'Listo': return 'success'
-    case 'En espera': return 'warning'
+    case 'Completed': return 'success'
+    case 'InProgress': return 'warning'
+    case 'Canceled': return 'danger'
     default: return 'secondary'
   }
 }
@@ -102,13 +105,13 @@ function formatDate(dateStr) {
             <pv-input-icon>
               <i class="pi pi-search" />
             </pv-input-icon>
-            <pv-input-text v-model="filters['global'].value" placeholder="Buscar..." />
+            <pv-input-text v-model="filters['global'].value" :placeholder="t('reports.list.search')" />
           </pv-icon-field>
         </div>
       </template>
 
-      <template #empty> No se encontraron reportes. </template>
-      <template #loading> Cargando reportes... </template>
+      <template #empty> No reports were found. </template>
+      <template #loading> Loading reports... </template>
 
       <pv-column field="title" :header="t('reports.list.name')" style="min-width: 14rem">
         <template #filter="{ filterModel, filterCallback }">
@@ -127,6 +130,7 @@ function formatDate(dateStr) {
               @change="filterCallback()"
               :options="typeOptions"
               optionLabel="label"
+              optionValue="value"
               :placeholder="t('reports.list.label.type')"
               :showClear="true"
               style="width: 100%"
@@ -150,6 +154,7 @@ function formatDate(dateStr) {
               @change="filterCallback()"
               :options="statusOptions"
               optionLabel="label"
+              optionValue="value"
               :placeholder="t('reports.list.label.status')"
               :showClear="true"
               style="width: 100%"

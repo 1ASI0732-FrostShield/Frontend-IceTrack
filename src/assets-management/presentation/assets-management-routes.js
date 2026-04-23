@@ -1,5 +1,5 @@
 const siteDetail = () => import('./views/site-detail.vue');
-const siteList = () => import('./views/site-list.vue');
+const siteList = () => import('./views/sites-list.vue');
 
 const assetsManagementRoutes = [
     {   path: 'sites',             name: 'assets-management-sites',      component: siteList(), meta: {title: 'Sites'}},

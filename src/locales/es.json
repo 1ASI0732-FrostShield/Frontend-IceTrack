@@ -1,246 +1,672 @@
 {
-  "common": {
-    "appName": "IceTrack",
-    "ok": "Aceptar",
-    "cancel": "Cancelar",
-    "save": "Guardar",
-    "search": "Buscar",
-    "status": { "open": "Abierta", "assigned": "Asignada", "inProgress": "En progreso", "resolved": "Resuelta", "closed": "Cerrada" },
-    "severity": { "info": "Info", "warning": "Advertencia", "critical": "Crítica" },
-
-    "filter-by": "Filtrar por",
-    "all": "Todos",
-    "submit-request": "Enviar Solicitud",
-    "cancel-tooltip": "Cancelar Solicitud",
-    "error-occurred": "Ha ocurrido un error"
-  },
-  "nav": { "dashboard": "Inicio", "sites": "Sitios", "equipments": "Equipos", "services": "Órdenes", "alerts": "Alertas", "reports": "Reportes", "admin": "Administración", "help": "Ayuda" },
-  "auth": {
-    "login": { "title": "Iniciar sesión", "email": "Correo", "password": "Contraseña", "cta": "Entrar" },
-    "register": { "title": "Crear cuenta" },
-    "errors": { "invalidCredentials": "Correo o contraseña incorrectos." }
-  },
-  "page-not-found": {
-    "title": "Página no encontrada",
-    "content": "La ruta {unavailable-route} no está disponible.",
-    "go-dashboard": "Ir al Dashboard"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "demoBanner": "Modo demo: usando tenant {id}",
-    "kpis": {
-      "equipments": "Equipos monitoreados",
-      "alerts": "Alertas abiertas",
-      "orders": "Órdenes activas",
-      "avgTemp": "Temperatura promedio"
-    },
-    "chartTitle": "Temperatura (24h/7d)",
-    "recentAlerts": "Alertas recientes",
-    "alerts": {
-      "noAlerts": "Sin alertas recientes",
-      "columns": {
-        "date": "FECHA",
-        "equipment": "EQUIPO",
-        "site": "SITIO",
-        "severity": "SEVERIDAD",
-        "status": "ESTADO",
-        "action": "ACCIÓN"
-      },
-      "severities": {
-        "critical": "Crítico",
-        "warning": "Advertencia",
-        "info": "Información",
-        "low": "Baja",
-        "medium": "Media",
-        "high": "Alta"
-      },
-      "statuses": {
-        "open": "Abierto",
-        "acknowledged": "Reconocido",
-        "resolved": "Resuelto",
-        "closed": "Cerrado",
-        "pending": "Pendiente",
-        "in_progress": "En progreso"
-      },
-      "actions": {
-        "acknowledge": "Aceptar (ACK)",
-        "resolve": "Resolver",
-        "close": "Cerrar",
-        "view": "Ver detalles"
-      }
-    }
-  },
-  "sites": {
-    "list": { "title": "Sitios", "empty": "Aún no hay sitios.", "id": "Id", "name": "Nombre", "address": "Dirección" },
-    "detail": {"title": "Detalle del sitio", "contactName": "Nombre de contacto", "contactPhone": "Teléfono", "createdAt": "Creado", "updatedAt": "Actualizado" }
-  },
-  "equipments": {
-    "list": { "title": "Equipos", "id": "Id", "model": "Modelo", "type": "Tipo", "serial": "Serie", "status": "Estado" },
-    "detail": {"title": "Detalle del equipo", "siteId": "Sitio Id", "installedAt": "Instalado", "lastSeenAt": "Última conexión", "createdAt": "Creado", "updatedAt": "Actualizado" },
-    "controls": { "info": "Informacion", "more": "Mas" ,"setpointC": "Punto de ajuste °C", "name": "Nombre", "manufacturer": "Fabricante", "online": "En línea" }
-  },
-  "services": {
-    "requests": {
-      "id": "ID",
-      "title": "Solicitudes de servicio",
-      "new": "Nueva solicitud",
-      "detail": "Detalle de solicitud",
-
-      "my-requests": "Mis Solicitudes de Servicio",
-      "new-request-title": "Crear Nueva Solicitud",
-      "success-message": "¡Solicitud creada exitosamente! Pronto nos comunicaremos.",
-      "date": "Fecha",
-      "equipment": "Equipo",
-      "site": "Sitio",
-      "type": "Tipo",
-      "status": "Estado",
-      "actions": "Acciones",
-      "track": "Seguimiento",
-      "track-tooltip": "Ver el estado actual y el técnico asignado",
-      "view-report": "Ver Reporte",
-      "report-tooltip": "Descargar el informe de servicio completado",
-      "confirm-cancel": "¿Está seguro de que desea cancelar la Solicitud {id}?",
-      "cancel-header": "Confirmar Cancelación",
-      "request-type": "Tipo de Solicitud",
-      "priority": "Prioridad",
-      "problem-description": "Descripción del Problema"
-    },
-    "status": { "scheduled": "Programada", "assigned": "Asignada", "inProgress": "En progreso", "done": "Completada", "pending": "Pendiente", "canceled": "Cancelada" }
-  },
-  "service-requests": {
-    "types": {
-      "corrective": "Correctivo",
-      "preventive": "Preventivo"
-    }
-  },
-
-  "alerts": {
-    "list": {
-      "title": "Alertas",
-      "type": "Tipo",
-      "equipment": "Equipo",
-      "site": "Sitio",
-      "tenant": "Tenant",
-      "timestamp": "Fecha",
-      "actions": "Acciones",
-      "dateFrom": "Desde",
-      "dateTo": "Hasta",
-      "viewEquipment": "Ver equipo",
-      "clear": "Limpiar"
-    },
-    "types": {
-      "highTemperature": "Alta temperatura",
-      "powerLoss": "Pérdida de energía",
-      "sensorOffline": "Sensor desconectado"
-    },
-    "placeholders": {
-      "selectType": "Seleccionar tipo",
-      "selectEquipment": "Seleccionar equipo"
-    },
-    "deletion": {
-      "confirmDeleteTitle": "Eliminar alerta",
-      "confirmDeleteMessage": "¿Estás seguro de eliminar esta alerta?",
-      "confirmDeleteAccept": "Sí, eliminar",
-      "confirmDeleteReject": "Cancelar",
-      "deleteSuccess": "Alerta eliminada correctamente",
-      "deleteError": "Error al eliminar la alerta"
-    }
-  },
-
-  "errors": {
-    "occurred": "Ocurrió un error"
-  },
-  "reports": {
-    "list": {
-      "title": "Reportes Generados",
-      "new": "Nuevo Reporte",
-      "name": "Nombre",
-      "type": "Tipo",
-      "date": "Fecha",
-      "status": "Estado",
-      "actions": "Acciones",
-      "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
-      "delete-header": "Confirmar eliminación",
-      "statusType": {
-        "done": "Listo",
-        "inProgress": "En progreso"
-      },
-      "label": {
-        "search": "Buscar por nombre",
-        "type": "Seleccionar tipo",
-        "status": "Seleccionar estado"
-      },
-      "action": {
-        "view": "Ver Reporte"
-      },
-      "detail": {
-        "start": "Detalle del Reporte",
-        "title": "Título",
-        "type": "Tipo",
-        "status": "Estado",
-        "summary": "Resumen",
-        "content": "Contenido",
-        "generatedAt": "Generado el",
-        "edit": "Editar",
-        "back": "Volver",
+    "common": {
+        "appName": "IceTrack",
+        "ok": "Aceptar",
+        "cancel": "Cancelar",
         "save": "Guardar",
-        "cancel": "Cancelar"
-      },
-      "create": {
-        "start": "Nuevo Reporte"
-      }
+        "search": "Buscar",
+        "status": {
+            "title": "Estado",
+            "open": "Abierta",
+            "assigned": "Asignada",
+            "inProgress": "En progreso",
+            "resolved": "Resuelta",
+            "closed": "Cerrada"
+        },
+        "severity": {
+            "info": "Info",
+            "warning": "Advertencia",
+            "critical": "Crítica"
+        },
+        "filter-by": "Filtrar por",
+        "all": "Todos",
+        "submit-request": "Enviar Solicitud",
+        "cancel-tooltip": "Cancelar Solicitud",
+        "error-occurred": "Ha ocurrido un error",
+        "success": "Éxito",
+        "error": "Error"
     },
-    "types": {
-      "equipmentHistory": "Historial del Equipo",
-      "energyConsumption": "Consumo de Energía",
-      "Service": "Servicio"
+    "nav": {
+        "dashboard": "Inicio",
+        "sites": "Sitios",
+        "equipments": "Equipos",
+        "services": "Órdenes",
+        "alerts": "Alertas",
+        "reports": "Reportes",
+        "admin": "Administración",
+        "help": "Ayuda",
+        "provider_dashboard": "Dashboard",
+        "provider_services": "Servicios",
+        "technician_management": "Técnicos"
+    },
+    "auth": {
+        "login": {
+            "title": "Iniciar sesión",
+            "username": "Nombre de usuario",
+            "email": "Correo",
+            "password": "Contraseña",
+            "cta": "Entrar",
+            "submit": "Ingresar",
+            "error": "Usuario o contraseña inválidos"
+        },
+        "register": {
+            "title": "Crear cuenta",
+            "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+            "signIn": "Inicia sesión",
+            "selectRole": "Selecciona tu rol",
+            "cta": "Registrarse",
+            "roles": {
+                "owner": "Propietario",
+                "ownerDesc": "Administra tus sitios y equipos",
+                "provider": "Proveedor de servicios",
+                "providerDesc": "Proporciona servicios a propietarios"
+            }
+        },
+        "errors": {
+            "invalidCredentials": "Correo o contraseña incorrectos.",
+            "occurred": "Ocurrió un error"
+        }
+    },
+    "page-not-found": {
+        "title": "Página no encontrada",
+        "content": "La ruta {unavailable-route} no está disponible.",
+        "go-dashboard": "Ir al Dashboard"
+    },
+    "dashboard": {
+        "title": "Panel de Control",
+        "subtitle": "Monitorea tus equipos y alertas",
+        "loading": "Cargando panel...",
+        "loadingData": "Cargando datos...",
+        "refresh": "Actualizar Panel",
+        "noConfig": "No se encontró configuración del dashboard",
+        "noCardsAdded": "No has agregado tarjetas a tu dashboard aún",
+        "noCardsVisible": "Sin tarjetas visibles",
+        "useConfigPanel": "Usa el panel de configuración de abajo para agregar tarjetas.",
+        "noData": "Sin datos disponibles",
+        "dataPoints": "puntos de datos",
+        "demoBanner": "Modo demo: usando tenant {id}",
+        "chartTitle": "Tendencia de Temperatura",
+        "recentAlerts": "Alertas recientes",
+        "filteredBySite": "Filtrado por ID de sitio: {id}",
+        "showingAllSites": "Mostrando todos los sitios",
+        "kpis": {
+            "equipments": "Equipos monitoreados",
+            "alerts": "Alertas abiertas",
+            "orders": "Órdenes activas",
+            "avgTemp": "Temperatura promedio",
+            "totalEquipments": "Equipos totales",
+            "openAlerts": "Alertas abiertas",
+            "energyThisWeek": "Energía (esta semana)"
+        },
+        "configCardSubtitles": {
+            "monitoredEquipment": "Total de equipos monitoreados",
+            "openAlerts": "Alertas que requieren atención",
+            "default": "Métrica de dashboard"
+        },
+        "errors": {
+            "title": "Se encontraron errores:"
+        },
+        "settings": {
+            "title": "Configuración del Dashboard",
+            "defaultSite": "Sitio Predeterminado",
+            "selectSite": "Seleccione un sitio",
+            "defaultSiteHelp": "Los datos se filtrarán por este sitio por defecto",
+            "temperatureRange": "Rango de Temperatura",
+            "temperatureRangePlaceholder": "ej., -20 a 5",
+            "temperatureRangeHelp": "Rango de temperatura predeterminado para monitoreo de equipos"
+        },
+        "addCard": {
+            "title": "Agregar Tarjeta",
+            "dialogTitle": "Agregar tarjeta al dashboard",
+            "selectType": "Seleccione el tipo de tarjeta",
+            "add": "Agregar Tarjeta",
+            "allCardsAdded": "Todas las tarjetas disponibles han sido agregadas",
+            "loading": "Cargando tarjetas disponibles...",
+            "widgetType": "Tipo de widget del dashboard",
+            "added": "Agregada"
+        },
+        "config": {
+            "title": "Configuración del Dashboard",
+            "fields": {
+                "userId": "ID de usuario"
+            },
+            "temperatureRangeNote": "Para alertas de temperatura",
+            "noSiteSelected": "Ningún sitio seleccionado",
+            "unnamedSite": "Sitio {id}",
+            "table": {
+                "id": "ID",
+                "cardType": "Tipo de tarjeta",
+                "order": "Orden",
+                "visible": "Visible",
+                "actions": "Acciones"
+            },
+            "visibility": {
+                "label": "Visibilidad",
+                "visible": "Visible",
+                "hidden": "Oculta",
+                "showOnDashboard": "Mostrar esta tarjeta en el dashboard"
+            },
+            "actions": {
+                "settings": "Configuración",
+                "addCard": "Agregar tarjeta",
+                "editCard": "Editar tarjeta",
+                "deleteCard": "Eliminar tarjeta"
+            },
+            "tooltips": {
+                "editCard": "Editar tarjeta",
+                "deleteCard": "Eliminar tarjeta"
+            },
+            "confirm": {
+                "removeHeader": "Eliminar tarjeta",
+                "removeMessage": "¿Seguro que quieres quitar \"{cardType}\" de tu dashboard?",
+                "accept": "Eliminar"
+            },
+            "editVisibility": {
+                "title": "Editar visibilidad de la tarjeta"
+            },
+            "messages": {
+                "settingsUpdated": "Configuración actualizada correctamente",
+                "settingsUpdateFailed": "No se pudo actualizar la configuración",
+                "cardAdded": "Tarjeta \"{cardType}\" agregada correctamente",
+                "cardAddFailed": "No se pudo agregar la tarjeta",
+                "cardUpdated": "Tarjeta actualizada correctamente",
+                "cardUpdateFailed": "No se pudo actualizar la tarjeta",
+                "cardRemoved": "Tarjeta \"{cardType}\" eliminada correctamente",
+                "cardRemoveFailed": "No se pudo eliminar la tarjeta"
+            }
+        },
+        "cardTypes": {
+            "AlertsCard": "Alertas",
+            "TemperatureMonitoringCard": "Monitoreo de Temperatura",
+            "EquipmentStatusCard": "Estado de Equipos",
+            "RecentReportsCard": "Reportes Recientes",
+            "ServiceRequestsCard": "Solicitudes de Servicio"
+        },
+        "cardDescriptions": {
+            "AlertsCard": "Ver alertas recientes y su estado",
+            "TemperatureMonitoringCard": "Monitorear tendencias de temperatura en el tiempo",
+            "EquipmentStatusCard": "Ver estado de equipos y KPIs",
+            "RecentReportsCard": "Acceder a reportes generados recientemente",
+            "ServiceRequestsCard": "Rastrear solicitudes de servicio activas"
+        },
+        "alerts": {
+            "noAlerts": "Sin alertas recientes",
+            "columns": {
+                "date": "FECHA",
+                "equipment": "EQUIPO",
+                "site": "SITIO",
+                "severity": "SEVERIDAD",
+                "status": "ESTADO",
+                "action": "ACCIÓN"
+            },
+            "severities": {
+                "critical": "Crítico",
+                "warning": "Advertencia",
+                "info": "Información",
+                "low": "Baja",
+                "medium": "Media",
+                "high": "Alta"
+            },
+            "statuses": {
+                "open": "Abierto",
+                "acknowledged": "Reconocido",
+                "resolved": "Resuelto",
+                "closed": "Cerrado",
+                "pending": "Pendiente",
+                "in_progress": "En progreso"
+            },
+            "actions": {
+                "acknowledge": "Aceptar (ACK)",
+                "resolve": "Resolver",
+                "close": "Cerrar",
+                "view": "Ver detalles"
+            }
+        },
+        "charts": {
+            "temperatureTrend": "Tendencia de temperatura",
+            "energyUsage": "Uso de energía"
+        }
+    },
+    "sites": {
+        "list": {
+            "title": "Sitios",
+            "empty": "Aún no hay sitios.",
+            "id": "Id",
+            "name": "Nombre",
+            "address": "Dirección"
+        },
+        "detail": {
+            "title": "Detalle del sitio",
+            "contactName": "Nombre de contacto",
+            "contactPhone": "Teléfono",
+            "createdAt": "Creado",
+            "updatedAt": "Actualizado"
+        },
+        "new": {
+            "title": "Registrar Nuevo Sitio",
+            "name": "Nombre del Sitio",
+            "address": "Dirección",
+            "contact-name": "Nombre de Contacto",
+            "phone": "Teléfono",
+            "register": "Registrar Sitio",
+            "toggle-map": "Alternar Mapa para Selección de Dirección",
+            "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
+            "alert-site-created": "¡Sitio creado exitosamente!",
+            "alert-create-error": "Error al crear el sitio."
+        }
+    },
+    "equipments": {
+        "list": {
+            "title": "Equipos",
+            "id": "Id",
+            "model": "Modelo",
+            "type": "Tipo",
+            "serial": "Serie",
+            "status": "Estado"
+        },
+        "detail": {
+            "title": "Detalle del equipo",
+            "siteId": "Sitio Id",
+            "installedAt": "Instalado",
+            "lastSeenAt": "Última conexión",
+            "createdAt": "Creado",
+            "updatedAt": "Actualizado"
+        },
+        "controls": {
+            "info": "Informacion",
+            "more": "Mas",
+            "setpointC": "Punto de ajuste °C",
+            "name": "Nombre",
+            "manufacturer": "Fabricante",
+            "online": "En línea"
+        }
+    },
+    "services": {
+        "requests": {
+            "id": "ID",
+            "title": "Solicitudes de servicio",
+            "new": "Nueva solicitud",
+            "detail": "Detalle de solicitud",
+            "my-requests": "Mis Solicitudes de Servicio",
+            "new-request-title": "Crear Nueva Solicitud",
+            "success-message": "¡Solicitud creada exitosamente! Pronto nos comunicaremos.",
+            "date": "Fecha",
+            "equipment": "Equipo",
+            "site": "Sitio",
+            "type": "Tipo",
+            "status": "Estado",
+            "actions": "Acciones",
+            "track": "Seguimiento",
+            "track-tooltip": "Ver el estado actual y el técnico asignado",
+            "view-report": "Ver Reporte",
+            "report-tooltip": "Descargar el informe de servicio completado",
+            "confirm-cancel": "¿Está seguro de que desea cancelar la Solicitud {id}?",
+            "cancel-header": "Confirmar Cancelación",
+            "provider": "Proveedor",
+            "order-number": "Orden #",
+            "review": "Revisar",
+            "view-review": "Ver Reseña",
+            "view-review-header": "Ver Reseña",
+            "submit-review-header": "Enviar Reseña",
+            "rating": "Calificación",
+            "comment": "Comentario",
+            "submit": "Enviar"
+        },
+        "status": {
+            "scheduled": "Programada",
+            "assigned": "Asignada",
+            "inProgress": "En progreso",
+            "done": "Completada",
+            "pending": "Pendiente",
+            "canceled": "Cancelada",
+            "completed": "Completado",
+            "rejected": "Rechazado",
+            "accepted": "Aceptado"
+        },
+        "detail": {
+            "title": "Información de la Solicitud",
+            "description": "Descripción:",
+            "site-id": "ID del Sitio:",
+            "equipment-id": "ID del Equipo:",
+            "created-at": "Creado el:",
+            "view-equipment-details": "Ver Detalles del Equipo",
+            "interventions-log": "Registro de Intervenciones",
+            "technician-id": "ID del Técnico:",
+            "view-details": "Ver Detalles",
+            "register-intervention": "Registrar Nueva Intervención",
+            "select-technician": "Seleccionar Técnico",
+            "work-summary": "Resumen del Trabajo",
+            "start-time": "Hora de Inicio",
+            "end-time": "Hora de Fin (opcional)",
+            "add-photo-url": "Añadir URL de Foto",
+            "register": "Registrar Intervención",
+            "not-found": "Solicitud de servicio no encontrada.",
+            "equipment-details": "Detalles del Equipo",
+            "name": "Nombre:",
+            "model": "Modelo:",
+            "serial": "Serial:",
+            "type": "Tipo:",
+            "installed": "Instalado:",
+            "close": "Cerrar"
+        },
+        "in-progress": {
+            "title": "Servicios en Progreso",
+            "id": "ID",
+            "description": "Descripción",
+            "status": "Estado",
+            "assigned-technician": "Técnico Asignado",
+            "not-assigned": "No Asignado",
+            "actions": "Acciones",
+            "assign-technician": "Asignar Técnico",
+            "complete": "Completar",
+            "no-active-services": "No se encontraron servicios activos."
+        },
+        "completed": {
+            "title": "Servicios Completados",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "technician": "Técnico",
+            "completed-at": "Completado el",
+            "no-completed-services": "No se encontraron servicios completados."
+        },
+        "rejected-canceled": {
+            "title": "Servicios Rechazados / Cancelados",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "status": "Estado",
+            "date": "Fecha",
+            "no-rejected-canceled-services": "No se encontraron servicios rechazados o cancelados."
+        },
+        "intervention": {
+            "title": "Intervención",
+            "back-to-request": "Volver a la Solicitud",
+            "details": "Detalles",
+            "technician": "Técnico:",
+            "start-time": "Hora de Inicio:",
+            "end-time": "Hora de Fin:",
+            "work-summary": "Resumen del Trabajo",
+            "evidence-photos": "Fotos de Evidencia",
+            "no-photos": "No se subieron fotos para esta intervención.",
+            "not-found": "Intervención no encontrada."
+        },
+        "new": {
+            "title": "Nueva Solicitud de Servicio",
+            "provider": "Proveedor de Servicios *",
+            "site": "Sitio *",
+            "equipment": "Equipo *",
+            "request-type": "Tipo de Solicitud *",
+            "priority": "Prioridad",
+            "description": "Descripción del Problema *",
+            "alert-required-fields": "Por favor complete todos los campos requeridos.",
+            "alert-request-created": "¡Solicitud creada exitosamente!",
+            "alert-create-error": "Error al crear la solicitud."
+        }
+    },
+    "service-requests": {
+        "types": {
+            "corrective": "Correctivo",
+            "preventive": "Preventivo"
+        }
+    },
+    "alerts": {
+        "list": {
+            "title": "Alertas",
+            "type": "Tipo",
+            "equipment": "Equipo",
+            "site": "Sitio",
+            "tenant": "Inquilino",
+            "timestamp": "Fecha",
+            "actions": "Acciones",
+            "dateFrom": "Desde",
+            "dateTo": "Hasta",
+            "viewEquipment": "Ver Equipo",
+            "clear": "Limpiar",
+            "status": "Estado"
+        },
+        "types": {
+            "highTemperature": "Alta Temperatura",
+            "powerLoss": "Fallo de Energía",
+            "sensorOffline": "Sensor Desconectado"
+        },
+        "status": {
+            "pending": "Pendiente",
+            "resolved": "Resuelto",
+            "acknowledged": "Reconocido",
+            "open": "Abierto",
+            "closed": "Cerrado",
+            "active": "Activo"
+        },
+        "actions": {
+            "acknowledge": "Reconocer",
+            "delete": "Eliminar",
+            "viewEquipment": "Ver Equipo"
+        },
+        "confirm": {
+            "header": "Reconocer Alerta",
+            "message": "¿Desea marcar esta alerta como reconocida?",
+            "deleteHeader": "Eliminar Alerta",
+            "deleteMessage": "¿Está seguro de que desea eliminar esta alerta?"
+        },
+        "success": {
+            "acknowledged": "Alerta reconocida exitosamente",
+            "deleted": "Alerta eliminada exitosamente"
+        },
+        "errors": {
+            "generic": "Error al cargar las alertas",
+            "invalidId": "ID de alerta inválido",
+            "acknowledge": "Error al reconocer la alerta",
+            "delete": "Error al eliminar la alerta"
+        },
+        "placeholders": {
+            "selectType": "Seleccionar tipo",
+            "selectEquipment": "Seleccionar equipo"
+        },
+        "deletion": {
+            "confirmDeleteTitle": "Eliminar alerta",
+            "confirmDeleteMessage": "¿Estás seguro de eliminar esta alerta?",
+            "confirmDeleteAccept": "Sí, eliminar",
+            "confirmDeleteReject": "Cancelar",
+            "deleteSuccess": "Alerta eliminada correctamente",
+            "deleteError": "Error al eliminar la alerta"
+        }
+    },
+    "errors": {
+        "occurred": "Ocurrió un error"
+    },
+    "reports": {
+        "list": {
+            "title": "Reportes Generados",
+            "new": "Nuevo Reporte",
+            "name": "Nombre",
+            "type": "Tipo",
+            "date": "Fecha",
+            "status": "Estado",
+            "actions": "Acciones",
+            "confirm-delete": "Estás seguro de que quieres eliminar \"{name}\"?",
+            "delete-header": "Confirmar eliminación",
+            "search": "Buscar",
+            "statusFilter": {
+                "completed": "Completado",
+                "inProgress": "En progreso",
+                "canceled": "Cancelado"
+            },
+            "typesFilter": {
+                "inspection": "Inspección",
+                "maintenance": "Mantenimiento",
+                "incident": "Incidente",
+                "audit": "Auditoría"
+            },
+            "statusType": {
+                "done": "Listo",
+                "inProgress": "En progreso"
+            },
+            "label": {
+                "search": "Buscar por nombre",
+                "type": "Seleccionar tipo",
+                "status": "Seleccionar estado"
+            },
+            "action": {
+                "view": "Ver Reporte"
+            },
+            "detail": {
+                "start": "Detalle del Reporte",
+                "title": "Título",
+                "type": "Tipo",
+                "status": "Estado",
+                "summary": "Resumen",
+                "tenantId": "Inquilino ID",
+                "equipmentId": "Equipo ID",
+                "content": "Contenido",
+                "url": "URL del Reporte",
+                "generatedAt": "Generado el",
+                "edit": "Editar",
+                "back": "Volver",
+                "save": "Guardar",
+                "cancel": "Cancelar"
+            },
+            "create": {
+                "start": "Nuevo Reporte"
+            }
+        },
+        "detail": {
+            "title": "Detalle de reporte"
+        },
+        "types": {
+            "equipmentHistory": "Historial del Equipo",
+            "energyConsumption": "Consumo de Energía",
+            "Service": "Servicio",
+            "performance": "Rendimiento"
+        },
+        "actions": {
+            "downloadPdf": "Descargar PDF"
+        }
+    },
+    "admin": {
+        "users": {
+            "title": "Informacion del Usuario",
+            "invite": "Invitar usuario",
+            "firstName": "Nonbres:",
+            "lastName": "Apellidos:",
+            "user": "Nombre de Usuario:",
+            "email": "Correo Electronico:",
+            "plans": "Planes:",
+            "registerDate": "Fecha de registro:",
+            "lastConnection": "Ultima Coneccion:",
+            "password": "Contraseña:",
+            "hide": "Ocultar",
+            "show": "Mostrar"
+        },
+        "alert": {
+            "save": "Perfil actualizado correctamente",
+            "cancel": "Cambios cancelados"
+        },
+        "settings": {
+            "title": "Configuración",
+            "language": "Idioma",
+            "cancel": "Cancelar",
+            "save": "Guardar",
+            "lightMode": "Modo de luz:",
+            "notifications": "Notificaciones:",
+            "alarmType": "Tipos de Alarma:",
+            "night": "Noche",
+            "day": "Dia",
+            "notify": {
+                "sms": "SMS",
+                "email": "Correo electrónico",
+                "calls": "Llamada telefonica",
+                "social": "Redes sociales"
+            },
+            "alarm": {
+                "bells": "Campanas",
+                "chime": "Timbre",
+                "pop": "Pop",
+                "none": "Ninguno"
+            }
+        }
+    },
+    "provider": {
+        "dashboard": {
+            "title": "Dashboard",
+            "new-requests": "Nuevas Solicitudes",
+            "active-services": "Servicios Activos",
+            "my-technicians": "Mis Técnicos",
+            "all-services": "Todos los Servicios",
+            "all-services-description": "Ir a la lista completa de tus servicios.",
+            "view-all-services": "Ver Todos los Servicios",
+            "pending-requests": "Solicitudes Pendientes",
+            "refresh-list": "Actualizar Lista",
+            "id": "ID",
+            "description": "Descripción",
+            "site": "Sitio",
+            "priority": "Prioridad",
+            "actions": "Acciones",
+            "accept": "Aceptar",
+            "reject": "Rechazar",
+            "no-pending-requests": "No se encontraron solicitudes pendientes."
+        },
+        "services": {
+            "title": "Mis Solicitudes de Servicio",
+            "hub": {
+                "title": "Centro de Gestión de Servicios",
+                "pending-requests": "Solicitudes Pendientes",
+                "pending-requests-description": "Esperando aceptación",
+                "in-progress": "En Progreso",
+                "in-progress-description": "Aceptado o asignado",
+                "completed": "Completado",
+                "completed-description": "Servicios finalizados",
+                "rejected-canceled": "Rechazado / Cancelado",
+                "rejected-canceled-description": "No proceder"
+            },
+            "list": {
+                "status": "Estado:",
+                "client": "Cliente:",
+                "search-by-client": "Buscar por nombre de cliente",
+                "order-number": "Orden #",
+                "site": "Sitio",
+                "actions": "Acciones",
+                "view-details": "Ver Detalles"
+            }
+        },
+        "technicians": {
+            "title": "Gestión de Técnicos",
+            "register-new": "Registrar Nuevo Técnico",
+            "name": "Nombre",
+            "specialty": "Especialidad",
+            "phone": "Teléfono",
+            "register": "Registrar",
+            "my-technicians": "Mis Técnicos",
+            "average-rating": "Calificación Promedio",
+            "actions": "Acciones",
+            "no-technicians": "No se encontraron técnicos. Registre uno para comenzar.",
+            "edit-technician": "Editar Técnico",
+            "confirm-delete": "¿Estás seguro de que quieres eliminar a {name}?",
+            "confirm-delete-header": "Confirmar Eliminación"
+        }
+    },
+    "validation": {
+        "required": "{field} es obligatorio",
+        "email": "Ingresa un correo válido",
+        "min": "Mínimo {min}",
+        "max": "Máximo {max}"
+    },
+    "dates": {
+        "today": "Hoy",
+        "yesterday": "Ayer",
+        "period": "{start} – {end}"
+    },
+    "notifications": {
+        "title": "Notificaciones",
+        "empty": "¡No tienes pendientes!",
+        "markAllRead": "Marcar todo como leído"
+    },
+    "table": {
+        "rows": "{count, plural, one {# fila} other {# filas}}"
+    },
+    "map": {
+        "selected-location": "Ubicación Seleccionada",
+        "address": "Dirección",
+        "coordinates": "Coordenadas"
     }
-  },
-  "admin": {
-    "users": {
-      "title": "Informacion del Usuario",
-      "invite": "Invitar usuario",
-      "firstName": "Nonbres:",
-      "lastName": "Apellidos:",
-      "user": "Nombre de Usuario:",
-      "email": "Correo Electronico:",
-      "plans": "Planes:",
-      "registerDate": "Fecha de registro:",
-      "lastConnection": "Ultima Coneccion:",
-      "password": "Contraseña:",
-      "hide": "Ocultar",
-      "show": "Mostrar"
-    },
-    "alert": {
-      "save": "Perfil actualizado correctamente",
-      "cancel": "Cambios cancelados"
-    },
-    "settings": {
-      "title": "Configuración",
-      "language": "Idioma",
-      "cancel": "Cancelar",
-      "save": "Guardar",
-      "lightMode": "Modo de luz:",
-      "notifications": "Notificaciones:",
-      "alarmType": "Tipos de Alarma:",
-      "night": "Noche",
-      "day": "Dia",
-      "notify": {
-        "sms": "SMS",
-        "email": "Correo electrónico",
-        "calls": "Llamada telefonica",
-        "social": "Redes sociales"
-      },
-      "alarm": {
-        "bells": "Campanas",
-        "chime": "Timbre",
-        "pop": "Pop",
-        "none": "Ninguno"
-      }
-    }
-  },
-  "validation": { "required": "{field} es obligatorio", "email": "Ingresa un correo válido", "min": "Mínimo {min}", "max": "Máximo {max}" },
-  "dates": { "today": "Hoy", "yesterday": "Ayer", "period": "{start} – {end}" },
-  "notifications": { "title": "Notificaciones", "empty": "¡No tienes pendientes!", "markAllRead": "Marcar todo como leído" },
-  "table": { "rows": "{count, plural, one {# fila} other {# filas}}" }
 }

@@ -1,50 +1,63 @@
+import { Intervention } from './intervention.entity.js';
+
+/**
+ * @class ServiceRequest
+ * @description Represents a service request entity, including all its properties and related data.
+ * @author Kenyi Ramirez
+ */
 export class ServiceRequest {
+    /**
+     * @constructor
+     * @param {object} props - The properties of the service request.
+     */
     constructor({
-                    id = null,
-                    tenantId = null,
-                    siteId = null,
-                    equipmentId = null,
-                    requesterId = null,
-                    origin = 'manual',
-                    alertId = null,
-                    type = 'corrective',
-                    priority = 'medium', // high, medium, low
-                    description = '',
-                    status = 'pending', // pending, assigned, scheduled, inProgress, done, canceled
-                    createdAt = null,
-                    scheduledFor = null,
-                    startedAt = null,
-                    completedAt = null,
-                    canceledAt = null,
-                    assignedTo = null,
-                    siteName = '',
-                    equipmentName = '',
-                    requesterName = '',
+                    id,
+                    requesterId,
+                    siteId,
+                    equipmentId,
+                    assignedTo,
+                    origin,
+                    type,
+                    priority,
+                    description,
+                    status,
+                    createdAt,
+                    completedAt,
+                    canceledAt,
+                    technicianId,
+                    // Enriched data
+                    siteName = 'N/A',
+                    equipmentName = 'N/A',
+                    requesterName = 'N/A',
+                    assignedToName = 'N/A',
                     technicianName = null,
-                    reportUrl = null
+                    hasReview = false,
+                    reviewId = null,
+                    orderNumber = 0,
+                    interventions = []
                 }) {
         this.id = id;
-        this.tenantId = tenantId;
+        this.requesterId = requesterId;
         this.siteId = siteId;
         this.equipmentId = equipmentId;
-        this.requesterId = requesterId;
+        this.assignedTo = assignedTo;
         this.origin = origin;
-        this.alertId = alertId;
         this.type = type;
         this.priority = priority;
         this.description = description;
         this.status = status;
         this.createdAt = createdAt;
-        this.scheduledFor = scheduledFor;
-        this.startedAt = startedAt;
         this.completedAt = completedAt;
         this.canceledAt = canceledAt;
-        this.assignedTo = assignedTo;
-
+        this.technicianId = technicianId;
         this.siteName = siteName;
         this.equipmentName = equipmentName;
         this.requesterName = requesterName;
+        this.assignedToName = assignedToName;
         this.technicianName = technicianName;
-        this.reportUrl = reportUrl;
+        this.hasReview = hasReview;
+        this.reviewId = reviewId;
+        this.orderNumber = orderNumber;
+        this.interventions = interventions.map(i => new Intervention(i));
     }
 }
