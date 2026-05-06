@@ -58,12 +58,48 @@ const useAssetsManagementStore = defineStore('assetsManagement', () => {
         }
     }
 
+    /**
+     * Updates an existing site via the API and updates state.
+     * @function
+     * @param {Site} site - The site to update.
+     * @returns {void}
+     */
+    async function updateSite(site) {
+        errors.value = [];
+        try {
+            const response = await assetsManagementApi.updateSite(site);
+            const updatedSite = SitesAssembler.toEntityFromResource(response.data);
+            const index = sites.value.findIndex(s => s.id === updatedSite.id);
+            if (index !== -1) sites.value[index] = updatedSite;
+        } catch (error) {
+            errors.value.push(error);
+            throw error;
+        }
+    }
+
+    /**
+     * Deletes a site via the API and updates state.
+     * @function
+     * @param {Site} site - The site to delete.
+     * @returns {void}
+     */
+    function deleteSite(site) {
+        assetsManagementApi.deleteSite(site.id).then(() => {
+            const index = sites.value.findIndex(s => s["id"] === site.id);
+            if (index !== -1) sites.value.splice(index, 1);
+        }).catch(error => {
+            errors.value.push(error);
+        });
+    }
+
     return {
         sites,
         errors,
         sitesLoaded,
         fetchSites,
         createSite,
+        updateSite,
+        deleteSite,
     }
 });
 

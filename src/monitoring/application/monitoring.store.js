@@ -76,6 +76,23 @@ const useMonitoringStore = defineStore("monitoring", () => {
     }
 
     /**
+     * Creates a new site via the API and updates the equipments list.
+     * @param {object} equipmentData - The data for the new site.
+     * @returns {Promise<void>}
+     */
+    async function createEquipment(equipmentData) {
+        errors.value = [];
+        try {
+            const response = await monitoringApi.createEquipment(equipmentData);
+            const newEquipment = EquipmentAssembler.toEntityFromResource(response.data);
+            equipments.value.push(newEquipment);
+        } catch (error) {
+            errors.value.push(error);
+            throw error;
+        }
+    }
+
+    /**
      * Deletes a alerts via the API and updates state.
      * @function
      * @param {Category} alert - The alert to delete.
@@ -103,6 +120,7 @@ const useMonitoringStore = defineStore("monitoring", () => {
         alerts,
         errors,
         equipmentsLoaded,
+        createEquipment,
         alertsLoaded,
         acknowledgeAlert,
         fetchAlerts,

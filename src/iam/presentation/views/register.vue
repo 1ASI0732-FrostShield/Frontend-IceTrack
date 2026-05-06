@@ -60,7 +60,14 @@ async function handleRegister() {
 <template>
   <div class="flex justify-content-center align-items-center min-h-screen surface-ground">
     <pv-card class="w-full max-w-28rem">
-      <template #title>{{ t('auth.register.title') }}</template>
+
+      <!-- Create account -->
+      <template #title>
+        <span class="text-2xl font-bold">
+          {{ t('auth.register.title') }}
+        </span>
+      </template>
+
       <template #content>
         <form @submit.prevent="handleRegister" class="p-fluid">
 
@@ -99,25 +106,53 @@ async function handleRegister() {
             </div>
           </div>
 
-          <div class="field">
-            <label for="name">{{ t('admin.users.firstName') }}</label>
-            <pv-input-text id="name" v-model="name" required :disabled="loading || registrationSuccess" />
+          <!-- Name -->
+          <div class="field mb-4">
+            <label for="name" class="block mb-2 font-medium">
+              {{ t('admin.users.firstName') }}
+            </label>
+            <pv-input-text
+                id="name"
+                v-model="name"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+            />
           </div>
 
-          <div class="field">
-            <label for="username">{{ t('auth.login.username') }}</label>
-            <pv-input-text id="username" type="text" v-model="username" required :disabled="loading || registrationSuccess" />
+          <!-- Username -->
+          <div class="field mb-4">
+            <label for="username" class="block mb-2 font-medium">
+              {{ t('auth.login.username') }}
+            </label>
+            <pv-input-text
+                id="username"
+                type="text"
+                v-model="username"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+            />
           </div>
 
-          <div class="field">
-            <label for="password">{{ t('auth.login.password') }}</label>
-            <pv-input-text id="password" type="password" v-model="password" required :disabled="loading || registrationSuccess" />
+          <!-- Password -->
+          <div class="field mb-4">
+            <label for="password" class="block mb-2 font-medium">
+              {{ t('auth.login.password') }}
+            </label>
+            <pv-input-text
+                id="password"
+                type="password"
+                v-model="password"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+            />
           </div>
 
           <pv-button
               type="submit"
               :label="t('auth.register.cta')"
-              class="mt-4"
               :loading="loading"
               :disabled="loading || registrationSuccess"
           />

@@ -47,7 +47,8 @@
       "password": "Password",
       "cta": "Sign in",
       "submit": "Sign In",
-      "error": "Invalid username or password"
+      "error": "Invalid username or password",
+      "dontHaveAccount": "Don’t have an account?"
     },
     "register": {
       "title": "Create account",
@@ -231,17 +232,22 @@
   "sites": {
     "list": {
       "title": "Sites",
-      "empty": "No sites yet.",
+      "empty": "No sites yet",
       "id": "Id",
       "name": "Name",
-      "address": "Address"
+      "address": "Address",
+      "information": "More information"
     },
     "detail": {
+      "view": "View",
       "title": "Site detail",
-      "contactName": "Contact Name",
+      "contactName": "Contact name",
+      "contactEquipment": "Contact equipment",
       "contactPhone": "Phone",
       "createdAt": "Created",
-      "updatedAt": "Updated"
+      "updatedAt": "Updated",
+      "actions": "Actions",
+      "askDelete": "Are you sure to delete?"
     },
     "new": {
       "title": "Register New Site",
@@ -253,7 +259,7 @@
       "toggle-map": "Toggle Map for Address Selection",
       "alert-required-fields": "Please fill in all required fields.",
       "alert-site-created": "Site created successfully!",
-      "alert-create-error": "Error creating site."
+      "alert-create-error": "Error creating Site."
     }
   },
   "equipments": {
@@ -263,7 +269,8 @@
       "model": "Model",
       "type": "Type",
       "serial": "Serial",
-      "status": "Status"
+      "status": "Status",
+      "empty": "No equipment yet"
     },
     "detail": {
       "title": "Equipment detail",
@@ -272,6 +279,24 @@
       "lastSeenAt": "last Seen",
       "createdAt": "Created",
       "updatedAt": "Updated"
+    },
+    "new": {
+      "title": "Register New Equipment",
+      "site": "Choose the site",
+      "name": "Name",
+      "model": "Model",
+      "type": "Type",
+      "manufacturer": "Manufacturer",
+      "setpointC": "Set Point °C",
+      "serial": "Serial",
+      "status": "Status",
+      "online": "Online",
+      "register": "Register Equipment",
+      "installedAt": "Installed",
+      "lastSeenAt": "last Seen",
+      "alert-required-fields": "Please fill in all required fields.",
+      "alert-site-created": "Equipment created successfully!",
+      "alert-create-error": "Error creating Equipment."
     },
     "controls": {
       "info": "Information",

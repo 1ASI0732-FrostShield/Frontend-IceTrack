@@ -29,6 +29,15 @@ export class MonitoringApi extends BaseApi {
     }
 
     /**
+     * Creates a new equipment.
+     * @param {object} equipmentData - The data for the new site.
+     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the new site's response.
+     */
+    createEquipment(equipmentData) {
+        return this.http.post(equipmentsEndpointPath, equipmentData);
+    }
+
+    /**
      * Fetches all alerts.
      * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the alerts' response.
      */

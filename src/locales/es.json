@@ -47,7 +47,8 @@
             "password": "Contraseña",
             "cta": "Entrar",
             "submit": "Ingresar",
-            "error": "Usuario o contraseña inválidos"
+            "error": "Usuario o contraseña inválidos",
+            "dontHaveAccount": "¿No tienes una cuenta?"
         },
         "register": {
             "title": "Crear cuenta",
@@ -230,17 +231,23 @@
     "sites": {
         "list": {
             "title": "Sitios",
-            "empty": "Aún no hay sitios.",
+            "empty": "Aún no hay sitios",
             "id": "Id",
             "name": "Nombre",
-            "address": "Dirección"
+            "address": "Dirección",
+            "information": "Mas información"
         },
         "detail": {
+            "view": "Ver",
             "title": "Detalle del sitio",
-            "contactName": "Nombre de contacto",
+            "contactName": "Nombre del contacto",
+            "contactEquipment": "Equipo del contacto",
             "contactPhone": "Teléfono",
             "createdAt": "Creado",
-            "updatedAt": "Actualizado"
+            "updatedAt": "Actualizado",
+            "actions": "Acciones",
+            "delete": "Eliminar usuario",
+            "askDelete": "Are you sure to delete?"
         },
         "new": {
             "title": "Registrar Nuevo Sitio",
@@ -252,7 +259,7 @@
             "toggle-map": "Alternar Mapa para Selección de Dirección",
             "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
             "alert-site-created": "¡Sitio creado exitosamente!",
-            "alert-create-error": "Error al crear el sitio."
+            "alert-create-error": "Error al crear el Sitio."
         }
     },
     "equipments": {
@@ -262,7 +269,8 @@
             "model": "Modelo",
             "type": "Tipo",
             "serial": "Serie",
-            "status": "Estado"
+            "status": "Estado",
+            "empty": "Aún no hay equipos"
         },
         "detail": {
             "title": "Detalle del equipo",
@@ -271,6 +279,24 @@
             "lastSeenAt": "Última conexión",
             "createdAt": "Creado",
             "updatedAt": "Actualizado"
+        },
+        "new": {
+            "title": "Register New Equipment",
+            "site": "Elige el sitio",
+            "name": "Nombre",
+            "model": "Modelo",
+            "type": "Tipo",
+            "manufacturer": "Fabricante",
+            "setpointC": "Punto de ajuste °C",
+            "serial": "Serie",
+            "status": "Estado",
+            "online": "En línea",
+            "register": "Registrar Equipo",
+            "installedAt": "Instalado",
+            "lastSeenAt": "Última conexión",
+            "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
+            "alert-site-created": "¡Equipo creado exitosamente!",
+            "alert-create-error": "Error al crear el Equipo."
         },
         "controls": {
             "info": "Informacion",
