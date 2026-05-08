@@ -49,7 +49,6 @@ function getKpiValue(cardType) {
 
   const kpiMap = {
     'MonitoredEquipment': dataStore.kpis.totalEquipments ?? 0,
-    'OpenAlerts': dataStore.kpis.openAlerts ?? 0
   }
 
   return kpiMap[cardType] ?? '--'

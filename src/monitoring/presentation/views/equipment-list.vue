@@ -32,7 +32,6 @@ onMounted(() => {
 
 const openNewEquipmentDialog = () => {
   newEquipment.value = {
-    name: '',
     model: '',
     type: '',
     serial: '',
@@ -93,9 +92,6 @@ const saveNewEquipment = async () => {
       <!-- Type -->
       <pv-column field="type" :header="t('equipments.list.type')" />
 
-      <!-- Serial -->
-      <pv-column field="serial" :header="t('equipments.list.serial')" />
-
       <!-- Status -->
       <pv-column field="status" :header="t('equipments.list.status')">
         <template #body="slotProps">
@@ -106,12 +102,22 @@ const saveNewEquipment = async () => {
                   ? 'green'
                 : slotProps.data.status === 'maintenance'
                   ? 'red'
+                : slotProps.data.status === 'repair'
+                  ? 'orange'
                   : '',
               fontWeight: 'bold'
             }"
           >
             {{ slotProps.data.status }}
           </span>
+        </template>
+      </pv-column>
+
+      <pv-column :header="t('equipments.list.information')">
+        <template #body="{ data }">
+          <RouterLink :to="{ name: 'equipment-detail', params: { equipmentId: data.id } }">
+            <pv-button icon="pi pi-eye" text rounded severity="info" v-tooltip.top="t('equipments.detail.view')" />
+          </RouterLink>
         </template>
       </pv-column>
 
@@ -127,14 +133,23 @@ const saveNewEquipment = async () => {
     <pv-dialog v-model:visible="displayNewEquipmentDialog" :header="t('equipments.new.title')" :modal="true" class="p-fluid" style="width: 50vw">
       <form @submit.prevent="saveNewEquipment" class="flex flex-column gap-4">
         <div class="formgrid grid row-gap-3">
-
+          <!-- Put Site -->
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
-              <pv-dropdown id="site-id" v-model="newEquipment.siteId" :options="sites" option-label="name" option-value="id" class="w-full" />
+              <pv-dropdown
+                  id="site-id"
+                  v-model="newEquipment.siteId"
+                  :options="sites"
+                  option-label="name"
+                  option-value="id"
+                  class="w-full"
+                  @change="newEquipment.name = sites.find(s => s.id === newEquipment.siteId)?.name ?? ''"
+              />
               <label for="site-id">{{ t('equipments.new.site') }}</label>
             </pv-float-label>
           </div>
 
+          <!-- Create Model -->
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
               <pv-input-text id="equipment-model" v-model="newEquipment.model" class="w-full" />
@@ -142,6 +157,7 @@ const saveNewEquipment = async () => {
             </pv-float-label>
           </div>
 
+          <!-- Create Type -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
               <pv-input-text id="equipment-type" v-model="newEquipment.type" class="w-full" />
@@ -149,6 +165,7 @@ const saveNewEquipment = async () => {
             </pv-float-label>
           </div>
 
+          <!-- Create Serial -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
               <pv-input-text id="equipment-serial" v-model="newEquipment.serial" class="w-full" />
@@ -156,37 +173,36 @@ const saveNewEquipment = async () => {
             </pv-float-label>
           </div>
 
+          <!-- Put Status -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
-              <pv-input-text id="equipment-manufacturer" v-model="newEquipment.manufacturer" class="w-full" />
-              <label for="equipment-manufacturer">{{ t('equipments.new.manufacturer') }}</label>
-            </pv-float-label>
-          </div>
-
-          <div class="field col-12 md:col-6">
-            <pv-float-label>
-              <pv-dropdown id="equipment-status" v-model="newEquipment.status" :options="[{ label: 'Active', value: 'active' }, { label: 'Maintenance', value: 'maintenance' }]" option-label="label" option-value="value" class="w-full" />
+              <pv-dropdown
+                  id="equipment-status"
+                  v-model="newEquipment.status"
+                  :options="[
+                      { label: 'Active', value: 'ACTIVE' },
+                      { label: 'Maintenance', value: 'MAINTENANCE' },
+                      { label: 'Repair', value: 'Repair' },
+                      { label: 'Off', value: 'OFF' }]"
+                  option-label="label"
+                  option-value="value"
+                  class="w-full"
+              />
               <label for="equipment-status">{{ t('equipments.new.status') }}</label>
             </pv-float-label>
           </div>
 
+          <!-- Put Online -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
-              <pv-input-number id="equipment-setpoint" v-model="newEquipment.setPoint" class="w-full" />
-              <label for="equipment-setpoint">{{ t('equipments.new.setpointC') }}</label>
-            </pv-float-label>
-          </div>
-
-          <div class="field col-12 md:col-6">
-            <pv-float-label>
-              <pv-input-text id="equipment-name" v-model="newEquipment.name" class="w-full" required />
-              <label for="equipment-name">{{ t('equipments.new.name') }}</label>
-            </pv-float-label>
-          </div>
-
-          <div class="field col-12 md:col-6">
-            <pv-float-label>
-              <pv-dropdown id="equipment-online" v-model="newEquipment.online" :options="[{ label: 'Online', value: true }, { label: 'Offline', value: false }]" option-label="label" option-value="value" class="w-full" />
+              <pv-dropdown
+                  id="equipment-online"
+                  v-model="newEquipment.online"
+                  :options="[{ label: 'Online', value: true }, { label: 'Offline', value: false }]"
+                  option-label="label"
+                  option-value="value"
+                  class="w-full"
+              />
               <label for="equipment-online">{{ t('equipments.new.online') }}</label>
             </pv-float-label>
           </div>

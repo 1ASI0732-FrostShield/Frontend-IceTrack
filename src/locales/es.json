@@ -270,9 +270,11 @@
             "type": "Tipo",
             "serial": "Serie",
             "status": "Estado",
-            "empty": "Aún no hay equipos"
+            "empty": "Aún no hay equipos",
+            "information": "More information"
         },
         "detail": {
+            "view": "View",
             "title": "Detalle del equipo",
             "siteId": "Sitio Id",
             "installedAt": "Instalado",
@@ -286,8 +288,6 @@
             "name": "Nombre",
             "model": "Modelo",
             "type": "Tipo",
-            "manufacturer": "Fabricante",
-            "setpointC": "Punto de ajuste °C",
             "serial": "Serie",
             "status": "Estado",
             "online": "En línea",
@@ -295,7 +295,7 @@
             "installedAt": "Instalado",
             "lastSeenAt": "Última conexión",
             "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
-            "alert-site-created": "¡Equipo creado exitosamente!",
+            "alert-equipment-created": "¡Equipo creado exitosamente!",
             "alert-create-error": "Error al crear el Equipo."
         },
         "controls": {

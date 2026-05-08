@@ -4,9 +4,8 @@ export class Equipments {
      */
     constructor({
                     id = null, equipmentId = null, model = '', type = '', serial = '',
-                    status = '',  setPoint = 0,
-                    name = '',  manufacturer = '', online = false,
-                    created = '', updated = ''
+                    status = '',  setPoint = 0, name = '',  siteId = 0,
+                    manufacturer = '', online = false, created = '', updated = ''
                 }) {
         this.id = id;
         this.equipmentId = equipmentId;
@@ -14,9 +13,8 @@ export class Equipments {
         this.type = type;
         this.serial = serial;
         this.status = status;
-        this.setPoint = setPoint;
         this.name = name;
-        this.manufacturer = manufacturer;
+        this.siteId = siteId;
         this.online = online;
         this.created = created;
         this.updated = updated;
