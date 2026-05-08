@@ -64,6 +64,7 @@ const confirmDelete = (site) => {
 </script>
 
 <template>
+
   <section class="p-4">
     <pv-confirm-dialog />
 

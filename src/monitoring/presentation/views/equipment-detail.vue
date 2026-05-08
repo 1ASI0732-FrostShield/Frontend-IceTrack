@@ -52,6 +52,10 @@ function togglePower() {
       <pv-column field="siteId" :header="t('equipments.detail.siteId')" sortable >
       </pv-column>
 
+      <!-- Id -->
+      <pv-column field="serial" :header="t('equipments.detail.serial')" sortable >
+      </pv-column>
+
       <!-- Created At -->
       <pv-column field="created" :header="t('equipments.detail.createdAt')" >
       </pv-column>
