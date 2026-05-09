@@ -1,6 +1,6 @@
 <script setup>
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useI18n } from "vue-i18n";
 import MapLocationPicker from "@/shared/presentation/components/MapLocationPicker.vue";
@@ -49,6 +49,8 @@ const handleLocationSelected = (location) => {
 };
 
 const currentLocation = ref(null);
+const phoneTouched = ref(false)
+const phoneIsValid = computed(() => /^[0-9]{9}$/.test(newSite.value.phone))
 
 // Obtener ubicación actual
 const getCurrentLocation = () => {
@@ -84,19 +86,49 @@ const getCurrentLocation = () => {
 };
 
 const saveNewSite = async () => {
+  phoneTouched.value = true
+
   if (!newSite.value.name || !newSite.value.address || !newSite.value.contactName || !newSite.value.phone) {
-    alert(t('sites.new.alert-required-fields'));
-    return;
+    alert(t('sites.new.alert-required-fields'))
+    return
   }
+
+  if (!phoneIsValid.value) {
+    alert(t('sites.new.alert-invalid-phone'))
+    return
+  }
+
   try {
-    await createSite(newSite.value);
-    alert(t('sites.new.alert-site-created'));
-    displayNewSiteDialog.value = false;
-    await fetchSites(); // Refresh the list
+    await createSite(newSite.value)
+    alert(t('sites.new.alert-site-created'))
+    displayNewSiteDialog.value = false
+    await fetchSites()
   } catch (error) {
-    alert(t('sites.new.alert-create-error'));
-    console.error('Error creating site:', error);
+    alert(t('sites.new.alert-create-error'))
+    console.error('Error creating site:', error)
   }
+}
+
+const isFormValid = computed(() => {
+  return (
+      newSite.value.name.trim() !== '' &&
+      newSite.value.address.trim() !== '' &&
+      newSite.value.contactName.trim() !== '' &&
+      newSite.value.phone.length === 9
+  );
+});
+
+const onPhoneInput = (event) => {
+  const value = event.target.value.replace(/\D/g, '').slice(0, 9);
+  newSite.value.phone = value;
+  event.target.value = value;
+  phoneTouched.value = true;
+};
+
+const onTextInput = (event, field) => {
+  const value = event.target.value.replace(/[0-9]/g, '');
+  newSite.value[field] = value;
+  event.target.value = value;
 };
 
 </script>
@@ -150,30 +182,60 @@ const saveNewSite = async () => {
 
         <!-- Inputs -->
         <div class="formgrid grid row-gap-3">
+          <!-- New Name -->
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
-              <pv-input-text id="site-name" v-model="newSite.name" class="w-full" required />
+              <pv-input-text
+                  id="site-name"
+                  :value="newSite.name"
+                  @input="onTextInput($event, 'name')"
+                  class="w-full"
+                  required
+              />
               <label for="site-name">{{ t('sites.new.name') }}</label>
             </pv-float-label>
           </div>
 
+          <!-- New Address -->
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
-              <pv-input-text id="site-address" v-model="newSite.address" class="w-full" required />
+              <pv-input-text
+                  id="site-address"
+                  :value="newSite.address"
+                  @input="onTextInput($event, 'address')"
+                  class="w-full"
+                  required
+              />
               <label for="site-address">{{ t('sites.new.address') }}</label>
             </pv-float-label>
           </div>
 
+          <!-- New Contact Name -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
-              <pv-input-text id="contact-name" v-model="newSite.contactName" class="w-full" required />
+              <pv-input-text
+                  id="contact-name"
+                  :value="newSite.contactName"
+                  @input="onTextInput($event, 'contactName')"
+                  class="w-full"
+                  required
+              />
               <label for="contact-name">{{ t('sites.new.contact-name') }}</label>
             </pv-float-label>
           </div>
 
+          <!-- New Phone -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
-              <pv-input-text id="phone" v-model="newSite.phone" class="w-full" required />
+              <pv-input-text
+                  id="phone"
+                  :value="newSite.phone"
+                  @input="onPhoneInput"
+                  class="w-full"
+                  maxlength="9"
+                  inputmode="numeric"
+                  :invalid="phoneTouched && newSite.phone.length < 9"
+              />
               <label for="phone">{{ t('sites.new.phone') }}</label>
             </pv-float-label>
           </div>
@@ -199,7 +261,13 @@ const saveNewSite = async () => {
       </form>
       <template #footer>
         <pv-button :label="t('common.cancel')" icon="pi pi-times" @click="displayNewSiteDialog = false" class="p-button-text"/>
-        <pv-button :label="t('sites.new.register')" icon="pi pi-check" @click="saveNewSite" />
+
+        <pv-button
+            :label="t('sites.new.register')"
+            icon="pi pi-check"
+            @click="saveNewSite"
+            :disabled="!isFormValid"
+        />
       </template>
     </pv-dialog>
   </section>

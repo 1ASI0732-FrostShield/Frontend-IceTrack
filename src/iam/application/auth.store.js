@@ -68,8 +68,13 @@ export const useAuthStore = defineStore("auth", () => {
             if (status === 400 || status === 401) {
                 errorMessage = error.response?.data?.message || t('auth.errors.invalidCredentials');
             } else if (status === 500) {
-                console.error("SERVER ERROR 500:", error.response?.data);
-                errorMessage = t('errors.occurred');
+                const serverMessage = error.response?.data;
+                if (typeof serverMessage === 'string' && serverMessage.includes('Invalid username or password')) {
+                    errorMessage = t('auth.errors.invalidCredentials');
+                } else {
+                    console.error("SERVER ERROR 500:", serverMessage);
+                    errorMessage = t('errors.occurred');
+                }
             }
 
             errors.value.push({ message: errorMessage });
@@ -90,8 +95,13 @@ export const useAuthStore = defineStore("auth", () => {
             if (status === 400) {
                 errorMessage = error.response?.data?.message || t('errors.registrationFailed');
             } else if (status === 500) {
-                console.error("SERVER ERROR 500:", error.response?.data);
-                errorMessage = t('errors.occurred');
+                const serverMessage = error.response?.data;
+                if (typeof serverMessage === 'string' && serverMessage.includes('already taken')) {
+                    errorMessage = t('auth.errors.usernameTaken');
+                } else {
+                    console.error("SERVER ERROR 500:", serverMessage);
+                    errorMessage = t('errors.occurred');
+                }
             }
 
             errors.value.push({ message: errorMessage });

@@ -1,9 +1,5 @@
 <script setup>
-/**
- * @file technician-management.vue
- * @description View for managing technicians, including registration, editing, and deletion.
- * @author Kenyi Ramirez
- */
+
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
@@ -63,12 +59,17 @@ const fetchTechnicians = async () => {
   }
 };
 
-/**
- * Registers a new technician.
- * @async
- */
+// Validacion Phone
+const onPhoneInput = (event) => {
+  const value = event.target.value.replace(/\D/g, '').slice(0, 9);
+  newTechnician.value.phone = value;
+  event.target.value = value;
+};
+
 const registerTechnician = async () => {
   if (!newTechnician.value.name || !newTechnician.value.specialty) return;
+  if (newTechnician.value.phone && newTechnician.value.phone.length !== 9) return;
+
   submitting.value = true;
   try {
     const dataToSend = { ...newTechnician.value, providerId: currentProviderId.value };
@@ -136,10 +137,25 @@ const deleteTechnician = async (id) => {
   }
 };
 
+const isFormValid = computed(() => {
+  return (
+      newTechnician.value.name.trim() !== '' &&
+      newTechnician.value.specialty.trim() !== '' &&
+      newTechnician.value.phone.length === 9
+  );
+});
+
+const onTextInput = (event, field) => {
+  const value = event.target.value.replace(/[0-9]/g, '');
+  newTechnician.value[field] = value;
+  event.target.value = value;
+};
+
 /**
  * Fetches initial data when the component is mounted.
  */
 onMounted(fetchTechnicians);
+
 </script>
 
 <template>
@@ -151,26 +167,55 @@ onMounted(fetchTechnicians);
         <pv-card>
           <template #title>{{ t('provider.technicians.register-new') }}</template>
           <template #content>
-            <form @submit.prevent="registerTechnician" class="flex flex-column gap-4">
-              <div class="p-fluid">
+            <form @submit.prevent="registerTechnician" class="flex flex-column gap-5">
+              <div class="p-fluid mt-3">
+
+                <!-- Registration Name -->
                 <pv-float-label>
-                  <pv-input-text id="name" v-model="newTechnician.name" required />
+                  <pv-input-text
+                      id="name"
+                      :value="newTechnician.name"
+                      @input="onTextInput($event, 'name')"
+                      required
+                  />
                   <label for="name">{{ t('provider.technicians.name') }}</label>
                 </pv-float-label>
               </div>
+
+              <!-- Registration Speciality -->
               <div class="p-fluid">
                 <pv-float-label>
-                  <pv-input-text id="specialty" v-model="newTechnician.specialty" required />
+                  <pv-input-text
+                      id="specialty"
+                      :value="newTechnician.specialty"
+                      @input="onTextInput($event, 'specialty')"
+                      required
+                  />
                   <label for="specialty">{{ t('provider.technicians.specialty') }}</label>
                 </pv-float-label>
               </div>
+
+              <!-- Registration Phone -->
               <div class="p-fluid">
                 <pv-float-label>
-                  <pv-input-text id="phone" v-model="newTechnician.phone" />
+                  <pv-input-text
+                      id="phone"
+                      :value="newTechnician.phone"
+                      @input="onPhoneInput"
+                      maxlength="9"
+                      inputmode="numeric"
+                  />
                   <label for="phone">{{ t('provider.technicians.phone') }}</label>
                 </pv-float-label>
               </div>
-              <pv-button type="submit" :label="t('provider.technicians.register')" icon="pi pi-plus" :loading="submitting"/>
+
+              <pv-button
+                  type="submit"
+                  :label="t('provider.technicians.register')"
+                  icon="pi pi-plus"
+                  :loading="submitting"
+                  :disabled="!isFormValid"
+              />
             </form>
           </template>
         </pv-card>

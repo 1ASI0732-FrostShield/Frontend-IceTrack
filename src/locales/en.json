@@ -1,77 +1,89 @@
 {
     "common": {
-      "appName": "IceTrack",
-      "ok": "OK",
-      "cancel": "Cancel",
-      "save": "Save",
-      "search": "Search",
-      "status": {
-        "title": "Status",
-        "open": "Open",
-        "assigned": "Assigned",
-        "inProgress": "In progress",
-        "resolved": "Resolved",
-        "closed": "Closed"
-      },
-      "severity": {
-        "info": "Info",
-        "warning": "Warning",
-        "critical": "Critical"
-      },
-      "filter-by": "Filter by",
-      "all": "All",
-      "submit-request": "Submit Request",
-      "cancel-tooltip": "Cancel Request",
-      "error-occurred": "An error occurred",
-      "success": "Success",
-      "error": "Error"
+        "appName": "IceTrack",
+        "ok": "OK",
+        "cancel": "Cancel",
+        "save": "Save",
+        "search": "Search",
+        "status": {
+            "title": "Status",
+            "open": "Open",
+            "assigned": "Assigned",
+            "inProgress": "In progress",
+            "resolved": "Resolved",
+            "closed": "Closed"
+        },
+        "severity": {
+            "info": "Info",
+            "warning": "Warning",
+            "critical": "Critical"
+        },
+        "filter-by": "Filter by",
+        "all": "All",
+        "submit-request": "Submit Request",
+        "cancel-tooltip": "Cancel Request",
+        "error-occurred": "An error occurred",
+        "success": "Success",
+        "error": "Error"
     },
     "nav": {
-      "dashboard": "Dashboard",
-      "sites": "Sites",
-      "equipments": "Equipments",
-      "services": "Services",
-      "alerts": "Alerts",
-      "reports": "Reports",
-      "admin": "Admin",
-      "help": "Help",
-      "provider_dashboard": "Provider Dashboard",
-      "provider_services": "Provider Services",
-      "technician_management": "Technician Management"
+        "dashboard": "Dashboard",
+        "sites": "Sites",
+        "equipments": "Equipments",
+        "services": "Services",
+        "alerts": "Alerts",
+        "reports": "Reports",
+        "admin": "Admin",
+        "help": "Help",
+        "provider_dashboard": "Provider Dashboard",
+        "provider_services": "Provider Services",
+        "technician_management": "Technician Management"
     },
     "auth": {
-      "login": {
-        "title": "Sign in",
-        "username": "Username",
-        "email": "Email",
-        "password": "Password",
-        "cta": "Sign in",
-        "submit": "Sign In",
-        "error": "Invalid username or password",
-        "dontHaveAccount": "Don’t have an account?"
-      },
-      "register": {
-        "title": "Create account",
-        "alreadyHaveAccount": "Already have an account?",
-        "selectRole": "Select your role",
-        "cta": "Register",
-        "signIn": "Sign in",
-        "roles": {
-          "owner": "Owner",
-          "ownerDesc": "Manage your sites and equipment",
-          "provider": "Service Provider",
-          "providerDesc": "Provide services to owners"
+        "login": {
+            "title": "Sign in",
+            "username": "Username",
+            "email": "Email",
+            "password": "Password",
+            "cta": "Sign in",
+            "submit": "Sign In",
+            "error": "Invalid username or password",
+            "dontHaveAccount": "Don’t have an account?"
+        },
+        "register": {
+            "title": "Create account",
+            "alreadyHaveAccount": "Already have an account?",
+            "selectRole": "Select your role",
+            "cta": "Register",
+            "signIn": "Sign in",
+            "success": "User registered successfully",
+            "roles": {
+              "owner": "Owner",
+              "ownerDesc": "Manage your sites and equipment",
+              "provider": "Service Provider",
+              "providerDesc": "Provide services to owners"
+          },
+          "passwordPolicy": {
+              "title": "Password must contain:",
+              "minLength": "At least 8 characters",
+              "uppercase": "One uppercase letter",
+              "lowercase": "One lowercase letter",
+              "number": "One number",
+              "special": "One special character",
+              "allPassed": "Strong password",
+              "error": "Password does not meet security requirements"
+          }
+        },
+        "errors": {
+            "invalidCredentials": "Email or password is incorrect",
+            "occurred": "An error occurred",
+            "usernameTaken": "This username is already in use"
         }
-      },
-      "errors": {
-        "invalidCredentials": "Email or password is incorrect.",
-        "occurred": "An error occurred"
-      }
     },
     "page-not-found": {
-      "title": "Page Not Found",
-      "content": "The path {unavailable-route} is not available.",
-      "go-dashboard": "Go Dashboard"
+        "title": "Page Not Found",
+        "content": "The path {unavailable-route} is not available",
+        "go-dashboard": "Go Dashboard"
     },
     "dashboard": {
         "title": "Dashboard",
@@ -82,7 +94,7 @@
         "noConfig": "No dashboard configuration found",
         "noCardsAdded": "No cards added to your dashboard yet",
         "noCardsVisible": "No cards visible",
-        "useConfigPanel": "Use the configuration panel below to add cards.",
+        "useConfigPanel": "Use the configuration panel below to add cards",
         "noData": "No data available",
         "dataPoints": "data points",
         "demoBanner": "Demo mode: using tenant {id}",
@@ -257,9 +269,11 @@
             "phone": "Phone",
             "register": "Register Site",
             "toggle-map": "Toggle Map for Address Selection",
-            "alert-required-fields": "Please fill in all required fields.",
+            "alert-required-fields": "Please fill in all required fields",
             "alert-site-created": "Site created successfully!",
-            "alert-create-error": "Error creating Site."
+            "alert-create-error": "Error creating Site",
+            "phone-invalid": "Enter a valid phone number",
+            "alert-invalid-phone": "The phone number is invalid"
         }
     },
     "equipments": {
@@ -294,9 +308,10 @@
             "register": "Register Equipment",
             "installedAt": "Installed",
             "lastSeenAt": "last Seen",
-            "alert-required-fields": "Please fill in all required fields.",
+            "alert-required-fields": "Please fill in all required fields",
             "alert-equipment-created": "Equipment created successfully!",
-            "alert-create-error": "Error creating Equipment."
+            "alert-create-error": "Error creating Equipment",
+            "alert-duplicate-serial": "A device with the same serial number already exists"
         },
         "controls": {
             "info": "Information",
@@ -315,7 +330,7 @@
             "detail": "Request detail",
             "my-requests": "My Service Requests",
             "new-request-title": "Create New Request",
-            "success-message": "Request created successfully! We will contact you soon.",
+            "success-message": "Request created successfully! We will contact you soon",
             "date": "Date",
             "equipment": "Equipment",
             "site": "Site",
@@ -334,8 +349,8 @@
             "view-review": "View Review",
             "view-review-header": "View Review",
             "submit-review-header": "Submit Review",
-            "rating": "Rating",
-            "comment": "Comment",
+            "rating": "Rating:",
+            "comment": "Comment:",
             "submit": "Submit"
         },
         "status": {
@@ -366,7 +381,7 @@
             "end-time": "End Time (optional)",
             "add-photo-url": "Add Photo URL",
             "register": "Register Intervention",
-            "not-found": "Service request not found.",
+            "not-found": "Service request not found",
             "equipment-details": "Equipment Details",
             "name": "Name:",
             "model": "Model:",
@@ -385,7 +400,7 @@
             "actions": "Actions",
             "assign-technician": "Assign Technician",
             "complete": "Complete",
-            "no-active-services": "No active services found."
+            "no-active-services": "No active services found"
         },
         "completed": {
             "title": "Completed Services",
@@ -394,7 +409,7 @@
             "site": "Site",
             "technician": "Technician",
             "completed-at": "Completed At",
-            "no-completed-services": "No completed services found."
+            "no-completed-services": "No completed services found"
         },
         "rejected-canceled": {
             "title": "Rejected / Canceled Services",
@@ -403,7 +418,7 @@
             "site": "Site",
             "status": "Status",
             "date": "Date",
-            "no-rejected-canceled-services": "No rejected or canceled services found."
+            "no-rejected-canceled-services": "No rejected or canceled services found"
         },
         "intervention": {
             "title": "Intervention",
@@ -414,20 +429,20 @@
             "end-time": "End Time:",
             "work-summary": "Work Summary",
             "evidence-photos": "Evidence Photos",
-            "no-photos": "No photos were uploaded for this intervention.",
-            "not-found": "Intervention not found."
+            "no-photos": "No photos were uploaded for this intervention",
+            "not-found": "Intervention not found"
         },
         "new": {
             "title": "New Service Request",
             "provider": "Service Provider *",
             "site": "Site *",
             "equipment": "Equipment *",
-            "request-type": "Request Type *",
-            "priority": "Priority",
-            "description": "Problem Description *",
-            "alert-required-fields": "Please complete all required fields.",
+            "request-type": "Request Type",
+            "priority": "Priority *",
+            "description": "Problem Description",
+            "alert-required-fields": "Please complete all required fields",
             "alert-request-created": "Request created successfully!",
-            "alert-create-error": "Error creating request."
+            "alert-create-error": "Error creating request"
         }
     },
     "service-requests": {
@@ -567,7 +582,7 @@
             "active-services": "Active Services",
             "my-technicians": "My Technicians",
             "all-services": "All Services",
-            "all-services-description": "Go to the complete list of your services.",
+            "all-services-description": "Go to the complete list of your services",
             "view-all-services": "View All Services",
             "pending-requests": "Pending Requests",
             "refresh-list": "Refresh List",
@@ -578,7 +593,7 @@
             "actions": "Actions",
             "accept": "Accept",
             "reject": "Reject",
-            "no-pending-requests": "No pending requests found."
+            "no-pending-requests": "No pending requests found"
         },
         "services": {
             "title": "My Service Requests",
@@ -613,7 +628,7 @@
             "my-technicians": "My Technicians",
             "average-rating": "Average Rating",
             "actions": "Actions",
-            "no-technicians": "No technicians found. Register one to get started.",
+            "no-technicians": "No technicians found. Register one to get started",
             "edit-technician": "Edit Technician",
             "confirm-delete": "Are you sure you want to delete {name}?",
             "confirm-delete-header": "Confirm Deletion"

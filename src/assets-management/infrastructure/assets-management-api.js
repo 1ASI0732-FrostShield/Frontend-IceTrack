@@ -53,4 +53,8 @@ export class AssetsManagementApi extends BaseApi {
     deleteSite(id) {
         return this.#sitesEndpointPath.delete(id);
     }
+
+    getSiteById(id) {
+        return this.http.get(`${sitesEndpointPath}/${id}`);
+    }
 }

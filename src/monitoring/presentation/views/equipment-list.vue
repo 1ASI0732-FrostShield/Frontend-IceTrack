@@ -1,6 +1,6 @@
 <script setup>
 
-import { onMounted, ref } from "vue";
+import {computed, onMounted, ref} from "vue";
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useI18n } from "vue-i18n";
@@ -10,7 +10,6 @@ const store = useMonitoringStore();
 const assetsStore = useAssetsManagementStore();
 const { equipments, equipmentsLoaded, errors, fetchEquipments, createEquipment } = store;
 const { sites, sitesLoaded, fetchSites } = assetsStore;
-
 const displayNewEquipmentDialog = ref(false);
 
 const newEquipment = ref({
@@ -54,10 +53,25 @@ const saveNewEquipment = async () => {
     displayNewEquipmentDialog.value = false;
     await fetchEquipments();
   } catch (error) {
-    alert(t('equipments.new.alert-create-error'));
+    if (error.response?.status === 409) {
+      alert(t('equipments.new.alert-duplicate-serial'));
+    } else {
+      alert(t('equipments.new.alert-create-error'));
+    }
     console.error('Error creating equipment:', error);
   }
 };
+
+const isFormValid = computed(() => {
+  return (
+      newEquipment.value.siteId !== null &&
+      newEquipment.value.model.trim() !== '' &&
+      newEquipment.value.type.trim() !== '' &&
+      newEquipment.value.serial.trim() !== '' &&
+      newEquipment.value.status !== '' &&
+      newEquipment.value.online !== null
+  );
+});
 
 </script>
 
@@ -85,7 +99,7 @@ const saveNewEquipment = async () => {
       <!-- Model -->
       <pv-column field="model" :header="t('equipments.list.model')">
         <template #body="slotProps">
-          <span style="font-weight: bold">{{ slotProps.data.model }}</span>
+          <span>{{ slotProps.data.model }}</span>
         </template>
       </pv-column>
 
@@ -210,7 +224,12 @@ const saveNewEquipment = async () => {
       </form>
       <template #footer>
         <pv-button :label="t('common.cancel')" icon="pi pi-times" @click="displayNewEquipmentDialog = false" class="p-button-text" />
-        <pv-button :label="t('equipments.new.register')" icon="pi pi-check" @click="saveNewEquipment" />
+        <pv-button
+            :label="t('equipments.new.register')"
+            icon="pi pi-check"
+            @click="saveNewEquipment"
+            :disabled="!isFormValid"
+        />
       </template>
     </pv-dialog>
 
