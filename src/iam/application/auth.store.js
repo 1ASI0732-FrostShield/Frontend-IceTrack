@@ -90,7 +90,7 @@ export const useAuthStore = defineStore("auth", () => {
             return true;
         } catch (error) {
             const status = error.response?.status;
-            let errorMessage = t('errors.registrationFailed');
+            let errorMessage = t('auth.errors.usernameTaken');
 
             if (status === 400) {
                 errorMessage = error.response?.data?.message || t('errors.registrationFailed');

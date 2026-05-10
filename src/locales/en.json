@@ -5,6 +5,10 @@
         "cancel": "Cancel",
         "save": "Save",
         "search": "Search",
+        "edit": "Edit",
+        "delete": "Delete",
+        "more": "More",
+        "back": "Go back",
         "status": {
             "title": "Status",
             "open": "Open",
@@ -273,7 +277,12 @@
             "alert-site-created": "Site created successfully!",
             "alert-create-error": "Error creating Site",
             "phone-invalid": "Enter a valid phone number",
-            "alert-invalid-phone": "The phone number is invalid"
+            "alert-invalid-phone": "The phone number is invalid",
+            "error": {
+                "duplicate-name": "A site with that name already exists",
+                "duplicate-address": "A site with that address already exists",
+                "duplicate-phone": "A site with that phone number already exists"
+            }
         }
     },
     "equipments": {
@@ -439,10 +448,11 @@
             "equipment": "Equipment *",
             "request-type": "Request Type",
             "priority": "Priority *",
-            "description": "Problem Description",
+            "description": "Problem Description *",
             "alert-required-fields": "Please complete all required fields",
             "alert-request-created": "Request created successfully!",
-            "alert-create-error": "Error creating request"
+            "alert-create-error": "Error creating request",
+            "equipment-already-in-use": "This equipment already has an active request"
         }
     },
     "service-requests": {
@@ -615,7 +625,8 @@
                 "order-number": "Order #",
                 "site": "Site",
                 "actions": "Actions",
-                "view-details": "View Details"
+                "details": "Report",
+                "create-details": "Create report"
             }
         },
         "technicians": {
@@ -631,7 +642,10 @@
             "no-technicians": "No technicians found. Register one to get started",
             "edit-technician": "Edit Technician",
             "confirm-delete": "Are you sure you want to delete {name}?",
-            "confirm-delete-header": "Confirm Deletion"
+            "confirm-delete-header": "Confirm Deletion",
+            "phone-duplicate": "Phone already registered",
+            "add-specialty": "Add specialty",
+            "specialty-name": "Specialty name"
         }
       },
     "validation": {

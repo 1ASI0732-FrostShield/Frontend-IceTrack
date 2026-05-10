@@ -5,6 +5,10 @@
         "cancel": "Cancelar",
         "save": "Guardar",
         "search": "Buscar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "more": "Ver",
+        "back": "Regresar",
         "status": {
             "title": "Estado",
             "open": "Abierta",
@@ -273,7 +277,12 @@
             "alert-site-created": "¡Sitio creado exitosamente!",
             "alert-create-error": "Error al crear el Sitio",
             "phone-invalid": "Ingresa un número de teléfono válido",
-            "alert-invalid-phone": "El número de teléfono no es válido"
+            "alert-invalid-phone": "El número de teléfono no es válido",
+            "error": {
+                "duplicate-name": "Ya existe un sitio con ese nombre",
+                "duplicate-address": "Ya existe un sitio con esa dirección",
+                "duplicate-phone": "Ya existe un sitio con ese teléfono"
+            }
         }
     },
     "equipments": {
@@ -284,7 +293,7 @@
             "type": "Tipo",
             "status": "Estado",
             "empty": "Aún no hay equipos",
-            "information": "More information"
+            "information": "Más información"
         },
         "detail": {
             "view": "View",
@@ -297,7 +306,7 @@
             "updatedAt": "Actualizado"
         },
         "new": {
-            "title": "Register New Equipment",
+            "title": "Registrar Nuevo Equipo",
             "site": "Elige el sitio",
             "name": "Nombre",
             "model": "Modelo",
@@ -439,10 +448,11 @@
             "equipment": "Equipo *",
             "request-type": "Tipo de Solicitud",
             "priority": "Prioridad *",
-            "description": "Descripción del Problema",
+            "description": "Descripción del Problema *",
             "alert-required-fields": "Por favor complete todos los campos requeridos",
             "alert-request-created": "¡Solicitud creada exitosamente!",
-            "alert-create-error": "Error al crear la solicitud"
+            "alert-create-error": "Error al crear la solicitud",
+            "equipment-already-in-use": "Este equipo ya tiene una solicitud activa"
         }
     },
     "service-requests": {
@@ -667,7 +677,8 @@
                 "order-number": "Orden #",
                 "site": "Sitio",
                 "actions": "Acciones",
-                "view-details": "Ver Detalles"
+                "details": "Reportes",
+                "create-details": "Crear reporte"
             }
         },
         "technicians": {
@@ -683,7 +694,10 @@
             "no-technicians": "No se encontraron técnicos. Registre uno para comenzar",
             "edit-technician": "Editar Técnico",
             "confirm-delete": "¿Estás seguro de que quieres eliminar a {name}?",
-            "confirm-delete-header": "Confirmar Eliminación"
+            "confirm-delete-header": "Confirmar Eliminación",
+            "phone-duplicate": "Teléfono ya registrado",
+            "add-specialty": "Agregar especialidad",
+            "specialty-name": "Nombre de especialidad"
         }
     },
     "validation": {

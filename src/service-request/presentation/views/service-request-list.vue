@@ -41,8 +41,12 @@ const filteredRequests = computed(() => {
 });
 
 const statusSeverity = (status) => ({
-  pending: 'danger', accepted: 'warning', inProgress: 'info',
-  completed: 'success', canceled: 'secondary', rejected: 'secondary'
+  pending: 'warn',
+  accepted: 'warning',
+  inProgress: 'info',
+  completed: 'success',
+  canceled: 'danger',
+  rejected: 'secondary'
 }[status] || 'secondary');
 
 const statusTranslation = (status) => t(status ? `services.status.${status}` : 'common.all');
@@ -110,52 +114,73 @@ const submitReview = async () => {
 
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
       <span class="text-sm font-semibold">{{ t('common.filter-by') }}:</span>
+
       <pv-select-button v-model="filters.status" :options="['', 'pending', 'accepted', 'inProgress', 'completed', 'canceled', 'rejected']" :allowEmpty="true">
         <template #option="slotProps">{{ statusTranslation(slotProps.option) }}</template>
       </pv-select-button>
+
       <pv-select-button v-model="filters.type" :options="['', 'corrective', 'preventive']" :allowEmpty="true" class="ml-3">
         <template #option="slotProps">{{ typeTranslation(slotProps.option) }}</template>
       </pv-select-button>
     </div>
 
     <pv-data-table :value="filteredRequests" :loading="!requestsLoaded" striped-rows :rows="10" paginator table-style="min-width: 50rem">
+      <!-- Order -->
       <pv-column field="orderNumber" :header="t('services.requests.order-number')" sortable style="width: 100px;"/>
-      <pv-column field="createdAt" :header="t('services.requests.date')" sortable>
-        <template #body="{ data }">{{ new Date(data.createdAt).toLocaleDateString() }}</template>
-      </pv-column>
 
+      <!-- Equipment -->
       <pv-column field="equipmentName" :header="t('services.requests.equipment')" sortable />
 
+      <!-- Site -->
       <pv-column field="siteName" :header="t('services.requests.site')" sortable />
 
+      <!-- Provider -->
       <pv-column field="assignedToName" :header="t('services.requests.provider')" sortable />
 
+      <!-- Type -->
       <pv-column field="type" :header="t('services.requests.type')">
         <template #body="{ data }">
-          <pv-tag :value="typeTranslation(data.type)" :severity="data.type === 'corrective' ? 'danger' : 'warning'" />
+          <pv-tag
+              :value="typeTranslation(data.type)"
+              :severity="data.type === 'corrective' ? 'danger' : 'warn'"
+          />
         </template>
       </pv-column>
 
+      <!-- Status -->
       <pv-column field="status" :header="t('services.requests.status')">
         <template #body="{ data }">
           <pv-tag :value="statusTranslation(data.status)" :severity="statusSeverity(data.status)" />
         </template>
       </pv-column>
 
+      <!-- Actions -->
       <pv-column :header="t('services.requests.actions')" style="width: 220px;">
         <template #body="{ data }">
+          <!-- Details -->
           <pv-button
               icon="pi pi-eye"
-              :label="t('services.requests.detail')"
               text rounded severity="info"
+              v-tooltip.top="t('services.requests.detail')"
               @click="navigateToDetail(data)"
           />
+
+          <!-- Danger -->
           <pv-button
-              v-if="data.status === 'completed'"
+              v-if="['pending', 'accepted'].includes(data.status)"
+              icon="pi pi-times"
+              text rounded severity="danger"
+              v-tooltip.top="t('common.cancel-tooltip')"
+              @click="confirmCancel(data)" />
+
+          <!-- Review -->
+          <pv-button
+              v-if="data.status === 'completed' || data.status === 'canceled' || data.status === 'rejected' || data.status === 'inProgress'"
               icon="pi pi-star"
-              :label="data.hasReview ? t('services.requests.view-review') : t('services.requests.review')"
               text rounded
               :severity="data.hasReview ? 'info' : 'warning'"
+              :disabled="data.status === 'canceled' || data.status === 'rejected' || data.status === 'inProgress'"
+              v-tooltip.top="t('services.requests.view-review')"
               @click="openReviewDialog(data)"
           />
         </template>

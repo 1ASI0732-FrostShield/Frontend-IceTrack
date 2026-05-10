@@ -25,7 +25,7 @@ export class ServiceRequestAssembler {
         return new ServiceRequest({
             ...dto,
             siteName: site ? site.name : 'N/A',
-            equipmentName: equipment ? `${equipment.name} (${equipment.serial})` : 'N/A',
+            equipmentName: equipment ? `${equipment.model} (${equipment.serial})` : 'N/A',
             requesterName: requester ? requester.username : 'N/A',
             assignedToName: provider ? provider.username : 'N/A',
             technicianName: technician ? technician.name : null,

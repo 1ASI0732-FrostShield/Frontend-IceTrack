@@ -1,6 +1,7 @@
 <script setup>
 
-import {computed, onMounted, ref} from "vue";
+import { computed, onMounted, ref } from "vue";
+import { storeToRefs } from 'pinia';
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useI18n } from "vue-i18n";
@@ -8,9 +9,12 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const store = useMonitoringStore();
 const assetsStore = useAssetsManagementStore();
-const { equipments, equipmentsLoaded, errors, fetchEquipments, createEquipment } = store;
-const { sites, sitesLoaded, fetchSites } = assetsStore;
+const { equipments, equipmentsLoaded, errors } = storeToRefs(store);
+const { fetchEquipments, createEquipment } = store;
+const { sites, sitesLoaded } = storeToRefs(assetsStore);
+const { fetchSites } = assetsStore;
 const displayNewEquipmentDialog = ref(false);
+const serverError = ref(null);
 
 const newEquipment = ref({
   name: '',
@@ -31,6 +35,7 @@ onMounted(() => {
 
 const openNewEquipmentDialog = () => {
   newEquipment.value = {
+    name: '',
     model: '',
     type: '',
     serial: '',
@@ -38,26 +43,35 @@ const openNewEquipmentDialog = () => {
     status: '',
     setPoint: 0,
     siteId: null,
+    online: false
   };
+  serverError.value = null;
   displayNewEquipmentDialog.value = true;
 };
 
 const saveNewEquipment = async () => {
+  serverError.value = null
+
   if (!newEquipment.value.name || !newEquipment.value.siteId) {
     alert(t('equipments.new.alert-required-fields'));
     return;
   }
+
+  const sameSerial = equipments.value.find(e =>
+      e.serial === newEquipment.value.serial
+  )
+  if (sameSerial) {
+    serverError.value = t('equipments.new.alert-duplicate-serial')
+    return
+  }
+
   try {
     await createEquipment(newEquipment.value);
     alert(t('equipments.new.alert-equipment-created'));
     displayNewEquipmentDialog.value = false;
     await fetchEquipments();
   } catch (error) {
-    if (error.response?.status === 409) {
-      alert(t('equipments.new.alert-duplicate-serial'));
-    } else {
-      alert(t('equipments.new.alert-create-error'));
-    }
+    serverError.value = t('equipments.new.alert-create-error')
     console.error('Error creating equipment:', error);
   }
 };
@@ -103,9 +117,6 @@ const isFormValid = computed(() => {
         </template>
       </pv-column>
 
-      <!-- Type -->
-      <pv-column field="type" :header="t('equipments.list.type')" />
-
       <!-- Status -->
       <pv-column field="status" :header="t('equipments.list.status')">
         <template #body="slotProps">
@@ -127,10 +138,11 @@ const isFormValid = computed(() => {
         </template>
       </pv-column>
 
-      <pv-column :header="t('equipments.list.information')">
+      <!-- More Information -->
+      <pv-column :header="t('sites.list.information')">
         <template #body="{ data }">
           <RouterLink :to="{ name: 'equipment-detail', params: { equipmentId: data.id } }">
-            <pv-button icon="pi pi-eye" text rounded severity="info" v-tooltip.top="t('equipments.detail.view')" />
+            <pv-button icon="pi pi-eye" text rounded severity="info" v-tooltip.top="t('sites.detail.view')" />
           </RouterLink>
         </template>
       </pv-column>
@@ -145,6 +157,13 @@ const isFormValid = computed(() => {
     </div>
 
     <pv-dialog v-model:visible="displayNewEquipmentDialog" :header="t('equipments.new.title')" :modal="true" class="p-fluid" style="width: 50vw">
+      <div v-if="serverError"
+           class="flex align-items-center gap-2 p-3 mb-3 border-round"
+           style="background: #fdecea; border: 1px solid #f5c2c7; color: #842029; border-radius: 6px;">
+        <i class="pi pi-exclamation-triangle" />
+        <span>{{ serverError }}</span>
+      </div>
+
       <form @submit.prevent="saveNewEquipment" class="flex flex-column gap-4">
         <div class="formgrid grid row-gap-3">
           <!-- Put Site -->

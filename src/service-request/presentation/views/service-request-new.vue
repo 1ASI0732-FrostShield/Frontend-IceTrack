@@ -10,12 +10,13 @@ import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requ
 import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 import { EquipmentAssembler } from "@/monitoring/infrastructure/equipments.assembler.js";
+import {storeToRefs} from "pinia";
 
 const { t } = useI18n();
 const router = useRouter();
 const store = useServiceRequestStore();
 const authStore = useAuthStore();
-const { errors } = store;
+const { errors, requests } = storeToRefs(store);
 const iamApi = new IamApi();
 const serviceRequestApi = new ServiceRequestsApi();
 const assetsManagementApi = new AssetsManagementApi();
@@ -67,7 +68,7 @@ const saveRequest = async () => {
     equipmentId: form.value.equipmentId,
     assignedTo: form.value.assignedTo,
     origin: 'Manual',
-    type: form.value.type,
+    type: selectedEquipmentStatus.value === 'MAINTENANCE' ? 'preventive' : 'corrective',
     priority: form.value.priority,
     description: form.value.description,
     status: 'pending',
@@ -106,7 +107,16 @@ const isFormValid = computed(() => {
       form.value.assignedTo !== null &&
       form.value.priority !== null &&
       form.value.description !== null &&
-      selectedEquipmentStatus.value !== 'ACTIVE'
+      selectedEquipmentStatus.value !== 'ACTIVE' &&
+      !equipmentAlreadyInUse.value
+  );
+});
+
+const equipmentAlreadyInUse = computed(() => {
+  if (!form.value.equipmentId) return false;
+  const activeStatuses = ['pending', 'accepted', 'inProgress'];
+  return requests.value?.some(
+      r => r.equipmentId === form.value.equipmentId && activeStatuses.includes(r.status)
   );
 });
 
@@ -166,6 +176,9 @@ const isFormValid = computed(() => {
                 />
                 <label for="equipment">{{ t('services.new.equipment') }}</label>
               </pv-float-label>
+              <small v-if="equipmentAlreadyInUse" class="text-red-500 mt-1">
+                {{ t('services.new.equipment-already-in-use') }}
+              </small>
             </div>
 
             <div class="field col-12 md:col-6">

@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
-import reportingRoutes from "@/reporting/presentation/reporting-routes.js";
-
 // Layout
 const Layout = () => import('@/shared/presentation/components/layout.vue')
 
@@ -58,7 +56,6 @@ const routes = [
             { path: 'services/new', name: 'service-requests-new', component: ServiceRequestFormPage, meta: { titleKey: 'services.requests.new', roleRequired: 'Owner' }},
             { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' }},
             { path: 'services/:requestId/interventions/:interventionId', name: 'intervention-detail', component: InterventionDetailPage, meta: { titleKey: 'services.interventions.detail' }},
-            ...reportingRoutes,
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'Provider' } },

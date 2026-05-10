@@ -1,6 +1,7 @@
 <script setup>
 
 import { onMounted, ref, computed } from "vue";
+import { storeToRefs } from 'pinia';
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useI18n } from "vue-i18n";
 import MapLocationPicker from "@/shared/presentation/components/MapLocationPicker.vue";
@@ -9,9 +10,12 @@ import { useAuthStore } from "@/iam/application/auth.store.js";
 const { t } = useI18n();
 const store = useAssetsManagementStore();
 const authStore = useAuthStore();
-const { sites, sitesLoaded, errors, fetchSites, createSite } = store;
+const { sites, sitesLoaded, errors } = storeToRefs(store);
+const { fetchSites, createSite } = store;
 const displayNewSiteDialog = ref(false);
 const showMap = ref(false);
+const serverError = ref(null)
+
 const newSite = ref({
   name: '',
   address: '',
@@ -29,7 +33,7 @@ onMounted(() => {
 const openNewSiteDialog = () => {
   newSite.value = {
     name: '',
-    address: '',
+    address: null,
     contactName: '',
     phone: '',
     latitude: null,
@@ -86,9 +90,11 @@ const getCurrentLocation = () => {
 };
 
 const saveNewSite = async () => {
+  serverError.value = null
   phoneTouched.value = true
 
-  if (!newSite.value.name || !newSite.value.address || !newSite.value.contactName || !newSite.value.phone) {
+  if (!newSite.value.name || !newSite.value.address ||
+      !newSite.value.contactName || !newSite.value.phone) {
     alert(t('sites.new.alert-required-fields'))
     return
   }
@@ -98,13 +104,35 @@ const saveNewSite = async () => {
     return
   }
 
+  const sameName = sites.value.find(s =>
+      s.name.toLowerCase() === newSite.value.name.toLowerCase()
+  )
+  if (sameName) {
+    serverError.value = t('sites.new.error.duplicate-name')
+    return
+  }
+
+  const sameAddress = sites.value.find(s =>
+      s.address.toLowerCase() === newSite.value.address.toLowerCase()
+  )
+  if (sameAddress) {
+    serverError.value = t('sites.new.error.duplicate-address')
+    return
+  }
+
+  const samePhone = sites.value.find(s => s.phone === newSite.value.phone)
+  if (samePhone) {
+    serverError.value = t('sites.new.error.duplicate-phone')
+    return
+  }
+
   try {
     await createSite(newSite.value)
     alert(t('sites.new.alert-site-created'))
     displayNewSiteDialog.value = false
     await fetchSites()
   } catch (error) {
-    alert(t('sites.new.alert-create-error'))
+    serverError.value = t('sites.new.alert-create-error')
     console.error('Error creating site:', error)
   }
 }
@@ -112,7 +140,7 @@ const saveNewSite = async () => {
 const isFormValid = computed(() => {
   return (
       newSite.value.name.trim() !== '' &&
-      newSite.value.address.trim() !== '' &&
+      (newSite.value.address ?? '').trim() !== '' &&
       newSite.value.contactName.trim() !== '' &&
       newSite.value.phone.length === 9
   );
@@ -160,6 +188,7 @@ const onTextInput = (event, field) => {
       <!-- Site Phone -->
       <pv-column field="phone" :header="t('sites.detail.contactPhone')"/>
 
+      <!-- More Information -->
       <pv-column :header="t('sites.list.information')">
         <template #body="{ data }">
           <RouterLink :to="{ name: 'site-detail', params: { siteId: data.id } }">
@@ -178,6 +207,13 @@ const onTextInput = (event, field) => {
     </div>
 
     <pv-dialog v-model:visible="displayNewSiteDialog" :header="t('sites.new.title')" :modal="true" class="p-fluid" style="width: 50vw" >
+      <div v-if="serverError"
+           class="flex align-items-center gap-2 p-3 mb-3 border-round"
+           style="background: #fdecea; border: 1px solid #f5c2c7; color: #842029; border-radius: 6px;">
+        <i class="pi pi-exclamation-triangle" />
+        <span>{{ serverError }}</span>
+      </div>
+
       <form @submit.prevent="saveNewSite" class="flex flex-column gap-4">
 
         <!-- Inputs -->
@@ -201,8 +237,7 @@ const onTextInput = (event, field) => {
             <pv-float-label>
               <pv-input-text
                   id="site-address"
-                  :value="newSite.address"
-                  @input="onTextInput($event, 'address')"
+                  v-model="newSite.address"
                   class="w-full"
                   required
               />

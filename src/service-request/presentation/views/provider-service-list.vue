@@ -158,11 +158,6 @@ onMounted(fetchData);
           <pv-tag :value="getStatusTranslation(data.status)" :severity="statusSeverity(data.status)" />
         </template>
       </pv-column>
-      <pv-column :header="t('provider.services.list.actions')">
-        <template #body="{ data }">
-          <pv-button icon="pi pi-eye" text rounded severity="info" @click="navigateToDetail(data)" v-tooltip.top="t('provider.services.list.view-details')" />
-        </template>
-      </pv-column>
     </pv-data-table>
   </div>
 </template>

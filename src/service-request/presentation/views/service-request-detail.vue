@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
@@ -38,8 +38,15 @@ const isProvider = computed(() => authStore.currentUserRole === 'Provider');
 const requestId = computed(() => route.params.requestId);
 const selectedEquipment = ref(null);
 
+watch(serviceRequest, (newVal) => {
+  if (newVal?.technicianId) {
+    newIntervention.value.technicianId = newVal.technicianId;
+  }
+});
+
 async function fetchRequestDetails() {
   isLoading.value = true;
+
   try {
     const [requestRes, interventionsRes] = await Promise.all([
       api.getServiceRequestDetailsQuery(requestId.value),
@@ -48,17 +55,15 @@ async function fetchRequestDetails() {
     serviceRequest.value = requestRes.data;
     interventions.value = interventionsRes.data;
 
-    const [siteRes, equipmentRes] = await Promise.all([
+    const [siteRes, equipmentRes, techsRes] = await Promise.all([
       assetsManagementApi.getSiteById(serviceRequest.value.siteId),
-      monitoringApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`)
+      monitoringApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`),
+      techniciansApi.getTechniciansByProvider(authStore.currentUserId)
     ]);
     siteName.value = siteRes.data.name;
     equipmentName.value = equipmentRes.data.model;
+    technicians.value = techsRes.data;
 
-    if (isProvider.value) {
-      const techniciansRes = await techniciansApi.getTechniciansByProvider(authStore.currentUserId);
-      technicians.value = techniciansRes.data;
-    }
   } catch (error) {
     console.error("Failed to fetch request details:", error);
   } finally {
@@ -76,6 +81,20 @@ async function openEquipmentDialog() {
     console.error("Failed to fetch equipment details:", error);
   }
 }
+
+const monthago = computed(() => {
+  const date = new Date();
+  date.setDate(date.getDate() - 30);
+  return date;
+});
+
+const lastInterventionEndTime = computed(() => {
+  if (!interventions.value.length) return monthago.value;
+  const sorted = [...interventions.value].sort(
+      (a, b) => new Date(b.endTime) - new Date(a.endTime)
+  );
+  return sorted[0]?.endTime ? new Date(sorted[0].endTime) : monthago.value;
+});
 
 function addPhotoUrl() {
   if (newPhotoUrl.value && !newIntervention.value.photoUrls.includes(newPhotoUrl.value)) {
@@ -128,14 +147,22 @@ onMounted(async () => {
 <template>
 
   <div class="p-4">
-    <router-view v-if="route.name === 'intervention-detail'"></router-view>
-    <div v-else>
+    <div>
       <pv-card v-if="isLoading">
         <template #content><p>{{ t('common.loading') }}</p></template>
       </pv-card>
 
       <div v-else-if="serviceRequest">
-        <h1 class="text-3xl font-bold mb-4">{{ t('services.requests.detail') }} #{{ serviceRequest.id }}</h1>
+        <div class="flex justify-content-between align-items-center mb-4">
+          <h1 class="text-3xl font-bold">{{ t('services.requests.detail') }} #{{ serviceRequest.id }}</h1>
+          <pv-button
+              icon="pi pi-arrow-left"
+              :label="t('common.back')"
+              text
+              severity="secondary"
+              @click="router.back()"
+          />
+        </div>
 
         <!-- Request Details -->
         <pv-card class="mb-4">
@@ -187,7 +214,7 @@ onMounted(async () => {
         </pv-card>
 
         <!-- Register New Intervention (Provider only) -->
-        <pv-card v-if="isProvider">
+        <pv-card v-if="isProvider && serviceRequest.status !== 'completed'">
           <template #title>{{ t('services.detail.register-intervention') }}</template>
           <template #content>
             <form @submit.prevent="registerIntervention" class="flex flex-column gap-4">
@@ -195,14 +222,27 @@ onMounted(async () => {
               <!-- Technician -->
               <div class="flex flex-column gap-2">
                 <label for="technician">{{ t('services.detail.select-technician') }}</label>
-                <pv-dropdown id="technician" v-model="newIntervention.technicianId" :options="technicians" optionLabel="name" optionValue="id" :placeholder="t('services.detail.select-technician')" />
+                <pv-input-text
+                    v-if="serviceRequest.technicianId"
+                    :value="technicians.find(t => t.id === serviceRequest.technicianId)?.name || serviceRequest.technicianId"
+                    readonly
+                    class="w-fit"
+                    style="min-width: 150px"
+                />
               </div>
 
               <!-- Start & End Time -->
               <div class="grid formgrid">
                 <div class="col-12 md:col-6 flex flex-column gap-2">
                   <label for="startTime">{{ t('services.detail.start-time') }}</label>
-                  <pv-calendar id="startTime" v-model="newIntervention.startTime" showTime hourFormat="24" :maxDate="new Date()" />
+                  <pv-calendar
+                      id="startTime"
+                      v-model="newIntervention.startTime"
+                      showTime
+                      hourFormat="24"
+                      :maxDate="new Date()"
+                      :minDate="lastInterventionEndTime"
+                  />
                 </div>
                 <div class="col-12 md:col-6 flex flex-column gap-2">
                   <label for="endTime">{{ t('services.detail.end-time') }}</label>
@@ -228,7 +268,10 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <pv-button type="submit" :label="t('services.detail.register')" />
+              <pv-button
+                  type="submit"
+                  :label="t('services.detail.register')"
+              />
 
             </form>
           </template>

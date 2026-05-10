@@ -59,11 +59,38 @@ const useMonitoringStore = defineStore("monitoring", () => {
         }
     }
 
+    async function updateEquipment(equipmentData) {
+        errors.value = [];
+        try {
+            const response = await monitoringApi.updateEquipment(equipmentData);
+            const updated = EquipmentAssembler.toEntityFromResource(response.data);
+            const index = equipments.value.findIndex(e => e.id === updated.id);
+            if (index !== -1) equipments.value[index] = updated;
+        } catch (error) {
+            errors.value.push(error);
+            throw error;
+        }
+    }
+
+    async function deleteEquipment(equipment) {
+        errors.value = [];
+        try {
+            await monitoringApi.deleteEquipment(equipment.id);
+            const index = equipments.value.findIndex(e => e.id === equipment.id);
+            if (index !== -1) equipments.value.splice(index, 1);
+        } catch (error) {
+            errors.value.push(error);
+            throw error;
+        }
+    }
+
     return {
         equipments,
         errors,
         equipmentsLoaded,
         createEquipment,
+        updateEquipment,
+        deleteEquipment,
         fetchEquipments,
     };
 });

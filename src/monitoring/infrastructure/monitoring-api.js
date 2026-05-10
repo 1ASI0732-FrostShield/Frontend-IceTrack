@@ -19,19 +19,30 @@ export class MonitoringApi extends BaseApi {
 
     /**
      * Fetches all equipments.
-     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the equipments' response.
      */
     getEquipment() {
         return this.#equipmentsEndpointPath.getAll();
     }
 
     /**
-     * Creates a new equipment.
-     * @param {object} equipmentData - The data for the new site.
-     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the new site's response.
-     */
+     * Creates new equipment.
+    */
     createEquipment(equipmentData) {
         return this.http.post(equipmentsEndpointPath, equipmentData);
+    }
+
+    /**
+     * Updates equipment.
+     */
+    updateEquipment(equipmentData) {
+        return this.http.put(`${equipmentsEndpointPath}/${equipmentData.id}`, equipmentData);
+    }
+
+    /**
+     * Delete equipment.
+     */
+    deleteEquipment(id) {
+        return this.http.delete(`${equipmentsEndpointPath}/${id}`);
     }
 }
 
