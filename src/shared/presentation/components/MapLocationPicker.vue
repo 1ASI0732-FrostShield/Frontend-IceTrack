@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useI18n } from 'vue-i18n';
@@ -9,15 +9,21 @@ const { t } = useI18n();
 const props = defineProps({
   initialLat: {
     type: Number,
-    default: -12.046374, // Default to Lima, Peru
+    default: -12.046374,
   },
   initialLng: {
     type: Number,
-    default: -77.042793, // Default to Lima, Peru
+    default: -77.042793,
   },
   initialZoom: {
     type: Number,
     default: 13,
+  },
+
+  // Recibe ubicación actual
+  currentLocation: {
+    type: Object,
+    default: null,
   },
 });
 
@@ -88,6 +94,28 @@ onMounted(() => {
     reverseGeocode(props.initialLat, props.initialLng);
   }
 });
+
+// Envia la ubicación actual
+watch(
+    () => props.currentLocation,
+    (location) => {
+      if (!location || !map || !marker) return;
+
+      const { lat, lng } = location;
+
+      selectedLocation.value.lat = lat;
+      selectedLocation.value.lng = lng;
+
+      // Mueve el mapa a ubicación actual
+      map.setView([lat, lng], 16);
+
+      // Mueve el marcador a ubicación actual
+      marker.setLatLng([lat, lng]);
+
+      // Obtiene dirección real
+      reverseGeocode(lat, lng);
+    }
+);
 
 onBeforeUnmount(() => {
   if (map) {

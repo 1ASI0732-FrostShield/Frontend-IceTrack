@@ -170,23 +170,38 @@ onMounted(fetchData);
       <template #title>
         <div class="flex justify-content-between align-items-center">
           <h2 class="text-2xl m-0">{{ t('provider.dashboard.pending-requests') }}</h2>
+          <!-- Reload Button -->
           <pv-button icon="pi pi-refresh" text rounded @click="fetchData" v-tooltip.left="t('provider.dashboard.refresh-list')"/>
         </div>
       </template>
       <template #content>
         <pv-data-table :value="pendingRequests" :loading="loading" responsive-layout="scroll">
+          <!-- Id -->
           <pv-column field="id" :header="t('provider.dashboard.id')" sortable style="width: 10%"></pv-column>
+
+          <!-- Description -->
           <pv-column field="description" :header="t('provider.dashboard.description')" style="width: 40%"></pv-column>
+
+          <!-- Site Name -->
           <pv-column field="siteName" :header="t('provider.dashboard.site')" sortable style="width: 20%"></pv-column>
+
+          <!-- Equipment Name -->
           <pv-column field="equipmentName" :header="t('services.requests.equipment')" sortable />
+
+          <!-- Priority -->
           <pv-column field="priority" :header="t('provider.dashboard.priority')" sortable style="width: 15%">
             <template #body="{ data }">
               <pv-tag :severity="data.priority === 'high' ? 'danger' : (data.priority === 'medium' ? 'warning' : 'info')" :value="data.priority"></pv-tag>
             </template>
           </pv-column>
+
+          <!-- Status -->
           <pv-column :header="t('provider.dashboard.actions')" style="width: 15%">
             <template #body="{ data }">
+              <!-- Succes -->
               <pv-button icon="pi pi-check" class="p-button-success mr-2" @click="handleAccept(data.id)" v-tooltip.top="t('provider.dashboard.accept')"/>
+
+              <!-- Reject -->
               <pv-button icon="pi pi-times" class="p-button-danger" @click="handleReject(data.id)" v-tooltip.top="t('provider.dashboard.reject')"/>
             </template>
           </pv-column>

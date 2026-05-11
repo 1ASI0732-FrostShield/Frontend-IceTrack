@@ -35,4 +35,26 @@ export class AssetsManagementApi extends BaseApi {
     createSite(siteData) {
         return this.http.post(sitesEndpointPath, siteData);
     }
+
+    /**
+     * Updates an existing site.
+     * @param {Object} resource - The site data to update (must include id).
+     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the updated site response.
+     */
+    updateSite(resource) {
+        return this.http.put(`${sitesEndpointPath}/${resource.id}`, resource);
+    }
+
+    /**
+     * Deletes a site by its ID.
+     * @param {number|string} id - The ID of the site to delete.
+     * @returns {Promise<import('axios').AxiosResponse>} Promise resolving to the delete response.
+     */
+    deleteSite(id) {
+        return this.#sitesEndpointPath.delete(id);
+    }
+
+    getSiteById(id) {
+        return this.http.get(`${sitesEndpointPath}/${id}`);
+    }
 }

@@ -5,6 +5,11 @@
         "cancel": "Cancelar",
         "save": "Guardar",
         "search": "Buscar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "more": "Ver",
+        "back": "Regresar",
+        "submit": "Enviar",
         "status": {
             "title": "Estado",
             "open": "Abierta",
@@ -47,7 +52,8 @@
             "password": "Contraseña",
             "cta": "Entrar",
             "submit": "Ingresar",
-            "error": "Usuario o contraseña inválidos"
+            "error": "Usuario o contraseña inválidos",
+            "dontHaveAccount": "¿No tienes una cuenta?"
         },
         "register": {
             "title": "Crear cuenta",
@@ -55,33 +61,45 @@
             "signIn": "Inicia sesión",
             "selectRole": "Selecciona tu rol",
             "cta": "Registrarse",
+            "success": "Usuario registrado correctamente",
             "roles": {
                 "owner": "Propietario",
                 "ownerDesc": "Administra tus sitios y equipos",
                 "provider": "Proveedor de servicios",
                 "providerDesc": "Proporciona servicios a propietarios"
+            },
+            "passwordPolicy": {
+                "title": "La contraseña debe contener:",
+                "minLength": "Al menos 8 caracteres",
+                "uppercase": "Una letra mayúscula",
+                "lowercase": "Una letra minúscula",
+                "number": "Un número",
+                "special": "Un carácter especial",
+                "allPassed": "Contraseña segura",
+                "error": "La contraseña no cumple con los requisitos de seguridad"
             }
         },
         "errors": {
-            "invalidCredentials": "Correo o contraseña incorrectos.",
-            "occurred": "Ocurrió un error"
+            "invalidCredentials": "Correo o contraseña incorrectos",
+            "occurred": "Ocurrió un error",
+            "usernameTaken": "Este nombre de usuario ya está en uso"
         }
     },
     "page-not-found": {
         "title": "Página no encontrada",
-        "content": "La ruta {unavailable-route} no está disponible.",
+        "content": "La ruta {unavailable-route} no está disponible",
         "go-dashboard": "Ir al Dashboard"
     },
     "dashboard": {
         "title": "Panel de Control",
-        "subtitle": "Monitorea tus equipos y alertas",
+        "subtitle": "Resumen de todos los procesos activos de maquinas registradas",
         "loading": "Cargando panel...",
         "loadingData": "Cargando datos...",
         "refresh": "Actualizar Panel",
         "noConfig": "No se encontró configuración del dashboard",
         "noCardsAdded": "No has agregado tarjetas a tu dashboard aún",
         "noCardsVisible": "Sin tarjetas visibles",
-        "useConfigPanel": "Usa el panel de configuración de abajo para agregar tarjetas.",
+        "useConfigPanel": "Usa el panel de configuración de abajo para agregar tarjetas",
         "noData": "Sin datos disponibles",
         "dataPoints": "puntos de datos",
         "demoBanner": "Modo demo: usando tenant {id}",
@@ -90,17 +108,24 @@
         "filteredBySite": "Filtrado por ID de sitio: {id}",
         "showingAllSites": "Mostrando todos los sitios",
         "kpis": {
-            "equipments": "Equipos monitoreados",
+            "sites": "Lugares de Equipos",
+            "equipments": "Equipos Monitoreados",
             "alerts": "Alertas abiertas",
-            "orders": "Órdenes activas",
+            "orders": "Órdenes activas o pendientes",
             "avgTemp": "Temperatura promedio",
             "totalEquipments": "Equipos totales",
             "openAlerts": "Alertas abiertas",
-            "energyThisWeek": "Energía (esta semana)"
+            "energyThisWeek": "Energía (esta semana)",
+            "maintenance": "Cantidad de Mantenimientos",
+            "repairs": "Cantidad de Reparaciones"
         },
         "configCardSubtitles": {
-            "monitoredEquipment": "Total de equipos monitoreados",
+            "monitoredEquipment": "Total de Equipos monitoreados",
+            "monitoredSites": "Total de Sitios monitoreados",
             "openAlerts": "Alertas que requieren atención",
+            "activeRequests": "Pedidos que estan en espera",
+            "maintenance": "Equipos que necesitan mantenimiento",
+            "repair": "Equipos que necesitan reparacion",
             "default": "Métrica de dashboard"
         },
         "errors": {
@@ -230,17 +255,23 @@
     "sites": {
         "list": {
             "title": "Sitios",
-            "empty": "Aún no hay sitios.",
+            "empty": "Aún no hay sitios",
             "id": "Id",
             "name": "Nombre",
-            "address": "Dirección"
+            "address": "Dirección",
+            "information": "Mas información"
         },
         "detail": {
+            "view": "Ver",
             "title": "Detalle del sitio",
-            "contactName": "Nombre de contacto",
+            "contactName": "Nombre del contacto",
+            "contactEquipment": "Cantidad de equipos",
             "contactPhone": "Teléfono",
             "createdAt": "Creado",
-            "updatedAt": "Actualizado"
+            "updatedAt": "Actualizado",
+            "actions": "Acciones",
+            "delete": "Eliminar usuario",
+            "askDelete": "Are you sure to delete?"
         },
         "new": {
             "title": "Registrar Nuevo Sitio",
@@ -250,9 +281,16 @@
             "phone": "Teléfono",
             "register": "Registrar Sitio",
             "toggle-map": "Alternar Mapa para Selección de Dirección",
-            "alert-required-fields": "Por favor, complete todos los campos obligatorios.",
+            "alert-required-fields": "Por favor, complete todos los campos obligatorios",
             "alert-site-created": "¡Sitio creado exitosamente!",
-            "alert-create-error": "Error al crear el sitio."
+            "alert-create-error": "Error al crear el Sitio",
+            "phone-invalid": "Ingresa un número de teléfono válido",
+            "alert-invalid-phone": "El número de teléfono no es válido",
+            "error": {
+                "duplicate-name": "Ya existe un sitio con ese nombre",
+                "duplicate-address": "Ya existe un sitio con esa dirección",
+                "duplicate-phone": "Ya existe un sitio con ese teléfono"
+            }
         }
     },
     "equipments": {
@@ -261,16 +299,36 @@
             "id": "Id",
             "model": "Modelo",
             "type": "Tipo",
-            "serial": "Serie",
-            "status": "Estado"
+            "status": "Estado",
+            "empty": "Aún no hay equipos",
+            "information": "Más información"
         },
         "detail": {
+            "view": "View",
             "title": "Detalle del equipo",
             "siteId": "Sitio Id",
+            "serial": "Serie",
             "installedAt": "Instalado",
             "lastSeenAt": "Última conexión",
             "createdAt": "Creado",
             "updatedAt": "Actualizado"
+        },
+        "new": {
+            "title": "Registrar Nuevo Equipo",
+            "site": "Elige el sitio",
+            "name": "Nombre",
+            "model": "Modelo",
+            "type": "Tipo",
+            "serial": "Serie",
+            "status": "Estado",
+            "online": "En línea",
+            "register": "Registrar Equipo",
+            "installedAt": "Instalado",
+            "lastSeenAt": "Última conexión",
+            "alert-required-fields": "Por favor, complete todos los campos obligatorios",
+            "alert-equipment-created": "¡Equipo creado exitosamente!",
+            "alert-create-error": "Error al crear el Equipo",
+            "alert-duplicate-serial": "Ya existe un equipo con el mismo número de serie"
         },
         "controls": {
             "info": "Informacion",
@@ -289,7 +347,7 @@
             "detail": "Detalle de solicitud",
             "my-requests": "Mis Solicitudes de Servicio",
             "new-request-title": "Crear Nueva Solicitud",
-            "success-message": "¡Solicitud creada exitosamente! Pronto nos comunicaremos.",
+            "success-message": "¡Solicitud creada exitosamente! Pronto nos comunicaremos",
             "date": "Fecha",
             "equipment": "Equipo",
             "site": "Sitio",
@@ -308,8 +366,8 @@
             "view-review": "Ver Reseña",
             "view-review-header": "Ver Reseña",
             "submit-review-header": "Enviar Reseña",
-            "rating": "Calificación",
-            "comment": "Comentario",
+            "rating": "Calificación:",
+            "comment": "Comentario:",
             "submit": "Enviar"
         },
         "status": {
@@ -340,7 +398,7 @@
             "end-time": "Hora de Fin (opcional)",
             "add-photo-url": "Añadir URL de Foto",
             "register": "Registrar Intervención",
-            "not-found": "Solicitud de servicio no encontrada.",
+            "not-found": "Solicitud de servicio no encontrada",
             "equipment-details": "Detalles del Equipo",
             "name": "Nombre:",
             "model": "Modelo:",
@@ -359,7 +417,7 @@
             "actions": "Acciones",
             "assign-technician": "Asignar Técnico",
             "complete": "Completar",
-            "no-active-services": "No se encontraron servicios activos."
+            "no-active-services": "No se encontraron servicios activos"
         },
         "completed": {
             "title": "Servicios Completados",
@@ -368,7 +426,7 @@
             "site": "Sitio",
             "technician": "Técnico",
             "completed-at": "Completado el",
-            "no-completed-services": "No se encontraron servicios completados."
+            "no-completed-services": "No se encontraron servicios completados"
         },
         "rejected-canceled": {
             "title": "Servicios Rechazados / Cancelados",
@@ -377,7 +435,7 @@
             "site": "Sitio",
             "status": "Estado",
             "date": "Fecha",
-            "no-rejected-canceled-services": "No se encontraron servicios rechazados o cancelados."
+            "no-rejected-canceled-services": "No se encontraron servicios rechazados o cancelados"
         },
         "intervention": {
             "title": "Intervención",
@@ -388,20 +446,21 @@
             "end-time": "Hora de Fin:",
             "work-summary": "Resumen del Trabajo",
             "evidence-photos": "Fotos de Evidencia",
-            "no-photos": "No se subieron fotos para esta intervención.",
-            "not-found": "Intervención no encontrada."
+            "no-photos": "No se subieron fotos para esta intervención",
+            "not-found": "Intervención no encontrada"
         },
         "new": {
             "title": "Nueva Solicitud de Servicio",
             "provider": "Proveedor de Servicios *",
             "site": "Sitio *",
             "equipment": "Equipo *",
-            "request-type": "Tipo de Solicitud *",
-            "priority": "Prioridad",
+            "request-type": "Tipo de Solicitud",
+            "priority": "Prioridad *",
             "description": "Descripción del Problema *",
-            "alert-required-fields": "Por favor complete todos los campos requeridos.",
+            "alert-required-fields": "Por favor complete todos los campos requeridos",
             "alert-request-created": "¡Solicitud creada exitosamente!",
-            "alert-create-error": "Error al crear la solicitud."
+            "alert-create-error": "Error al crear la solicitud",
+            "equipment-already-in-use": "Este equipo ya tiene una solicitud activa"
         }
     },
     "service-requests": {
@@ -593,7 +652,7 @@
             "active-services": "Servicios Activos",
             "my-technicians": "Mis Técnicos",
             "all-services": "Todos los Servicios",
-            "all-services-description": "Ir a la lista completa de tus servicios.",
+            "all-services-description": "Ir a la lista completa de tus servicios",
             "view-all-services": "Ver Todos los Servicios",
             "pending-requests": "Solicitudes Pendientes",
             "refresh-list": "Actualizar Lista",
@@ -604,7 +663,7 @@
             "actions": "Acciones",
             "accept": "Aceptar",
             "reject": "Rechazar",
-            "no-pending-requests": "No se encontraron solicitudes pendientes."
+            "no-pending-requests": "No se encontraron solicitudes pendientes"
         },
         "services": {
             "title": "Mis Solicitudes de Servicio",
@@ -626,7 +685,8 @@
                 "order-number": "Orden #",
                 "site": "Sitio",
                 "actions": "Acciones",
-                "view-details": "Ver Detalles"
+                "details": "Reportes",
+                "create-details": "Crear reporte"
             }
         },
         "technicians": {
@@ -639,10 +699,13 @@
             "my-technicians": "Mis Técnicos",
             "average-rating": "Calificación Promedio",
             "actions": "Acciones",
-            "no-technicians": "No se encontraron técnicos. Registre uno para comenzar.",
+            "no-technicians": "No se encontraron técnicos. Registre uno para comenzar",
             "edit-technician": "Editar Técnico",
             "confirm-delete": "¿Estás seguro de que quieres eliminar a {name}?",
-            "confirm-delete-header": "Confirmar Eliminación"
+            "confirm-delete-header": "Confirmar Eliminación",
+            "phone-duplicate": "Teléfono ya registrado",
+            "add-specialty": "Agregar especialidad",
+            "specialty-name": "Nombre de especialidad"
         }
     },
     "validation": {

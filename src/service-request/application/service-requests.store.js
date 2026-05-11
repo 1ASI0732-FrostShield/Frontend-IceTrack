@@ -13,11 +13,6 @@ const reviewsApi = new ReviewsApi();
 const assetsManagementApi = new AssetsManagementApi();
 const monitoringApi = new MonitoringApi();
 
-/**
- * @store useServiceRequestStore
- * @description A Pinia store for managing service requests.
- * @author Kenyi Ramirez
- */
 export const useServiceRequestStore = defineStore('service-request-list', () => {
     const requests = ref([]);
     const requestsLoaded = ref(false);
@@ -33,9 +28,8 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
         requestsLoaded.value = false;
         errors.value = [];
         try {
-            const [usersRes, techsRes, reviewsRes, sitesRes, equipmentsRes, requestsRes] = await Promise.all([
+            const [usersRes, reviewsRes, sitesRes, equipmentsRes, requestsRes] = await Promise.all([
                 iamApi.http.get('/users'),
-                iamApi.http.get('/technicians'),
                 reviewsApi.getAllReviews(),
                 assetsManagementApi.getSites(),
                 monitoringApi.getEquipment(),
@@ -44,7 +38,7 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
 
             const context = {
                 users: usersRes.data,
-                technicians: techsRes.data,
+                technicians: [],
                 reviews: reviewsRes.data,
                 sites: sitesRes.data,
                 equipments: equipmentsRes.data

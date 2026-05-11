@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+
+import {computed, ref} from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/iam/application/auth.store.js'
@@ -7,7 +8,6 @@ import { useAuthStore } from '@/iam/application/auth.store.js'
 const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
-
 const name = ref('')
 const username = ref('')
 const password = ref('')
@@ -15,6 +15,21 @@ const role = ref(0)
 const loading = ref(false)
 const errors = ref([])
 const registrationSuccess = ref(false)
+const passwordTouched = ref(false)
+
+const passwordRules = computed(() => [
+  { key: 'minLength', label: t('auth.register.passwordPolicy.minLength'), valid: password.value.length >= 8 },
+  { key: 'uppercase', label: t('auth.register.passwordPolicy.uppercase'), valid: /[A-Z]/.test(password.value) },
+  { key: 'lowercase', label: t('auth.register.passwordPolicy.lowercase'), valid: /[a-z]/.test(password.value) },
+  { key: 'number',    label: t('auth.register.passwordPolicy.number'),    valid: /[0-9]/.test(password.value) },
+  { key: 'special',   label: t('auth.register.passwordPolicy.special'),   valid: /[^A-Za-z0-9]/.test(password.value) }
+])
+
+const passwordIsValid = computed(() => passwordRules.value.every(r => r.valid))
+
+const showPasswordPolicy = computed(() =>
+    passwordTouched.value && password.value.length > 0 && !passwordIsValid.value
+)
 
 const roleOptions = [
   { label: t('auth.register.roles.owner'), value: 0, description: t('auth.register.roles.ownerDesc') },
@@ -28,6 +43,11 @@ async function handleRegister() {
 
   if (!name.value || !username.value || !password.value) {
     errors.value.push({ message: t('validation.required', { field: t('common.all') }) })
+    return
+  }
+
+  if (!passwordIsValid.value) {
+    errors.value.push({ message: t('auth.register.passwordPolicy.error') })
     return
   }
 
@@ -55,12 +75,21 @@ async function handleRegister() {
     loading.value = false
   }
 }
+
 </script>
 
 <template>
+
   <div class="flex justify-content-center align-items-center min-h-screen surface-ground">
     <pv-card class="w-full max-w-28rem">
-      <template #title>{{ t('auth.register.title') }}</template>
+
+      <!-- Create account -->
+      <template #title>
+        <span class="text-2xl font-bold">
+          {{ t('auth.register.title') }}
+        </span>
+      </template>
+
       <template #content>
         <form @submit.prevent="handleRegister" class="p-fluid">
 
@@ -99,25 +128,81 @@ async function handleRegister() {
             </div>
           </div>
 
-          <div class="field">
-            <label for="name">{{ t('admin.users.firstName') }}</label>
-            <pv-input-text id="name" v-model="name" required :disabled="loading || registrationSuccess" />
+          <!-- Name -->
+          <div class="field mb-4">
+            <label for="name" class="block mb-2 font-medium">
+              {{ t('admin.users.firstName') }}
+            </label>
+            <pv-input-text
+                id="name"
+                v-model="name"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+            />
           </div>
 
-          <div class="field">
-            <label for="username">{{ t('auth.login.username') }}</label>
-            <pv-input-text id="username" type="text" v-model="username" required :disabled="loading || registrationSuccess" />
+          <!-- Username -->
+          <div class="field mb-4">
+            <label for="username" class="block mb-2 font-medium">
+              {{ t('auth.login.username') }}
+            </label>
+            <pv-input-text
+                id="username"
+                type="text"
+                v-model="username"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+            />
           </div>
 
-          <div class="field">
-            <label for="password">{{ t('auth.login.password') }}</label>
-            <pv-input-text id="password" type="password" v-model="password" required :disabled="loading || registrationSuccess" />
+          <!-- Password -->
+          <div class="field mb-4">
+            <label for="password" class="block mb-2 font-medium">
+              {{ t('auth.login.password') }}
+            </label>
+            <pv-input-text
+                id="password"
+                type="password"
+                v-model="password"
+                class="w-full"
+                required
+                :disabled="loading || registrationSuccess"
+                @focus="passwordTouched = true"
+                @blur="passwordTouched = true"
+                :invalid="passwordTouched && password.length > 0 && !passwordIsValid"
+            />
+
+            <!-- Panel de errores -->
+            <div v-if="showPasswordPolicy" class="mt-2 p-3 border-round border-1 border-red-200 bg-red-50">
+              <p class="text-xs font-semibold text-red-700 mb-2 mt-0">
+                <i class="pi pi-shield mr-1"></i>
+                {{ t('auth.register.passwordPolicy.title') }}
+              </p>
+              <ul class="list-none p-0 m-0 flex flex-column gap-1">
+                <li
+                    v-for="rule in passwordRules"
+                    :key="rule.key"
+                    class="flex align-items-center gap-2 text-xs"
+                    :class="rule.valid ? 'text-green-600' : 'text-red-500'"
+                >
+                  <i :class="rule.valid ? 'pi pi-check-circle' : 'pi pi-times-circle'" class="text-xs"></i>
+                  <span>{{ rule.label }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Panel bueno -->
+            <div v-if="passwordTouched && password.length > 0 && passwordIsValid" class="mt-2 flex align-items-center gap-2 text-green-600 text-xs">
+              <i class="pi pi-check-circle"></i>
+              <span>{{ t('auth.register.passwordPolicy.allPassed') }}</span>
+            </div>
           </div>
 
           <pv-button
               type="submit"
               :label="t('auth.register.cta')"
-              class="mt-4"
               :loading="loading"
               :disabled="loading || registrationSuccess"
           />

@@ -7,12 +7,13 @@ export class Sites {
      * Creates a new Site instance.¿
      */
     constructor({
-                    id = null, name = '',  address = '', contactName = '',
+                    id = null, name = '',  address = '', cantEquipment = null, contactName = '',
                     phone = '', created = '', updated = ''
                 }) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.cantEquipment = cantEquipment;
         this.contactName = contactName;
         this.phone = phone;
         this.created = created;

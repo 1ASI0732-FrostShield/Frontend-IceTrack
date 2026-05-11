@@ -1,30 +1,19 @@
 <script setup>
-/**
- * @file provider-services-hub.vue
- * @description This component serves as a hub for service providers to view a summary of their service requests by status.
- * @author Kenyi Ramirez
- */
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+
+import { ref, onMounted, onActivated, computed, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const serviceApi = new ServiceRequestsApi();
 const authStore = useAuthStore();
 
-/**
- * Computed property for the current provider's ID.
- * @type {import('vue').ComputedRef<number>}
- */
 const currentProviderId = computed(() => authStore.currentUserId);
 
-/**
- * Reactive object to store the counts of service requests by status.
- * @type {import('vue').Ref<object>}
- */
 const counts = ref({
   pending: 0,
   accepted: 0,
@@ -34,25 +23,22 @@ const counts = ref({
   canceled: 0,
 });
 
-onMounted(async () => {
-  if (currentProviderId.value) {
-    const response = await serviceApi.getRequestsForProviderQuery(currentProviderId.value);
-    const allRequests = response.data;
+const fetchCounts = async () => {
+  if (!currentProviderId.value) return;
+  const response = await serviceApi.getRequestsForProviderQuery(currentProviderId.value);
+  const allRequests = response.data;
+  counts.value.pending = allRequests.filter(r => r.status === 'pending').length;
+  counts.value.accepted = allRequests.filter(r => r.status === 'accepted').length;
+  counts.value.inProgress = allRequests.filter(r => r.status === 'inProgress').length;
+  counts.value.completed = allRequests.filter(r => r.status === 'completed').length;
+  counts.value.rejected = allRequests.filter(r => r.status === 'rejected').length;
+  counts.value.canceled = allRequests.filter(r => r.status === 'canceled').length;
+};
 
-    counts.value.pending = allRequests.filter(r => r.status === 'pending').length;
-    counts.value.accepted = allRequests.filter(r => r.status === 'accepted').length;
-    counts.value.inProgress = allRequests.filter(r => r.status === 'inProgress').length;
-    counts.value.completed = allRequests.filter(r => r.status === 'completed').length;
-    counts.value.rejected = allRequests.filter(r => r.status === 'rejected').length;
-    counts.value.canceled = allRequests.filter(r => r.status === 'canceled').length;
-  }
-});
+onMounted(fetchCounts);
+onActivated(fetchCounts);
+watch(() => route.path, fetchCounts);
 
-/**
- * Navigates to the appropriate service list view based on the selected status.
- * @param {string} status - The status category to navigate to.
- * @function navigate
- */
 const navigate = (status) => {
   const routeNames = {
     'pending': 'provider-pending-services',
@@ -64,9 +50,11 @@ const navigate = (status) => {
     router.push({ name: routeNames[status] });
   }
 };
+
 </script>
 
 <template>
+
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">{{ t('provider.services.hub.title') }}</h1>
     <div class="grid">
@@ -96,7 +84,7 @@ const navigate = (status) => {
             </div>
           </template>
           <template #content>
-            <p class="text-5xl font-bold text-orange-500">{{ counts.inProgress }}</p>
+            <p class="text-5xl font-bold text-orange-500">{{ counts.accepted + counts.inProgress }}</p>
             <p class="text-color-secondary">{{ t('provider.services.hub.in-progress-description') }}</p>
           </template>
         </pv-card>
@@ -135,4 +123,5 @@ const navigate = (status) => {
       </div>
     </div>
   </div>
+
 </template>

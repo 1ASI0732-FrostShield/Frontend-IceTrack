@@ -7,12 +7,11 @@ import pinia from "./pinia.js";
 import i18n from './i18n.js'
 import PrimeVue from 'primevue/config'
 import { useAuthStore} from "@/iam/application/auth.store.js"; // Importar store aquí
-
 import Material from '@primeuix/themes/material'
 import { definePreset } from '@primeuix/themes'
-
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
+import Chart from 'primevue/chart'
 
 import {
     Avatar, Button, Card, Checkbox, Column, ConfirmationService, ConfirmDialog,
@@ -88,5 +87,6 @@ app.component('pv-avatar', Avatar)
     .component('pv-radio-button', RadioButton)
     .component('pv-timeline', Timeline)
     .directive('tooltip', Tooltip)
+    app.component('pv-chart', Chart);
 
 initializeAuthAndRun();

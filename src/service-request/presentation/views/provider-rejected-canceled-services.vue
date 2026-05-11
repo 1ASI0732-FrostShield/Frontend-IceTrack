@@ -1,51 +1,39 @@
 <script setup>
-/**
- * @file provider-rejected-canceled-services.vue
- * @description This component displays a list of rejected or canceled service requests for a provider.
- * @author Kenyi Ramirez
- */
+
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 const { t } = useI18n();
 const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
-
-/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
-/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
-/** @type {import('vue').Ref<Array<object>>} */
 const rejectedCanceledRequests = ref([]);
-
-/**
- * Computed property for the current provider's ID.
- * @type {import('vue').ComputedRef<number>}
- */
 const currentProviderId = computed(() => authStore.currentUserId);
 
-/**
- * Fetches rejected and canceled service requests for the current provider.
- * @async
- * @function fetchData
- */
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   error.value = null;
   try {
-    const [rejectedRes, canceledRes, usersRes] = await Promise.all([
+    const [rejectedRes, canceledRes, usersRes, sitesRes, equipmentsRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'rejected'),
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'canceled'),
-      iamApi.http.get('/users')
+      iamApi.http.get('/users'),
+      assetsManagementApi.getSites(),
+      monitoringApi.getEquipment()
     ]);
 
-    const context = { users: usersRes.data };
+    const context = { users: usersRes.data, sites: sitesRes.data, equipments: equipmentsRes.data };
     const rejected = ServiceRequestAssembler.toEntitiesFromResponse(rejectedRes.data, context);
     const canceled = ServiceRequestAssembler.toEntitiesFromResponse(canceledRes.data, context);
 
@@ -59,20 +47,16 @@ const fetchData = async () => {
   }
 };
 
-/**
- * Returns the translated status string.
- * @param {string} status - The status to translate.
- * @returns {string} The translated status.
- * @function getStatusTranslation
- */
 const getStatusTranslation = (status) => {
   return t(`services.status.${status}`);
 };
 
 onMounted(fetchData);
+
 </script>
 
 <template>
+
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">{{ t('services.rejected-canceled.title') }}</h1>
     <pv-card>
@@ -98,4 +82,5 @@ onMounted(fetchData);
       </template>
     </pv-card>
   </div>
+
 </template>

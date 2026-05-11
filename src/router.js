@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import i18n from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
-import reportingRoutes from "@/reporting/presentation/reporting-routes.js";
-
 // Layout
 const Layout = () => import('@/shared/presentation/components/layout.vue')
 
@@ -22,7 +20,6 @@ const SiteDetailPage = () => import('@/assets-management/presentation/views/site
 // Monitoring
 const EquipmentListPage = () => import('@/monitoring/presentation/views/equipment-list.vue')
 const EquipmentDetailPage = () => import('@/monitoring/presentation/views/equipment-detail.vue')
-const AlertsListPage = () => import('@/monitoring/presentation/views/alerts-list.vue')
 
 // Service Request
 const ServiceRequestListPage = () => import('@/service-request/presentation/views/service-request-list.vue');
@@ -55,12 +52,10 @@ const routes = [
             { path: 'sites/:siteId', name: 'site-detail', component: SiteDetailPage, meta: { titleKey: 'sites.detail.title', roleRequired: 'Owner' } },
             { path: 'equipments', name: 'equipments', component: EquipmentListPage, meta: { titleKey: 'equipments.list.title', roleRequired: 'Owner' } },
             { path: 'equipments/:equipmentId', name: 'equipment-detail', component: EquipmentDetailPage, meta: { titleKey: 'equipments.detail.title', roleRequired: 'Owner' } },
-            { path: 'alerts', name: 'alerts', component: AlertsListPage, meta: { titleKey: 'alerts.list.title', roleRequired: 'Owner' } },
             { path: 'services', name: 'service-requests-list', component: ServiceRequestListPage, meta: { titleKey: 'services.requests.title', roleRequired: 'Owner' }},
             { path: 'services/new', name: 'service-requests-new', component: ServiceRequestFormPage, meta: { titleKey: 'services.requests.new', roleRequired: 'Owner' }},
             { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' }},
             { path: 'services/:requestId/interventions/:interventionId', name: 'intervention-detail', component: InterventionDetailPage, meta: { titleKey: 'services.interventions.detail' }},
-            ...reportingRoutes,
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'Provider' } },

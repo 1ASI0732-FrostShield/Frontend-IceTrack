@@ -1,53 +1,47 @@
 <script setup>
-/**
- * @file provider-completed-services.vue
- * @description This component displays a list of completed service requests for a provider.
- * @author Kenyi Ramirez
- */
+
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
+const assetsManagementApi = new AssetsManagementApi();
+const monitoringApi = new MonitoringApi();
 const { t } = useI18n();
 const serviceRequestApi = new ServiceRequestsApi();
 const techniciansApi = new TechniciansApi();
 const iamApi = new IamApi();
 const authStore = useAuthStore();
-
-/** @type {import('vue').Ref<boolean>} */
 const loading = ref(false);
-/** @type {import('vue').Ref<string|null>} */
 const error = ref(null);
-/** @type {import('vue').Ref<Array<object>>} */
 const completedRequests = ref([]);
-
-/**
- * Computed property for the current provider's ID.
- * @type {import('vue').ComputedRef<number>}
- */
 const currentProviderId = computed(() => authStore.currentUserId);
+const router = useRouter();  // <-- agrega esto
 
-/**
- * Fetches completed service requests for the current provider.
- * @async
- * @function fetchData
- */
+const navigateToDetail = (request) => {
+  router.push({ name: 'service-request-detail', params: { requestId: request.id } });
+};
+
 const fetchData = async () => {
   if (!currentProviderId.value) return;
   loading.value = true;
   error.value = null;
   try {
-    const [requestsRes, usersRes, techsRes] = await Promise.all([
+    const [requestsRes, usersRes, techsRes, sitesRes, equipmentsRes] = await Promise.all([
       serviceRequestApi.getRequestsForProviderQuery(currentProviderId.value, 'completed'),
       iamApi.http.get('/users'),
-      techniciansApi.getTechniciansByProvider(currentProviderId.value)
+      techniciansApi.getTechniciansByProvider(currentProviderId.value),
+      assetsManagementApi.getSites(),
+      monitoringApi.getEquipment()
     ]);
 
-    const context = { users: usersRes.data, technicians: techsRes.data };
+    const context = { users: usersRes.data, technicians: techsRes.data, sites: sitesRes.data, equipments: equipmentsRes.data };
     completedRequests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
 
   } catch (e) {
@@ -59,9 +53,11 @@ const fetchData = async () => {
 };
 
 onMounted(fetchData);
+
 </script>
 
 <template>
+
   <div class="p-4">
     <h1 class="text-3xl font-bold mb-4">{{ t('services.completed.title') }}</h1>
     <pv-card>
@@ -74,6 +70,17 @@ onMounted(fetchData);
           <pv-column field="completedAt" :header="t('services.completed.completed-at')" sortable style="width: 10%">
             <template #body="{ data }">
               {{ new Date(data.completedAt).toLocaleDateString() }}
+            </template>
+          </pv-column>
+
+          <pv-column :header="t('provider.services.list.details')">
+            <template #body="{ data }">
+              <pv-button
+                  icon="pi pi-eye"
+                  text rounded severity="info"
+                  @click="navigateToDetail(data)"
+                  v-tooltip.top="t('provider.services.list.create-details')"
+              />
             </template>
           </pv-column>
           <template #empty>
