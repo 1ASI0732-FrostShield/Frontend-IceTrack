@@ -33,7 +33,14 @@ async function handleLogin() {
 <template>
   <div class="flex justify-content-center align-items-center min-h-screen surface-ground">
     <pv-card class="w-full max-w-25rem">
-      <template #title>{{ t('auth.login.title') }}</template>
+
+      <!-- Sign in -->
+      <template #title>
+        <span class="text-2xl font-bold">
+          {{ t('auth.login.title') }}
+        </span>
+      </template>
+
       <template #content>
         <form @submit.prevent="handleLogin" class="p-fluid">
 
@@ -44,26 +51,42 @@ async function handleLogin() {
             </p>
           </div>
 
-          <div class="field">
-            <!-- Etiqueta de UI -->
-            <label for="username">{{ t('auth.login.username') }}</label>
-            <pv-input-text id="username" type="text" v-model="username" required />
+          <!-- Username -->
+          <div class="field mb-4">
+            <label for="username" class="block mb-2 font-medium">
+              {{ t('auth.login.username') }}
+            </label>
+            <pv-input-text
+                id="username"
+                type="text"
+                v-model="username"
+                class="w-full"
+                required
+            />
           </div>
 
-          <div class="field">
-            <label for="password">{{ t('auth.login.password') }}</label>
-            <pv-input-text id="password" type="password" v-model="password" required />
+          <!-- Password -->
+          <div class="field mb-4">
+            <label for="password" class="block mb-2 font-medium">
+              {{ t('auth.login.password') }}
+            </label>
+            <pv-input-text
+                id="password"
+                type="password"
+                v-model="password"
+                class="w-full"
+                required
+            />
           </div>
 
           <pv-button
               type="submit"
               :label="t('auth.login.cta')"
-              class="mt-4"
               :loading="loading" />
 
           <div class="text-center mt-3">
             <router-link :to="{ name: 'auth-register' }" class="text-primary-500 hover:underline text-sm">
-              {{ t('auth.register.alreadyHaveAccount') }}
+              {{ t('auth.login.dontHaveAccount') }}
             </router-link>
           </div>
         </form>

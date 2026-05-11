@@ -1,9 +1,5 @@
 <script setup>
-/**
- * @file technician-management.vue
- * @description View for managing technicians, including registration, editing, and deletion.
- * @author Kenyi Ramirez
- */
+
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
@@ -63,12 +59,17 @@ const fetchTechnicians = async () => {
   }
 };
 
-/**
- * Registers a new technician.
- * @async
- */
+// Validacion Phone
+const onPhoneInput = (event) => {
+  const value = event.target.value.replace(/\D/g, '').slice(0, 9);
+  newTechnician.value.phone = value;
+  event.target.value = value;
+};
+
 const registerTechnician = async () => {
   if (!newTechnician.value.name || !newTechnician.value.specialty) return;
+  if (newTechnician.value.phone && newTechnician.value.phone.length !== 9) return;
+
   submitting.value = true;
   try {
     const dataToSend = { ...newTechnician.value, providerId: currentProviderId.value };
@@ -136,10 +137,57 @@ const deleteTechnician = async (id) => {
   }
 };
 
-/**
- * Fetches initial data when the component is mounted.
- */
+const isFormValid = computed(() => {
+  return (
+      newTechnician.value.name.trim() !== '' &&
+      newTechnician.value.specialty.trim() !== '' &&
+      newTechnician.value.phone.length === 9 &&
+      !isPhoneDuplicate.value
+  );
+});
+
+const onTextInput = (event, field) => {
+  const value = event.target.value.replace(/[0-9]/g, '');
+  newTechnician.value[field] = value;
+  event.target.value = value;
+};
+
 onMounted(fetchTechnicians);
+
+const isPhoneDuplicate = computed(() => {
+  if (!newTechnician.value.phone || newTechnician.value.phone.length !== 9) return false;
+  return technicians.value.some(tech => tech.phone === newTechnician.value.phone);
+});
+
+const specialties = [
+  'Refrigeration Technician',
+  'HVAC Technician',
+  'Ice Machine Technician',
+  'Cooling Technician',
+  'Service Technician',
+  'Maintenance Technician',
+  'Repair Technician',
+];
+
+const onEditPhoneInput = (event) => {
+  const value = event.target.value.replace(/\D/g, '').slice(0, 9);
+  editableTechnician.value.phone = value;
+  event.target.value = value;
+};
+
+const onEditTextInput = (event, field) => {
+  const value = event.target.value.replace(/[0-9]/g, '');
+  editableTechnician.value[field] = value;
+  event.target.value = value;
+};
+
+const isEditPhoneDuplicate = computed(() => {
+  if (!editableTechnician.value?.phone || editableTechnician.value.phone.length !== 9) return false;
+  return technicians.value.some(
+      tech => tech.phone === editableTechnician.value.phone && tech.id !== editableTechnician.value.id
+  );
+});
+
 </script>
 
 <template>
@@ -151,26 +199,60 @@ onMounted(fetchTechnicians);
         <pv-card>
           <template #title>{{ t('provider.technicians.register-new') }}</template>
           <template #content>
-            <form @submit.prevent="registerTechnician" class="flex flex-column gap-4">
-              <div class="p-fluid">
+            <form @submit.prevent="registerTechnician" class="flex flex-column gap-5">
+
+              <!-- Registration Name -->
+              <div class="p-fluid mt-3">
                 <pv-float-label>
-                  <pv-input-text id="name" v-model="newTechnician.name" required />
+                  <pv-input-text
+                      id="name"
+                      :value="newTechnician.name"
+                      @input="onTextInput($event, 'name')"
+                      required
+                  />
                   <label for="name">{{ t('provider.technicians.name') }}</label>
                 </pv-float-label>
               </div>
-              <div class="p-fluid">
+
+              <!-- Registration Speciality -->
+              <div class="p-fluid" style="padding-right: 15rem;">
                 <pv-float-label>
-                  <pv-input-text id="specialty" v-model="newTechnician.specialty" required />
+                  <pv-dropdown
+                      id="specialty"
+                      v-model="newTechnician.specialty"
+                      :options="specialties"
+                      class="w-full"
+                  />
                   <label for="specialty">{{ t('provider.technicians.specialty') }}</label>
                 </pv-float-label>
               </div>
+
+              <!-- Registration Phone -->
               <div class="p-fluid">
                 <pv-float-label>
-                  <pv-input-text id="phone" v-model="newTechnician.phone" />
+                  <pv-input-text
+                      id="phone"
+                      :value="newTechnician.phone"
+                      @input="onPhoneInput"
+                      maxlength="9"
+                      inputmode="numeric"
+                      :class="{ 'p-invalid': isPhoneDuplicate }"
+                  />
                   <label for="phone">{{ t('provider.technicians.phone') }}</label>
                 </pv-float-label>
+                <small v-if="isPhoneDuplicate" class="flex align-items-center gap-1 mt-1" style="color: red;">
+                  <i class="pi pi-exclamation-triangle" />
+                  {{ t('provider.technicians.phone-duplicate') }}
+                </small>
               </div>
-              <pv-button type="submit" :label="t('provider.technicians.register')" icon="pi pi-plus" :loading="submitting"/>
+
+              <pv-button
+                  type="submit"
+                  :label="t('provider.technicians.register')"
+                  icon="pi pi-plus"
+                  :loading="submitting"
+                  :disabled="!isFormValid"
+              />
             </form>
           </template>
         </pv-card>
@@ -207,23 +289,45 @@ onMounted(fetchTechnicians);
     <!-- Edit Dialog -->
     <pv-dialog v-model:visible="displayEditDialog" :header="t('provider.technicians.edit-technician')" :modal="true" class="p-fluid" style="width: 30vw">
       <div v-if="editableTechnician" class="flex flex-column gap-4">
-        <div class="p-fluid">
-          <pv-float-label>
-            <pv-input-text id="edit-name" v-model="editableTechnician.name" required />
-            <label for="edit-name">{{ t('provider.technicians.name') }}</label>
-          </pv-float-label>
+        <!-- Edit Name -->
+        <div class="p-fluid flex flex-column gap-1" style="padding-right: 25rem;">
+          <label for="edit-name" class="text-sm" style="color: #6c757d;">{{ t('provider.technicians.name') }}</label>
+          <pv-input-text
+              id="edit-name"
+              :value="editableTechnician.name"
+              @input="onEditTextInput($event, 'name')"
+              required
+          />
         </div>
-        <div class="p-fluid">
+
+        <!-- Edit Speciality -->
+        <div class="p-fluid" style="padding-right: 20rem; margin-top: 1rem;">
           <pv-float-label>
-            <pv-input-text id="edit-specialty" v-model="editableTechnician.specialty" required />
+            <pv-dropdown
+                id="edit-specialty"
+                v-model="editableTechnician.specialty"
+                :options="specialties"
+                class="w-full"
+            />
             <label for="edit-specialty">{{ t('provider.technicians.specialty') }}</label>
           </pv-float-label>
         </div>
-        <div class="p-fluid">
-          <pv-float-label>
-            <pv-input-text id="edit-phone" v-model="editableTechnician.phone" />
-            <label for="edit-phone">{{ t('provider.technicians.phone') }}</label>
-          </pv-float-label>
+
+        <!-- Edit Phone -->
+        <div class="p-fluid flex flex-column gap-1" style="padding-right: 25rem;">
+          <label for="edit-phone" class="text-sm" style="color: #6c757d;">{{ t('provider.technicians.phone') }}</label>
+          <pv-input-text
+              id="edit-phone"
+              :value="editableTechnician.phone"
+              @input="onEditPhoneInput"
+              maxlength="9"
+              inputmode="numeric"
+              :class="{ 'p-invalid': isEditPhoneDuplicate }"
+          />
+          <small v-if="isEditPhoneDuplicate" class="flex align-items-center gap-1 mt-1" style="color: red;">
+            <i class="pi pi-exclamation-triangle" />
+            {{ t('provider.technicians.phone-duplicate') }}
+          </small>
         </div>
       </div>
       <template #footer>

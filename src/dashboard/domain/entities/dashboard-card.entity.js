@@ -18,26 +18,26 @@ export class DashboardCard {
 
     /**
      * Get card icon based on type
-     * ONLY cards with available endpoints
      */
     getIcon() {
         const iconMap = {
             'MonitoredEquipment': 'pi-sitemap',
-            'OpenAlerts': 'pi-exclamation-triangle'
+            'OpenAlerts':         'pi-exclamation-triangle',
+            'Sites':              'pi-map-marker',
+            'ActiveRequests':     'pi-briefcase',
         };
         return iconMap[this.cardType] || 'pi-th-large';
     }
 
     /**
      * Get card color based on type
-     * ONLY cards with available endpoints
      */
     getColor() {
         const colorMap = {
-            // ✅ Available endpoints
             'MonitoredEquipment': '#3B82F6',  // Blue
-            'OpenAlerts': '#F59E0B'           // Orange
-            // ❌ Removed: TemperatureTrends, SystemHealth, EquipmentStatus, RecentReports
+            'OpenAlerts':         '#F59E0B',  // Orange
+            'Sites':              '#10B981',  // Green
+            'ActiveRequests':     '#22C55E',  // Light Green
         };
         return colorMap[this.cardType] || '#6B7280';
     }

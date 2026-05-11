@@ -1,35 +1,29 @@
 <script setup>
-/**
- * @file service-request-detail.vue
- * @description This component displays the detailed information of a service request, including its status, priority, description, and a log of interventions.
- * It also allows providers to register new interventions and view equipment details.
- * @author Kenyi Ramirez
- */
-import { ref, onMounted, computed } from 'vue';
+
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
-import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const api = new ServiceRequestsApi();
-const iamApi = new IamApi();
 const techniciansApi = new TechniciansApi();
 const monitoringApi = new MonitoringApi();
-
-/** @type {import('vue').Ref<object|null>} */
 const serviceRequest = ref(null);
-/** @type {import('vue').Ref<Array<object>>} */
 const interventions = ref([]);
-/** @type {import('vue').Ref<Array<object>>} */
 const technicians = ref([]);
-/** @type {import('vue').Ref<object>} */
+const displayEquipmentDialog = ref(false);
+const assetsManagementApi = new AssetsManagementApi();
+const siteName = ref('');
+const equipmentName = ref('');
+
 const newIntervention = ref({
   technicianId: null,
   summary: '',
@@ -37,35 +31,22 @@ const newIntervention = ref({
   endTime: '',
   photoUrls: []
 });
-/** @type {import('vue').Ref<string>} */
+
 const newPhotoUrl = ref('');
-
-/** @type {import('vue').Ref<boolean>} */
 const isLoading = ref(false);
-/**
- * Computed property to check if the current user is a provider.
- * @type {import('vue').ComputedRef<boolean>}
- */
 const isProvider = computed(() => authStore.currentUserRole === 'Provider');
-/**
- * Computed property for the service request ID from the route parameters.
- * @type {import('vue').ComputedRef<number>}
- */
 const requestId = computed(() => route.params.requestId);
-
-/** @type {import('vue').Ref<boolean>} */
-const displayEquipmentDialog = ref(false);
-/** @type {import('vue').Ref<object|null>} */
 const selectedEquipment = ref(null);
 
-/**
- * Fetches the details of the service request and its interventions.
- * If the user is a provider, it also fetches the available technicians.
- * @async
- * @function fetchRequestDetails
- */
+watch(serviceRequest, (newVal) => {
+  if (newVal?.technicianId) {
+    newIntervention.value.technicianId = newVal.technicianId;
+  }
+});
+
 async function fetchRequestDetails() {
   isLoading.value = true;
+
   try {
     const [requestRes, interventionsRes] = await Promise.all([
       api.getServiceRequestDetailsQuery(requestId.value),
@@ -74,10 +55,15 @@ async function fetchRequestDetails() {
     serviceRequest.value = requestRes.data;
     interventions.value = interventionsRes.data;
 
-    if (isProvider.value) {
-      const techniciansRes = await techniciansApi.getTechniciansByProvider(authStore.currentUserId);
-      technicians.value = techniciansRes.data;
-    }
+    const [siteRes, equipmentRes, techsRes] = await Promise.all([
+      assetsManagementApi.getSiteById(serviceRequest.value.siteId),
+      monitoringApi.http.get(`/equipment/${serviceRequest.value.equipmentId}`),
+      techniciansApi.getTechniciansByProvider(authStore.currentUserId)
+    ]);
+    siteName.value = siteRes.data.name;
+    equipmentName.value = equipmentRes.data.model;
+    technicians.value = techsRes.data;
+
   } catch (error) {
     console.error("Failed to fetch request details:", error);
   } finally {
@@ -85,11 +71,6 @@ async function fetchRequestDetails() {
   }
 }
 
-/**
- * Opens the equipment details dialog and fetches the equipment information.
- * @async
- * @function openEquipmentDialog
- */
 async function openEquipmentDialog() {
   if (!serviceRequest.value || !serviceRequest.value.equipmentId) return;
   try {
@@ -101,10 +82,20 @@ async function openEquipmentDialog() {
   }
 }
 
-/**
- * Adds a new photo URL to the new intervention form.
- * @function addPhotoUrl
- */
+const monthago = computed(() => {
+  const date = new Date();
+  date.setDate(date.getDate() - 30);
+  return date;
+});
+
+const lastInterventionEndTime = computed(() => {
+  if (!interventions.value.length) return monthago.value;
+  const sorted = [...interventions.value].sort(
+      (a, b) => new Date(b.endTime) - new Date(a.endTime)
+  );
+  return sorted[0]?.endTime ? new Date(sorted[0].endTime) : monthago.value;
+});
+
 function addPhotoUrl() {
   if (newPhotoUrl.value && !newIntervention.value.photoUrls.includes(newPhotoUrl.value)) {
     newIntervention.value.photoUrls.push(newPhotoUrl.value);
@@ -112,11 +103,6 @@ function addPhotoUrl() {
   }
 }
 
-/**
- * Registers a new intervention for the current service request.
- * @async
- * @function registerIntervention
- */
 async function registerIntervention() {
   if (!newIntervention.value.technicianId || !newIntervention.value.summary) {
     alert('Please select a technician and provide a summary.');
@@ -142,41 +128,41 @@ async function registerIntervention() {
   }
 }
 
-/**
- * Navigates to the detail page of a specific intervention.
- * @param {object} intervention - The intervention object.
- * @function navigateToIntervention
- */
 function navigateToIntervention(intervention) {
   router.push({ name: 'intervention-detail', params: { requestId: requestId.value, interventionId: intervention.id } });
 }
 
-/**
- * Returns the translated status string, handling different casings.
- * @param {string} status - The status to translate.
- * @returns {string} The translated status.
- * @function getStatusTranslation
- */
 const getStatusTranslation = (status) => {
   if (!status) return '';
   const key = Object.keys(t('services.status')).find(k => k.toLowerCase() === status.toLowerCase());
   return key ? t(`services.status.${key}`) : status;
 };
 
+onMounted(async () => {
+  await fetchRequestDetails();
+});
 
-onMounted(fetchRequestDetails);
 </script>
 
 <template>
+
   <div class="p-4">
-    <router-view v-if="route.name === 'intervention-detail'"></router-view>
-    <div v-else>
+    <div>
       <pv-card v-if="isLoading">
         <template #content><p>{{ t('common.loading') }}</p></template>
       </pv-card>
 
       <div v-else-if="serviceRequest">
-        <h1 class="text-3xl font-bold mb-4">{{ t('services.requests.detail') }} #{{ serviceRequest.id }}</h1>
+        <div class="flex justify-content-between align-items-center mb-4">
+          <h1 class="text-3xl font-bold">{{ t('services.requests.detail') }} #{{ serviceRequest.id }}</h1>
+          <pv-button
+              icon="pi pi-arrow-left"
+              :label="t('common.back')"
+              text
+              severity="secondary"
+              @click="router.back()"
+          />
+        </div>
 
         <!-- Request Details -->
         <pv-card class="mb-4">
@@ -189,9 +175,8 @@ onMounted(fetchRequestDetails);
                 <p><strong>{{ t('services.detail.description') }}</strong> {{ serviceRequest.description }}</p>
               </div>
               <div class="col-12 md:col-6">
-                <p><strong>{{ t('services.requests.site') }}:</strong> {{ serviceRequest.siteName }}</p>
-                <p><strong>{{ t('services.requests.equipment') }}:</strong> {{ serviceRequest.equipmentName }}</p>
-                <p><strong>{{ t('services.detail.created-at') }}</strong> {{ new Date(serviceRequest.createdAt).toLocaleString() }}</p>
+                <p><strong>{{ t('services.requests.site') }}:</strong> {{ siteName }}</p>
+                <p><strong>{{ t('services.requests.equipment') }}:</strong> {{ equipmentName }}</p>
               </div>
             </div>
             <div class="mt-4">
@@ -229,39 +214,65 @@ onMounted(fetchRequestDetails);
         </pv-card>
 
         <!-- Register New Intervention (Provider only) -->
-        <pv-card v-if="isProvider">
+        <pv-card v-if="isProvider && serviceRequest.status !== 'completed'">
           <template #title>{{ t('services.detail.register-intervention') }}</template>
           <template #content>
             <form @submit.prevent="registerIntervention" class="flex flex-column gap-4">
-              <div class="p-fluid">
+
+              <!-- Technician -->
+              <div class="flex flex-column gap-2">
                 <label for="technician">{{ t('services.detail.select-technician') }}</label>
-                <pv-dropdown id="technician" v-model="newIntervention.technicianId" :options="technicians" optionLabel="name" optionValue="id" :placeholder="t('services.detail.select-technician')" />
+                <pv-input-text
+                    v-if="serviceRequest.technicianId"
+                    :value="technicians.find(t => t.id === serviceRequest.technicianId)?.name || serviceRequest.technicianId"
+                    readonly
+                    class="w-fit"
+                    style="min-width: 150px"
+                />
               </div>
-              <div class="p-fluid">
+
+              <!-- Start & End Time -->
+              <div class="grid formgrid">
+                <div class="col-12 md:col-6 flex flex-column gap-2">
+                  <label for="startTime">{{ t('services.detail.start-time') }}</label>
+                  <pv-calendar
+                      id="startTime"
+                      v-model="newIntervention.startTime"
+                      showTime
+                      hourFormat="24"
+                      :maxDate="new Date()"
+                      :minDate="lastInterventionEndTime"
+                  />
+                </div>
+                <div class="col-12 md:col-6 flex flex-column gap-2">
+                  <label for="endTime">{{ t('services.detail.end-time') }}</label>
+                  <pv-calendar id="endTime" v-model="newIntervention.endTime" showTime hourFormat="24" :maxDate="new Date()" :minDate="newIntervention.startTime" :disabled="!newIntervention.startTime" />
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="flex flex-column gap-2">
                 <label for="summary">{{ t('services.detail.work-summary') }}</label>
                 <pv-textarea id="summary" v-model="newIntervention.summary" rows="3" required />
               </div>
-              <div class="grid formgrid">
-                <div class="col-12 md:col-6">
-                  <label for="startTime">{{ t('services.detail.start-time') }}</label>
-                  <pv-calendar id="startTime" v-model="newIntervention.startTime" showTime hourFormat="24" />
-                </div>
-                <div class="col-12 md:col-6">
-                  <label for="endTime">{{ t('services.detail.end-time') }}</label>
-                  <pv-calendar id="endTime" v-model="newIntervention.endTime" showTime hourFormat="24" />
-                </div>
-              </div>
-              <div class="p-fluid">
+
+              <!-- Photo URLs -->
+              <div class="flex flex-column gap-2">
                 <label for="photoUrl">{{ t('services.detail.add-photo-url') }}</label>
                 <div class="p-inputgroup">
                   <pv-input-text id="photoUrl" v-model="newPhotoUrl" placeholder="https://example.com/photo.jpg" />
                   <pv-button icon="pi pi-plus" class="p-button-secondary" @click="addPhotoUrl" type="button" />
                 </div>
-                <div v-if="newIntervention.photoUrls && newIntervention.photoUrls.length" class="mt-2 flex flex-wrap gap-2">
-                  <img v-for="url in newIntervention.photoUrls" :key="url" :src="url" class="w-4rem h-4rem shadow-1 border-round"/>
+                <div v-if="newIntervention.photoUrls?.length" class="mt-2 flex flex-wrap gap-2">
+                  <img v-for="url in newIntervention.photoUrls" :key="url" :src="url" class="w-4rem h-4rem shadow-1 border-round" />
                 </div>
               </div>
-              <pv-button type="submit" :label="t('services.detail.register')" />
+
+              <pv-button
+                  type="submit"
+                  :label="t('services.detail.register')"
+              />
+
             </form>
           </template>
         </pv-card>
