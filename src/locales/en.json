@@ -9,6 +9,7 @@
         "delete": "Delete",
         "more": "More",
         "back": "Go back",
+        "submit": "Submit",
         "status": {
             "title": "Status",
             "open": "Open",
