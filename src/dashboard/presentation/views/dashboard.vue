@@ -1,102 +1,131 @@
 <script setup>
-import { onMounted, computed, watch } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
-import { useDashboardDataStore } from '@/dashboard/application/dashboard-data.store.js'
-import DashboardConfigTable from '../components/dashboard-config-table.vue'
+import { useDashboardDataStore }   from '@/dashboard/application/dashboard-data.store.js'
+import { useRouter } from 'vue-router'
 
-const { t } = useI18n()
+const router = useRouter()
+const { t }       = useI18n()
 const configStore = useDashboardConfigStore()
-const dataStore = useDashboardDataStore()
+const dataStore   = useDashboardDataStore()
 
 onMounted(() => {
-  loadDashboard()
+  configStore.loadConfigForCurrentUser().then(() => {
+    dataStore.loadAll(configStore.defaultSiteId).then(() => {
+      console.log('requests raw:', dataStore.requests.map(r => r.status))
+      console.log('counts:', dataStore.requestStatusCounts)
+    })
+  })
 })
 
-watch(
-    () => configStore.config?.cards,
-    (newCards, oldCards) => {
-      if (oldCards && newCards && newCards.length !== oldCards.length) {
-        console.log('Cards changed, refreshing dashboard...')
-        refreshDashboard()
-      }
-    },
-    { deep: true }
-)
-
-function loadDashboard() {
-  configStore.loadConfigForCurrentUser()
-      .then(() => {
-        configStore.loadAvailableCardTypes()
-        return dataStore.loadAll(configStore.defaultSiteId)
-      })
-      .catch(error => {
-        console.error('Error loading dashboard:', error)
-      })
-}
-
-function refreshDashboard() {
+function refresh() {
   dataStore.loadAll(configStore.defaultSiteId)
 }
 
-const visibleCards = computed(() => {
-  if (!configStore.config) return []
-  return configStore.visibleCards
+const kpiCards = computed(() => [
+  {
+    key:      'sites',
+    label:    t('dashboard.kpis.sites'),
+    sublabel: t('dashboard.configCardSubtitles.monitoredSites'),
+    value:    dataStore.kpis?.totalSites      ?? '--',
+    icon:     'pi-map-marker',
+    color:    'text-teal-500',
+    route:    '/sites'
+  },
+  {
+    key:      'equipments',
+    label:    t('dashboard.kpis.equipments'),
+    sublabel: t('dashboard.configCardSubtitles.monitoredEquipment'),
+    value:    dataStore.kpis?.totalEquipments ?? '--',
+    icon:     'pi-sitemap',
+    color:    'text-primary',
+    route:    '/equipments'
+  },
+  {
+    key:      'requests',
+    label:    t('dashboard.kpis.orders'),
+    sublabel: t('dashboard.configCardSubtitles.activeRequests'),
+    value:    dataStore.kpis?.activeRequests  ?? '--',
+    icon:     'pi-briefcase',
+    color:    'text-green-500',
+    route:    '/services'
+  },
+])
+
+const equipmentStatusCards = computed(() => [
+  {
+    key:     'maintenance',
+    label:   t('dashboard.kpis.maintenance'),
+    sublabel: t('dashboard.configCardSubtitles.maintenance'),
+    value:   dataStore.equipmentStatusCounts.maintenance,
+    icon:    'pi-wrench',
+    color:   'text-orange-500',
+    severity: 'warning',
+    route:    '/services'
+  },
+  {
+    key:     'repair',
+    label:   t('dashboard.kpis.repair'),
+    value:   dataStore.equipmentStatusCounts.repair,
+    sublabel: t('dashboard.configCardSubtitles.repair'),
+    icon:    'pi-hammer',
+    color:   'text-red-500',
+    severity: 'danger',
+    route:    '/services'
+  },
+])
+
+const requestChartData = computed(() => {
+  const counts = [
+    dataStore.requestStatusCounts.inProgress,
+    dataStore.requestStatusCounts.pending,
+    dataStore.requestStatusCounts.completed,
+    dataStore.requestStatusCounts.canceled,
+    dataStore.requestStatusCounts.rejected,
+  ]
+
+  const total = counts.reduce((a, b) => a + b, 0)
+
+  if (total === 0) {
+    return {
+      labels: [t('dashboard.noData')],
+      datasets: [{ data: [1], backgroundColor: ['#e5e7eb'], borderWidth: 0 }],
+    }
+  }
+
+  return {
+    labels: [
+      t('services.status.inProgress'),
+      t('services.status.pending'),
+      t('services.status.completed'),
+      t('services.status.canceled'),
+      t('services.status.rejected'),
+    ],
+    datasets: [{
+      data: counts,
+      backgroundColor: ['#3b82f6', '#f59e0b', '#22c55e', '#ef4444', '#8b5cf6'],
+      borderWidth: 0,
+    }],
+  }
 })
 
-function getKpiValue(cardType) {
-  if (!dataStore.kpis) return '--'
-
-  const kpiMap = {
-    'MonitoredEquipment': dataStore.kpis.totalEquipments ?? 0,
-  }
-
-  return kpiMap[cardType] ?? '--'
+const chartOptions = {
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10 },
+    },
+  },
+  responsive: true,
+  maintainAspectRatio: false,
 }
-
-function getCardIcon(cardType) {
-  const iconMap = {
-    'MonitoredEquipment': 'pi-sitemap',
-    'OpenAlerts': 'pi-exclamation-triangle'
-  }
-  return iconMap[cardType] || 'pi-th-large'
-}
-
-function getCardColor(cardType) {
-  const colorMap = {
-    'MonitoredEquipment': 'text-primary',
-    'OpenAlerts': 'text-orange-500'
-  }
-  return colorMap[cardType] || 'text-gray-500'
-}
-
-function getCardTitle(cardType) {
-  const titleMap = {
-    'MonitoredEquipment': t('dashboard.kpis.equipments'),
-    'OpenAlerts': t('dashboard.kpis.alerts')
-  }
-  return titleMap[cardType] || cardType
-}
-
-function getCardSubtitle(cardType) {
-  const subtitleMap = {
-    'MonitoredEquipment': t('dashboard.configCardSubtitles.monitoredEquipment'),
-    'OpenAlerts': t('dashboard.configCardSubtitles.openAlerts')
-  }
-  return subtitleMap[cardType] || t('dashboard.configCardSubtitles.default')
-}
-
-const kpiCards = computed(() => {
-  return visibleCards.value
-})
-
-const hasAnyData = computed(() => {
-  return dataStore.kpis !== null
-})
 </script>
 
 <template>
   <div class="p-3">
+
+    <!-- Header -->
     <div class="flex align-items-center justify-content-between mb-4">
       <div>
         <h1 class="text-3xl font-bold m-0">{{ t('dashboard.title') }}</h1>
@@ -104,95 +133,93 @@ const hasAnyData = computed(() => {
         <small v-if="configStore.defaultSiteId" class="text-400">
           {{ t('dashboard.filteredBySite', { id: configStore.defaultSiteId }) }}
         </small>
-        <small v-else class="text-400">
-          {{ t('dashboard.showingAllSites') }}
-        </small>
       </div>
       <pv-button
           icon="pi pi-refresh"
           :label="t('dashboard.refresh')"
-          @click="refreshDashboard"
+          @click="refresh"
           :loading="dataStore.loading"
           outlined
       />
     </div>
 
-    <div v-if="configStore.loading && !configStore.config" class="text-center p-5">
-      <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
-      <p class="mt-3 text-600">{{ t('dashboard.loading') }}</p>
-    </div>
-
-    <div v-if="configStore.errors.length > 0 || dataStore.errors.length > 0" class="mb-3">
-      <pv-card>
-        <template #content>
-          <div class="flex align-items-start gap-3">
-            <i class="pi pi-exclamation-triangle text-red-500 text-2xl"></i>
-            <div class="flex-1">
-              <div class="font-semibold text-lg mb-2">{{ t('dashboard.errors.title') }}</div>
-              <ul class="m-0 pl-3">
-                <li v-for="(error, idx) in [...configStore.errors, ...dataStore.errors]" :key="idx" class="text-red-600 mb-1">
-                  {{ error }}
-                </li>
-              </ul>
-            </div>
-            <pv-button
-                icon="pi pi-times"
-                text
-                rounded
-                severity="danger"
-                @click="configStore.clearErrors(); dataStore.clearErrors()"
-            />
-          </div>
-        </template>
-      </pv-card>
-    </div>
-
-    <template v-if="configStore.config && !configStore.loading">
-      <div v-if="kpiCards.length > 0" class="grid mb-4">
-        <div v-for="card in kpiCards" :key="card.id" class="col-12 md:col-6 lg:col-3">
-          <pv-card class="h-full">
+    <template v-if="!configStore.loading || configStore.config">
+      <div class="grid mb-4">
+        <div v-for="card in kpiCards" :key="card.key" class="col-12 md:col-6 lg:col-4" >
+          <pv-card
+              class="h-full cursor-pointer"
+              @click="card.route && router.push(card.route)"
+          >
             <template #title>
               <div class="flex align-items-center justify-content-between w-full">
-                <span class="text-lg">{{ getCardTitle(card.cardType) }}</span>
-                <i :class="`pi ${getCardIcon(card.cardType)}`" class="text-xl"></i>
+                <span class="text-lg">{{ card.label }}</span>
+                <i :class="`pi ${card.icon} text-xl`"></i>
               </div>
             </template>
             <template #content>
               <div class="flex flex-column gap-2">
-                <div class="text-4xl font-bold" :class="getCardColor(card.cardType)">
-                  {{ getKpiValue(card.cardType) }}
+                <div class="text-4xl font-bold" :class="card.color">
+                  <i v-if="dataStore.loading" class="pi pi-spin pi-spinner"></i>
+                  <span v-else>{{ card.value }}</span>
                 </div>
-                <div class="text-sm text-500">
-                  {{ getCardSubtitle(card.cardType) }}
-                </div>
-                <div v-if="dataStore.loading" class="text-xs text-400 flex align-items-center gap-1">
-                  <i class="pi pi-spin pi-spinner"></i>
-                  <span>{{ t('dashboard.loadingData') }}</span>
-                </div>
-                <div v-else-if="!hasAnyData" class="text-xs text-orange-500 flex align-items-center gap-1">
-                  <i class="pi pi-exclamation-circle"></i>
-                  <span>{{ t('dashboard.noData') }}</span>
-                </div>
+                <div class="text-sm text-500">{{ card.sublabel }}</div>
               </div>
             </template>
           </pv-card>
         </div>
       </div>
 
-      <div v-if="kpiCards.length === 0" class="mb-4">
-        <pv-card>
-          <template #content>
-            <div class="text-center p-4">
-              <i class="pi pi-inbox text-6xl text-400 mb-3"></i>
-              <div class="text-xl font-semibold mb-2">{{ t('dashboard.noCardsVisible') }}</div>
-              <p class="text-600 mb-3">{{ t('dashboard.noCardsAdded') }}</p>
-              <p class="text-500 mb-4">{{ t('dashboard.useConfigPanel') }}</p>
-            </div>
-          </template>
-        </pv-card>
-      </div>
+      <div class="grid">
 
-      <dashboard-config-table v-if="configStore.config" :config="configStore.config" />
+        <!-- Equipment status cards -->
+        <div class="col-12 md:col-6 lg:col-3">
+          <div class="flex flex-column gap-5" style="height: 22rem">
+            <div v-for="card in equipmentStatusCards" :key="card.key" class="flex-1">
+              <pv-card
+                  class="h-full cursor-pointer"
+                  @click="router.push('/services')"
+              >
+                <template #title>
+                  <div class="flex align-items-center justify-content-between w-full">
+                    <div class="flex flex-column gap-1">
+                      <span class="font-bold text-lg">{{ card.label }}</span>
+                      <span class="text-sm font-normal text-500">{{ card.sublabel }}</span>
+                    </div>
+                    <i :class="['pi', card.icon, 'text-3xl', card.color]"></i>
+                  </div>
+                </template>
+                <template #content>
+                  <div class="flex align-items-center justify-content-between">
+                    <div class="text-3xl font-bold" :class="card.color">
+                      <i v-if="dataStore.loading" class="pi pi-spin pi-spinner text-xl"></i>
+                      <span v-else>{{ card.value }}</span>
+                    </div>
+                  </div>
+                </template>
+              </pv-card>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-9">
+          <pv-card class="h-full">
+            <template #title>
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-chart-pie text-xl text-primary"></i>
+                <span>{{ t('services.requests.title') }}</span>
+              </div>
+            </template>
+            <template #content>
+              <div v-if="dataStore.loading" class="flex justify-content-center align-items-center" style="height: 260px">
+                <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
+              </div>
+              <div v-else style="height: 260px">
+                <pv-chart type="doughnut" :data="requestChartData" :options="chartOptions" style="height: 100%" />
+              </div>
+            </template>
+          </pv-card>
+        </div>
+      </div>
     </template>
   </div>
 </template>

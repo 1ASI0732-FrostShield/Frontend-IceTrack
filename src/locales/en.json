@@ -91,7 +91,7 @@
     },
     "dashboard": {
         "title": "Dashboard",
-        "subtitle": "Monitor your equipment and alerts",
+        "subtitle": "Summary of all active processes of registered machines",
         "loading": "Loading dashboard...",
         "loadingData": "Loading data...",
         "refresh": "Refresh Dashboard",
@@ -107,17 +107,24 @@
         "filteredBySite": "Filtered by Site ID: {id}",
         "showingAllSites": "Showing all sites",
         "kpis": {
+          "sites": "Number of Sites locations",
           "equipments": "Monitored Equipment",
           "alerts": "Open Alerts",
-          "orders": "Active Orders",
+          "orders": "Active or pending orders",
           "avgTemp": "Average Temperature",
           "totalEquipments": "Total Equipment",
           "openAlerts": "Open Alerts",
-          "energyThisWeek": "Energy (This Week)"
+          "energyThisWeek": "Energy (This Week)",
+          "maintenance": "Number of Maintenance",
+          "repair": "Number of Repairs"
         },
         "configCardSubtitles": {
-          "monitoredEquipment": "Total equipment being tracked",
+          "monitoredEquipment": "Total equipments being tracked",
+          "monitoredSites": "Total sites being tracked",
           "openAlerts": "Alerts requiring attention",
+          "activeRequests": "Request that are pending",
+          "maintenance": "Equipment that needs maintenance",
+          "repair": "Equipment that needs repair",
           "default": "Dashboard metric"
         },
         "errors": {

@@ -91,7 +91,7 @@
     },
     "dashboard": {
         "title": "Panel de Control",
-        "subtitle": "Monitorea tus equipos y alertas",
+        "subtitle": "Resumen de todos los procesos activos de maquinas registradas",
         "loading": "Cargando panel...",
         "loadingData": "Cargando datos...",
         "refresh": "Actualizar Panel",
@@ -107,17 +107,24 @@
         "filteredBySite": "Filtrado por ID de sitio: {id}",
         "showingAllSites": "Mostrando todos los sitios",
         "kpis": {
-            "equipments": "Equipos monitoreados",
+            "sites": "Lugares de Equipos",
+            "equipments": "Equipos Monitoreados",
             "alerts": "Alertas abiertas",
-            "orders": "Órdenes activas",
+            "orders": "Órdenes activas o pendientes",
             "avgTemp": "Temperatura promedio",
             "totalEquipments": "Equipos totales",
             "openAlerts": "Alertas abiertas",
-            "energyThisWeek": "Energía (esta semana)"
+            "energyThisWeek": "Energía (esta semana)",
+            "maintenance": "Cantidad de Mantenimientos",
+            "repairs": "Cantidad de Reparaciones"
         },
         "configCardSubtitles": {
-            "monitoredEquipment": "Total de equipos monitoreados",
+            "monitoredEquipment": "Total de Equipos monitoreados",
+            "monitoredSites": "Total de Sitios monitoreados",
             "openAlerts": "Alertas que requieren atención",
+            "activeRequests": "Pedidos que estan en espera",
+            "maintenance": "Equipos que necesitan mantenimiento",
+            "repair": "Equipos que necesitan reparacion",
             "default": "Métrica de dashboard"
         },
         "errors": {

@@ -1,52 +1,37 @@
 import { BaseApi } from "@/shared/infrastructure/base-api.js";
 
+const equipmentsPath = import.meta.env.VITE_EQUIPMENTS_ENDPOINT_PATH || '/equipment';
+const sitesPath      = import.meta.env.VITE_SITES_ENDPOINT_PATH      || '/sites';
+
 /**
  * Dashboard Data API Service
- * Handles requests for KPIs, alerts, and dashboard metrics
- * ONLY includes endpoints that exist in the backend
  */
 export class DashboardDataApi extends BaseApi {
     constructor() {
         super();
     }
 
-    /**
-     * Get equipments (for MonitoredEquipment KPI)
-     * GET /api/v1/equipment
-     * ✅ Endpoint exists and works
-     */
     getEquipments(tenantId = null, siteId = null) {
         const params = {};
         if (tenantId) params.tenantId = tenantId;
-        if (siteId) params.siteId = siteId;
+        if (siteId)   params.siteId   = siteId;
+        return this.http.get(equipmentsPath, { params });
+    }
 
-        return this.http.get('/equipment', { params });
+    getSites(siteId = null) {
+        const params = {};
+        if (siteId) params.siteId = siteId;
+        return this.http.get(sitesPath, { params });
     }
 
     /**
-     * Get alerts (for OpenAlerts KPI)
-     * GET /api/v1/alert
-     * ✅ Endpoint exists (currently returns 500 - needs backend fix)
+     * Get ALL service requests for a requester (no status filter)
+     * Uses same endpoint as ServiceRequestsApi.getRequestsByRequesterQuery
      */
-    getOpenAlerts(tenantId = null, equipmentId = null, siteId = null) {
-        const params = {};
-        if (tenantId) params.tenantId = tenantId;
-        if (equipmentId) params.equipmentId = equipmentId;
-        if (siteId) params.siteId = siteId;
-
-        return this.http.get('/alert', { params });
-    }
-
-    /**
-     * Get recent alerts for table display
-     * GET /api/v1/alert
-     * ✅ Same endpoint as above
-     */
-    getRecentAlerts(tenantId = null, siteId = null) {
-        const params = {};
-        if (tenantId) params.tenantId = tenantId;
-        if (siteId) params.siteId = siteId;
-
-        return this.http.get('/alert', { params });
+    getAllServiceRequests(requesterId = null) {
+        if (requesterId) {
+            return this.http.get(`/service-requests/requester/${requesterId}`);
+        }
+        return this.http.get('/service-requests');
     }
 }

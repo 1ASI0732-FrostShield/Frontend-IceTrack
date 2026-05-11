@@ -8,6 +8,7 @@ export class DashboardKpis {
                     totalEquipments = 0,
                     openAlerts = 0,
                     activeRequests = 0,
+                    totalSites = 0,
                     avgTemperature = 0,
                     minTemperature = 0,
                     maxTemperature = 0
@@ -15,6 +16,7 @@ export class DashboardKpis {
         this.totalEquipments = totalEquipments;
         this.openAlerts = openAlerts;
         this.activeRequests = activeRequests;
+        this.totalSites = totalSites;
         this.avgTemperature = avgTemperature;
         this.minTemperature = minTemperature;
         this.maxTemperature = maxTemperature;
@@ -26,7 +28,8 @@ export class DashboardKpis {
     hasData() {
         return this.totalEquipments > 0 ||
             this.openAlerts > 0 ||
-            this.activeRequests > 0;
+            this.activeRequests > 0 ||
+            this.totalSites > 0;
     }
 
     /**

@@ -5,12 +5,14 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from "vue-i18n";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useConfirm } from "primevue/useconfirm";
+import { useRouter } from 'vue-router';
 
 const {t} = useI18n();
 const store = useAssetsManagementStore();
 const { sites, sitesLoaded, errors } = storeToRefs(store);
 const { fetchSites, updateSite, deleteSite } = store;
 const serverError = ref(null)
+const router = useRouter();
 
 onMounted(() => {
   if (!sitesLoaded.value) fetchSites();
@@ -117,9 +119,13 @@ const formatDate = (value) => {
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('sites.list.title') }}</h1>
 
-      <RouterLink :to="{ name: 'sites' }">
-        <pv-button :label="t('sites.list.title')" />
-      </RouterLink>
+      <pv-button
+          icon="pi pi-arrow-left"
+          :label="t('common.back')"
+          text
+          severity="secondary"
+          @click="router.back()"
+      />
     </div>
 
     <pv-data-table

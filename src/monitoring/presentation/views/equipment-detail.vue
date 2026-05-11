@@ -5,6 +5,7 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useConfirm } from "primevue/useconfirm";
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
 const store = useMonitoringStore();
@@ -14,6 +15,7 @@ const confirm = useConfirm();
 const serverError = ref(null);
 const displayEditDialog = ref(false);
 const selectedEquipment = ref(null);
+const router = useRouter();
 
 const editForm = ref({
   id: null,
@@ -86,9 +88,13 @@ const formatDate = (value) => {
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('equipments.detail.title') }}</h1>
 
-      <RouterLink :to="{ name: 'equipments' }">
-        <pv-button :label="t('equipments.list.title')" />
-      </RouterLink>
+      <pv-button
+          icon="pi pi-arrow-left"
+          :label="t('common.back')"
+          text
+          severity="secondary"
+          @click="router.back()"
+      />
     </div>
 
     <!-- Table -->
