@@ -3,15 +3,15 @@ import i18n from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
 // Layout
-const Layout = () => import('@/shared/presentation/components/layout.vue')
+const Layout = () => import('@/shared/presentation/components/appLayout.vue')
 
 // General Views
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
-const DashboardPage = () => import('@/dashboard/presentation/views/dashboard.vue')
+const DashboardPage = () => import('@/dashboard/presentation/views/appDashboard.vue')
 
 // IAM
-const LoginPage = () => import('@/iam/presentation/views/login.vue')
-const RegisterPage = () => import('@/iam/presentation/views/register.vue')
+const LoginPage = () => import('@/iam/presentation/views/appLogin.vue')
+const RegisterPage = () => import('@/iam/presentation/views/appRegister.vue')
 
 // Asset Management
 const SitesListPage = () => import('@/assets-management/presentation/views/sites-list.vue')

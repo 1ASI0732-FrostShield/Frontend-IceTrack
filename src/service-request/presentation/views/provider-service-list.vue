@@ -5,7 +5,6 @@
  * @author Kenyi Ramirez
  */
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
@@ -15,7 +14,6 @@ import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-m
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 
 const { t } = useI18n();
-const router = useRouter();
 const authStore = useAuthStore();
 const serviceRequestApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
@@ -84,15 +82,6 @@ const filteredRequests = computed(() => {
   }
   return list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
-
-/**
- * Navigates to the detail page of a specific service request.
- * @param {object} request - The service request object.
- * @function navigateToDetail
- */
-const navigateToDetail = (request) => {
-  router.push({ name: 'service-request-detail', params: { requestId: request.id } });
-};
 
 /**
  * Determines the severity of the status tag for display.
