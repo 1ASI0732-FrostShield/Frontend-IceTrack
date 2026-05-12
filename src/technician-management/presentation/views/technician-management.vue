@@ -188,62 +188,79 @@ const isEditPhoneDuplicate = computed(() => {
   );
 });
 
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+};
+
+const avatarColors = [
+  { bg: '#B5D4F4', color: '#0C447C' },
+  { bg: '#9FE1CB', color: '#085041' },
+  { bg: '#F5C4B3', color: '#712B13' },
+  { bg: '#CECBF6', color: '#3C3489' },
+  { bg: '#F4C0D1', color: '#72243E' },
+  { bg: '#C0DD97', color: '#3B6D11' },
+];
+
+const getAvatarStyle = (name) => {
+  const index = (name?.charCodeAt(0) ?? 0) % avatarColors.length;
+  return avatarColors[index];
+};
 </script>
 
 <template>
   <div class="p-4">
-    <h1 class="text-3xl font-bold mb-4">{{ t('provider.technicians.title') }}</h1>
+    <pv-confirm-dialog />
+
+    <h1 class="tm-page-title">{{ t('provider.technicians.title') }}</h1>
+
     <div class="grid">
       <!-- Registration Form -->
       <div class="col-12 md:col-4">
-        <pv-card>
-          <template #title>{{ t('provider.technicians.register-new') }}</template>
+        <pv-card class="tm-card">
+          <template #title>
+            <span class="tm-card-title">{{ t('provider.technicians.register-new') }}</span>
+          </template>
           <template #content>
-            <form @submit.prevent="registerTechnician" class="flex flex-column gap-5">
+            <form @submit.prevent="registerTechnician" class="flex flex-column gap-4">
 
-              <!-- Registration Name -->
-              <div class="p-fluid mt-3">
-                <pv-float-label>
-                  <pv-input-text
-                      id="name"
-                      :value="newTechnician.name"
-                      @input="onTextInput($event, 'name')"
-                      required
-                  />
-                  <label for="name">{{ t('provider.technicians.name') }}</label>
-                </pv-float-label>
+              <div class="tm-field">
+                <label class="tm-label">{{ t('provider.technicians.name') }}</label>
+                <pv-input-text
+                    id="name"
+                    :value="newTechnician.name"
+                    @input="onTextInput($event, 'name')"
+                    class="w-full tm-input"
+                    required
+                />
               </div>
 
-              <!-- Registration Speciality -->
-              <div class="p-fluid" style="padding-right: 15rem;">
-                <pv-float-label>
-                  <pv-dropdown
-                      id="specialty"
-                      v-model="newTechnician.specialty"
-                      :options="specialties"
-                      class="w-full"
-                  />
-                  <label for="specialty">{{ t('provider.technicians.specialty') }}</label>
-                </pv-float-label>
+              <div class="tm-field">
+                <label class="tm-label">{{ t('provider.technicians.specialty') }}</label>
+                <pv-dropdown
+                    id="specialty"
+                    v-model="newTechnician.specialty"
+                    :options="specialties"
+                    class="w-full"
+                />
               </div>
 
-              <!-- Registration Phone -->
-              <div class="p-fluid">
-                <pv-float-label>
-                  <pv-input-text
-                      id="phone"
-                      :value="newTechnician.phone"
-                      @input="onPhoneInput"
-                      maxlength="9"
-                      inputmode="numeric"
-                      :class="{ 'p-invalid': isPhoneDuplicate }"
-                  />
-                  <label for="phone">{{ t('provider.technicians.phone') }}</label>
-                </pv-float-label>
-                <small v-if="isPhoneDuplicate" class="flex align-items-center gap-1 mt-1" style="color: red;">
+              <div class="tm-field">
+                <label class="tm-label">{{ t('provider.technicians.phone') }}</label>
+                <pv-input-text
+                    id="phone"
+                    :value="newTechnician.phone"
+                    @input="onPhoneInput"
+                    maxlength="9"
+                    inputmode="numeric"
+                    class="w-full tm-input"
+                    :class="{ 'p-invalid': isPhoneDuplicate }"
+                />
+                <small v-if="isPhoneDuplicate" class="tm-error-msg">
                   <i class="pi pi-exclamation-triangle" />
                   {{ t('provider.technicians.phone-duplicate') }}
                 </small>
+                <small v-else class="tm-hint">9 digits only</small>
               </div>
 
               <pv-button
@@ -252,6 +269,7 @@ const isEditPhoneDuplicate = computed(() => {
                   icon="pi pi-plus"
                   :loading="submitting"
                   :disabled="!isFormValid"
+                  class="tm-btn-register"
               />
             </form>
           </template>
@@ -260,25 +278,66 @@ const isEditPhoneDuplicate = computed(() => {
 
       <!-- Technician List -->
       <div class="col-12 md:col-8">
-        <pv-card>
-          <template #title>{{ t('provider.technicians.my-technicians') }}</template>
+        <pv-card class="tm-card">
+          <template #title>
+            <span class="tm-card-title">{{ t('provider.technicians.my-technicians') }}</span>
+          </template>
           <template #content>
-            <pv-data-table :value="technicians" :loading="loading" responsive-layout="scroll">
-              <pv-column field="name" :header="t('provider.technicians.name')" sortable></pv-column>
-              <pv-column field="specialty" :header="t('provider.technicians.specialty')" sortable></pv-column>
-              <pv-column field="phone" :header="t('provider.technicians.phone')"></pv-column>
+            <pv-data-table :value="technicians" :loading="loading" responsive-layout="scroll" class="tm-table">
+
+              <pv-column field="name" :header="t('provider.technicians.name')" sortable>
+                <template #body="{ data }">
+                  <div class="tm-name-cell">
+                    <div
+                        class="tm-avatar"
+                        :style="{
+                          background: getAvatarStyle(data.name).bg,
+                          color: getAvatarStyle(data.name).color
+                        }"
+                    >
+                      {{ getInitials(data.name) }}
+                    </div>
+                    <span>{{ data.name }}</span>
+                  </div>
+                </template>
+              </pv-column>
+
+              <pv-column field="specialty" :header="t('provider.technicians.specialty')" sortable />
+              <pv-column field="phone" :header="t('provider.technicians.phone')" />
+
               <pv-column :header="t('provider.technicians.average-rating')" sortable field="averageRating">
                 <template #body="{ data }">
-                  <pv-rating :modelValue="data.averageRating" :readonly="true" :cancel="false" :stars="5" />
-                  <span class="ml-2">({{ data.averageRating ? data.averageRating.toFixed(1) : 'N/A' }})</span>
+                  <div class="tm-rating-cell">
+                    <pv-rating :modelValue="data.averageRating" :readonly="true" :cancel="false" :stars="5" />
+                    <span class="tm-rating-val">
+                      ({{ data.averageRating ? data.averageRating.toFixed(1) : 'N/A' }})
+                    </span>
+                  </div>
                 </template>
               </pv-column>
-              <pv-column :header="t('provider.technicians.actions')" style="width: 10rem">
+
+              <pv-column :header="t('provider.technicians.actions')" style="width: 8rem">
                 <template #body="{ data }">
-                  <pv-button icon="pi pi-pencil" text rounded class="mr-2" @click="openEditDialog(data)" />
-                  <pv-button icon="pi pi-trash" text rounded severity="danger" @click="confirmDelete(data)" />
+                  <div class="tm-actions">
+                    <pv-button
+                        icon="pi pi-pencil"
+                        text rounded
+                        class="tm-action-btn"
+                        v-tooltip.top="t('common.edit')"
+                        @click="openEditDialog(data)"
+                    />
+                    <pv-button
+                        icon="pi pi-trash"
+                        text rounded
+                        severity="danger"
+                        class="tm-action-btn tm-action-btn-danger"
+                        v-tooltip.top="t('common.delete')"
+                        @click="confirmDelete(data)"
+                    />
+                  </div>
                 </template>
               </pv-column>
+
               <template #empty>{{ t('provider.technicians.no-technicians') }}</template>
             </pv-data-table>
           </template>
@@ -287,55 +346,260 @@ const isEditPhoneDuplicate = computed(() => {
     </div>
 
     <!-- Edit Dialog -->
-    <pv-dialog v-model:visible="displayEditDialog" :header="t('provider.technicians.edit-technician')" :modal="true" class="p-fluid" style="width: 30vw">
-      <div v-if="editableTechnician" class="flex flex-column gap-4">
-        <!-- Edit Name -->
-        <div class="p-fluid flex flex-column gap-1" style="padding-right: 25rem;">
-          <label for="edit-name" class="text-sm" style="color: #6c757d;">{{ t('provider.technicians.name') }}</label>
-          <pv-input-text
-              id="edit-name"
-              :value="editableTechnician.name"
-              @input="onEditTextInput($event, 'name')"
-              required
+    <pv-dialog
+        v-model:visible="displayEditDialog"
+        :modal="true"
+        :show-header="false"
+        class="tm-edit-dialog"
+        style="width: 30vw; border-radius: 12px; overflow: hidden;"
+        content-style="padding: 0;"
+    >
+      <div v-if="editableTechnician">
+
+        <!-- Custom Header -->
+        <div class="ed-header">
+          <div class="ed-header-left">
+            <div
+                class="tm-avatar ed-avatar"
+                :style="{
+                  background: getAvatarStyle(editableTechnician.name).bg,
+                  color: getAvatarStyle(editableTechnician.name).color
+                }"
+            >
+              {{ getInitials(editableTechnician.name) }}
+            </div>
+            <div>
+              <p class="ed-name">{{ editableTechnician.name }}</p>
+              <p class="ed-sub">{{ t('provider.technicians.edit-technician') }}</p>
+            </div>
+          </div>
+          <pv-button
+              icon="pi pi-times"
+              text rounded
+              class="tm-action-btn"
+              :aria-label="t('common.cancel')"
+              @click="displayEditDialog = false"
           />
         </div>
 
-        <!-- Edit Speciality -->
-        <div class="p-fluid" style="padding-right: 20rem; margin-top: 1rem;">
-          <pv-float-label>
+        <!-- Body -->
+        <div class="ed-body">
+
+          <div class="tm-field">
+            <label class="tm-label">{{ t('provider.technicians.name') }}</label>
+            <pv-input-text
+                id="edit-name"
+                :value="editableTechnician.name"
+                @input="onEditTextInput($event, 'name')"
+                class="w-full"
+            />
+          </div>
+
+          <div class="tm-field">
+            <label class="tm-label">{{ t('provider.technicians.specialty') }}</label>
             <pv-dropdown
                 id="edit-specialty"
                 v-model="editableTechnician.specialty"
                 :options="specialties"
                 class="w-full"
             />
-            <label for="edit-specialty">{{ t('provider.technicians.specialty') }}</label>
-          </pv-float-label>
+          </div>
+
+          <div class="tm-field">
+            <label class="tm-label">{{ t('provider.technicians.phone') }}</label>
+            <pv-input-text
+                id="edit-phone"
+                :value="editableTechnician.phone"
+                @input="onEditPhoneInput"
+                maxlength="9"
+                inputmode="numeric"
+                class="w-full"
+                :class="{ 'p-invalid': isEditPhoneDuplicate }"
+            />
+            <small v-if="isEditPhoneDuplicate" class="tm-error-msg">
+              <i class="pi pi-exclamation-triangle" />
+              {{ t('provider.technicians.phone-duplicate') }}
+            </small>
+            <small v-else class="tm-hint">9 digits only</small>
+          </div>
         </div>
 
-        <!-- Edit Phone -->
-        <div class="p-fluid flex flex-column gap-1" style="padding-right: 25rem;">
-          <label for="edit-phone" class="text-sm" style="color: #6c757d;">{{ t('provider.technicians.phone') }}</label>
-          <pv-input-text
-              id="edit-phone"
-              :value="editableTechnician.phone"
-              @input="onEditPhoneInput"
-              maxlength="9"
-              inputmode="numeric"
-              :class="{ 'p-invalid': isEditPhoneDuplicate }"
+        <!-- Footer -->
+        <div class="ed-footer">
+          <pv-button
+              :label="t('common.cancel')"
+              icon="pi pi-times"
+              class="p-button-text"
+              @click="displayEditDialog = false"
           />
-          <small v-if="isEditPhoneDuplicate" class="flex align-items-center gap-1 mt-1" style="color: red;">
-            <i class="pi pi-exclamation-triangle" />
-            {{ t('provider.technicians.phone-duplicate') }}
-          </small>
+          <pv-button
+              :label="t('common.save')"
+              icon="pi pi-check"
+              severity="info"
+              :loading="submitting"
+              :disabled="isEditPhoneDuplicate"
+              @click="saveTechnician"
+          />
         </div>
       </div>
-      <template #footer>
-        <pv-button :label="t('common.cancel')" icon="pi pi-times" @click="displayEditDialog = false" class="p-button-text"/>
-        <pv-button :label="t('common.save')" icon="pi pi-check" @click="saveTechnician" :loading="submitting" />
-      </template>
     </pv-dialog>
 
-    <pv-confirm-dialog />
   </div>
 </template>
+
+<style scoped>
+/* Page */
+.tm-page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+/* Card */
+.tm-card :deep(.p-card-body) { padding: 1.25rem; }
+.tm-card :deep(.p-card-title) { padding-bottom: 0; margin-bottom: 0; }
+.tm-card :deep(.p-card-content) { padding-top: 1rem; }
+
+.tm-card-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Fields */
+.tm-field { display: flex; flex-direction: column; gap: 5px; }
+
+.tm-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color-secondary);
+}
+
+.tm-hint {
+  font-size: 11px;
+  color: var(--text-color-secondary);
+  opacity: 0.7;
+}
+
+.tm-error-msg {
+  font-size: 11px;
+  color: #A32D2D;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Register button */
+.tm-btn-register {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Table */
+.tm-table :deep(.p-datatable-thead > tr > th) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-secondary);
+  background: var(--surface-ground);
+  border-bottom: 0.5px solid var(--surface-border);
+}
+
+.tm-table :deep(.p-datatable-tbody > tr) {
+  transition: background 0.12s;
+}
+
+.tm-table :deep(.p-datatable-tbody > tr > td) {
+  font-size: 13px;
+  border-bottom: 0.5px solid var(--surface-border);
+  padding: 0.65rem 1rem;
+}
+
+/* Avatar */
+.tm-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.tm-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Rating */
+.tm-rating-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tm-rating-val {
+  font-size: 12px;
+  color: var(--text-color-secondary);
+}
+
+/* Action buttons */
+.tm-actions { display: flex; gap: 2px; }
+
+.tm-action-btn :deep(.p-button-icon) { font-size: 13px; }
+
+.tm-action-btn-danger:hover :deep(.p-button-icon) { color: #A32D2D; }
+
+/* Edit Dialog */
+.ed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 0.5px solid var(--surface-border);
+}
+
+.ed-header-left { display: flex; align-items: center; gap: 10px; }
+
+.ed-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 13px !important;
+}
+
+.ed-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ed-sub {
+  font-size: 12px;
+  color: var(--text-color-secondary);
+  margin: 0;
+}
+
+.ed-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ed-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 1rem 1.25rem;
+  border-top: 0.5px solid var(--surface-border);
+}
+</style>

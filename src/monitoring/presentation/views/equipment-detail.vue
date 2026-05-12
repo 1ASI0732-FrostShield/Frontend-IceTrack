@@ -183,13 +183,13 @@ const formatDate = (value) => {
         <!-- Actualizar Model -->
         <div class="field col-12 md:col-6">
           <label class="block mb-2 font-medium">{{ t('equipments.new.model') }}</label>
-          <pv-input-text v-model="editForm.model" class="w-full" />
+          <pv-input-text v-model="editForm.model" class="w-full" disabled />
         </div>
 
         <!-- Actualizar Type -->
         <div class="field col-12 md:col-6">
           <label class="block mb-2 font-medium">{{ t('equipments.new.type') }}</label>
-          <pv-input-text v-model="editForm.type" class="w-full" />
+          <pv-input-text v-model="editForm.type" class="w-full" disabled />
         </div>
 
         <!-- Actualizar Serial -->

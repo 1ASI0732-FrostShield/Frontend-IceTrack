@@ -291,6 +291,22 @@
                 "duplicate-address": "Ya existe un sitio con esa dirección",
                 "duplicate-phone": "Ya existe un sitio con ese teléfono"
             }
+        },
+        "types": {
+            "CHILLER":          "Chiller",
+            "COOLING_TOWER":    "Cooling Tower",
+            "AHU":              "Air Handling Unit (AHU)",
+            "FAN_COIL":         "Fan Coil",
+            "CONDENSING_UNIT":  "Condensing Unit",
+            "HEAT_EXCHANGER":   "Heat Exchanger"
+        },
+        "models": {
+            "CARRIER_30XA": "Carrier 30XA",
+            "TRANE_CGAX":   "Trane CGAX",
+            "YORK_YVAA":    "York YVAA",
+            "DAIKIN_EWAD":  "Daikin EWAD",
+            "LENNOX_XC25":  "Lennox XC25",
+            "MCQUAY_AWV":   "McQuay AWV"
         }
     },
     "equipments": {

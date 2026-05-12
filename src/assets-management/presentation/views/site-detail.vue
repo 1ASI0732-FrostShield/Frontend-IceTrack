@@ -112,13 +112,11 @@ const formatDate = (value) => {
 </script>
 
 <template>
-
   <section class="p-4">
     <pv-confirm-dialog />
 
     <div class="flex justify-content-between align-items-center mb-4">
-      <h1 class="text-3xl font-bold">{{ t('sites.list.title') }}</h1>
-
+      <h1 class="sd-page-title">{{ t('sites.list.title') }}</h1>
       <pv-button
           icon="pi pi-arrow-left"
           :label="t('common.back')"
@@ -136,72 +134,58 @@ const formatDate = (value) => {
         paginator
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
+        class="sd-table"
     >
-      <!-- Contact Name -->
-      <pv-column field="contactName" :header="t('sites.detail.contactName')"/>
+      <pv-column field="contactName"   :header="t('sites.detail.contactName')" />
+      <pv-column field="cantEquipment" :header="t('sites.detail.contactEquipment')" />
 
-      <!-- Cant Equipment -->
-      <pv-column field="cantEquipment" :header="t('sites.detail.contactEquipment')"/>
-
-      <!-- Phone -->
       <pv-column field="phone" :header="t('sites.detail.contactPhone')">
         <template #body="slotProps">
-              <span :style="{ fontWeight: 'bold' }">
-                {{ slotProps.data.phone }}
-              </span>
+          <span class="sd-phone-cell">{{ slotProps.data.phone }}</span>
         </template>
       </pv-column>
 
-      <!-- Created At -->
       <pv-column field="created" :header="t('sites.detail.createdAt')">
-        <template #body="{ data }">
-          {{ formatDate(data.updated) }}
-        </template>
+        <template #body="{ data }">{{ formatDate(data.updated) }}</template>
       </pv-column>
 
-      <!-- Updated At -->
       <pv-column field="updated" :header="t('sites.detail.updatedAt')">
-        <template #body="{ data }">
-          {{ formatDate(data.updated) }}
-        </template>
+        <template #body="{ data }">{{ formatDate(data.updated) }}</template>
       </pv-column>
 
-      <!-- Details -->
       <pv-column :header="t('sites.detail.actions')">
         <template #body="{ data }">
-          <div class="flex gap-2">
+          <div class="sd-actions">
             <pv-button
                 icon="pi pi-pencil"
-                text
-                rounded
+                text rounded
                 severity="warning"
-                v-tooltip.top="'Edit'"
+                class="sd-action-btn"
+                v-tooltip.top="t('common.edit')"
                 @click="openEditDialog(data)"
             />
             <pv-button
-                type="button"
                 icon="pi pi-trash"
-                rounded
+                text rounded
                 severity="danger"
-                text
+                class="sd-action-btn sd-action-btn--danger"
+                v-tooltip.top="t('common.delete')"
                 @click="confirmDelete(data)"
             />
           </div>
         </template>
       </pv-column>
-
     </pv-data-table>
 
+    <!-- Edit Dialog -->
     <pv-dialog
         v-model:visible="displayEditDialog"
-        header="Edit Site"
+        :header="t('sites.detail.title')"
         :modal="true"
         class="p-fluid"
         style="width: 50vw"
     >
-      <div v-if="serverError"
-           class="flex align-items-center gap-2 p-3 mb-3 border-round"
-           style="background: #fdecea; border: 1px solid #f5c2c7; color: #842029; border-radius: 6px;">
+      <div v-if="serverError" class="sd-server-error mb-3">
         <i class="pi pi-exclamation-triangle" />
         <span>{{ serverError }}</span>
       </div>
@@ -209,22 +193,22 @@ const formatDate = (value) => {
       <div class="formgrid grid row-gap-3">
 
         <div class="field col-12 md:col-6">
-          <label for="edit-name" class="block mb-2 font-medium">Name</label>
+          <label class="sd-label">{{ t('sites.new.name') }}</label>
           <pv-input-text id="edit-name" :value="editForm.name" @input="onEditTextInput($event, 'name')" class="w-full" required />
         </div>
 
         <div class="field col-12 md:col-6">
-          <label for="edit-address" class="block mb-2 font-medium">Address</label>
+          <label class="sd-label">{{ t('sites.new.address') }}</label>
           <pv-input-text id="edit-address" v-model="editForm.address" class="w-full" required />
         </div>
 
         <div class="field col-12 md:col-6">
-          <label for="edit-contact-name" class="block mb-2 font-medium">Contact Name</label>
+          <label class="sd-label">{{ t('sites.new.contact-name') }}</label>
           <pv-input-text id="edit-contact-name" :value="editForm.contactName" @input="onEditTextInput($event, 'contactName')" class="w-full" required />
         </div>
 
         <div class="field col-12 md:col-6">
-          <label for="edit-phone" class="block mb-2 font-medium">Phone</label>
+          <label class="sd-label">{{ t('sites.new.phone') }}</label>
           <pv-input-text
               id="edit-phone"
               :value="editForm.phone"
@@ -234,33 +218,116 @@ const formatDate = (value) => {
               inputmode="numeric"
               :invalid="editForm.phone.length > 0 && editForm.phone.length < 9"
           />
+          <small
+              v-if="editForm.phone.length > 0 && editForm.phone.length < 9"
+              class="sd-field-hint sd-field-hint--error"
+          >
+            <i class="pi pi-exclamation-triangle" style="font-size:11px" />
+            {{ t('sites.new.phone-invalid') }}
+          </small>
+          <small v-else class="sd-field-hint">9 digits only</small>
         </div>
 
       </div>
 
       <template #footer>
-        <pv-button
-            label="Cancel"
-            icon="pi pi-times"
-            class="p-button-text"
-            @click="displayEditDialog = false"
-        />
-        <pv-button
-            label="Save"
-            icon="pi pi-check"
-            severity="success"
-            @click="saveEditSite"
-        />
+        <pv-button :label="t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="displayEditDialog = false" />
+        <pv-button :label="t('common.save')" icon="pi pi-check" severity="success" @click="saveEditSite" />
       </template>
     </pv-dialog>
 
-    <div v-if="errors.length" class="text-red-500 mt-3">
+    <div v-if="errors.length" class="sd-error-bar mt-3">
       {{ t('errors.occurred') }}: {{ errors.map(e => e.message).join(', ') }}
     </div>
-
   </section>
 </template>
 
 <style scoped>
+.sd-page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
 
+/* Table */
+.sd-table :deep(.p-datatable-thead > tr > th) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-secondary);
+  background: var(--surface-ground);
+  border-bottom: 0.5px solid var(--surface-border);
+}
+
+.sd-table :deep(.p-datatable-tbody > tr > td) {
+  font-size: 13px;
+  border-bottom: 0.5px solid var(--surface-border);
+  padding: 0.65rem 1rem;
+}
+
+.sd-table :deep(.p-datatable-tbody > tr) {
+  transition: background 0.12s;
+}
+
+/* Phone cell */
+.sd-phone-cell {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Actions */
+.sd-actions { display: flex; gap: 2px; }
+
+.sd-action-btn :deep(.p-button-icon) { font-size: 13px; }
+.sd-action-btn--danger:hover :deep(.p-button-icon) { color: #A32D2D; }
+
+/* Server error banner */
+.sd-server-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  background: #FCEBEB;
+  border: 0.5px solid #F09595;
+  color: #A32D2D;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* Labels */
+.sd-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color-secondary);
+  margin-bottom: 5px;
+}
+
+/* Field hints */
+.sd-field-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--text-color-secondary);
+  opacity: 0.7;
+  margin-top: 4px;
+}
+.sd-field-hint--error {
+  color: #A32D2D;
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Error bar */
+.sd-error-bar {
+  font-size: 13px;
+  color: #A32D2D;
+}
 </style>

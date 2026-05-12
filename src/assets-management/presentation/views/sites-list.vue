@@ -162,11 +162,9 @@ const onTextInput = (event, field) => {
 </script>
 
 <template>
-
   <section class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
-      <h1 class="text-3xl font-bold">{{ t('sites.list.title') }}</h1>
-
+      <h1 class="sl-page-title">{{ t('sites.list.title') }}</h1>
       <pv-button :label="t('sites.new.title')" icon="pi pi-plus" severity="success" @click="openNewSiteDialog" />
     </div>
 
@@ -178,17 +176,12 @@ const onTextInput = (event, field) => {
         paginator
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
+        class="sl-table"
     >
-      <!-- Site Name -->
-      <pv-column field="name" :header="t('sites.list.name')" />
+      <pv-column field="name"    :header="t('sites.list.name')" />
+      <pv-column field="address" :header="t('sites.list.address')" />
+      <pv-column field="phone"   :header="t('sites.detail.contactPhone')" />
 
-      <!-- Site Address -->
-      <pv-column field="address" :header="t('sites.list.address')"/>
-
-      <!-- Site Phone -->
-      <pv-column field="phone" :header="t('sites.detail.contactPhone')"/>
-
-      <!-- More Information -->
       <pv-column :header="t('sites.list.information')">
         <template #body="{ data }">
           <RouterLink :to="{ name: 'site-detail', params: { siteId: data.id } }">
@@ -197,69 +190,50 @@ const onTextInput = (event, field) => {
         </template>
       </pv-column>
 
-      <template #empty>
-        {{ t('sites.list.empty') }}
-      </template>
+      <template #empty>{{ t('sites.list.empty') }}</template>
     </pv-data-table>
 
-    <div v-if="errors.length" class="text-red-500 mt-3">
+    <div v-if="errors.length" class="sl-error-bar mt-3">
       {{ t('errors.occurred') }}: {{ errors.map(e => e.message).join(', ') }}
     </div>
 
-    <pv-dialog v-model:visible="displayNewSiteDialog" :header="t('sites.new.title')" :modal="true" class="p-fluid" style="width: 50vw" >
-      <div v-if="serverError"
-           class="flex align-items-center gap-2 p-3 mb-3 border-round"
-           style="background: #fdecea; border: 1px solid #f5c2c7; color: #842029; border-radius: 6px;">
+    <!-- Dialog -->
+    <pv-dialog
+        v-model:visible="displayNewSiteDialog"
+        :header="t('sites.new.title')"
+        :modal="true"
+        class="p-fluid"
+        style="width: 50vw"
+    >
+      <div v-if="serverError" class="sl-server-error mb-3">
         <i class="pi pi-exclamation-triangle" />
         <span>{{ serverError }}</span>
       </div>
 
       <form @submit.prevent="saveNewSite" class="flex flex-column gap-4">
-
-        <!-- Inputs -->
         <div class="formgrid grid row-gap-3">
-          <!-- New Name -->
+
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
-              <pv-input-text
-                  id="site-name"
-                  :value="newSite.name"
-                  @input="onTextInput($event, 'name')"
-                  class="w-full"
-                  required
-              />
+              <pv-input-text id="site-name" :value="newSite.name" @input="onTextInput($event, 'name')" class="w-full" required />
               <label for="site-name">{{ t('sites.new.name') }}</label>
             </pv-float-label>
           </div>
 
-          <!-- New Address -->
           <div class="field col-12 md:col-6 mt-4">
             <pv-float-label>
-              <pv-input-text
-                  id="site-address"
-                  v-model="newSite.address"
-                  class="w-full"
-                  required
-              />
+              <pv-input-text id="site-address" v-model="newSite.address" class="w-full" required />
               <label for="site-address">{{ t('sites.new.address') }}</label>
             </pv-float-label>
           </div>
 
-          <!-- New Contact Name -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
-              <pv-input-text
-                  id="contact-name"
-                  :value="newSite.contactName"
-                  @input="onTextInput($event, 'contactName')"
-                  class="w-full"
-                  required
-              />
+              <pv-input-text id="contact-name" :value="newSite.contactName" @input="onTextInput($event, 'contactName')" class="w-full" required />
               <label for="contact-name">{{ t('sites.new.contact-name') }}</label>
             </pv-float-label>
           </div>
 
-          <!-- New Phone -->
           <div class="field col-12 md:col-6">
             <pv-float-label>
               <pv-input-text
@@ -273,10 +247,14 @@ const onTextInput = (event, field) => {
               />
               <label for="phone">{{ t('sites.new.phone') }}</label>
             </pv-float-label>
+            <small v-if="phoneTouched && newSite.phone.length < 9" class="sl-field-hint sl-field-hint--error">
+              <i class="pi pi-exclamation-triangle" style="font-size:11px" />
+              {{ t('sites.new.phone-invalid') }}
+            </small>
+            <small v-else class="sl-field-hint">9 digits only</small>
           </div>
         </div>
 
-        <!-- Botón para ubicación actual -->
         <pv-button
             label="Usar mi ubicación actual"
             icon="pi pi-map-marker"
@@ -286,35 +264,94 @@ const onTextInput = (event, field) => {
             @click="getCurrentLocation"
         />
 
-        <!-- Mapa -->
-        <div v-if="showMap" class="map-section mt-0">
+        <div v-if="showMap" class="sl-map-section">
           <MapLocationPicker
               :current-location="currentLocation"
               @location-selected="handleLocationSelected"
           />
         </div>
       </form>
-      <template #footer>
-        <pv-button :label="t('common.cancel')" icon="pi pi-times" @click="displayNewSiteDialog = false" class="p-button-text"/>
 
-        <pv-button
-            :label="t('sites.new.register')"
-            icon="pi pi-check"
-            @click="saveNewSite"
-            :disabled="!isFormValid"
-        />
+      <template #footer>
+        <pv-button :label="t('common.cancel')" icon="pi pi-times" @click="displayNewSiteDialog = false" class="p-button-text" />
+        <pv-button :label="t('sites.new.register')" icon="pi pi-check" @click="saveNewSite" :disabled="!isFormValid" />
       </template>
     </pv-dialog>
   </section>
-
 </template>
 
 <style scoped>
-
-.map-section {
-  height: 400px; /* Ensure map has height */
-  width: 100%;
-  margin-top: 1rem;
+.sl-page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
+/* Table */
+.sl-table :deep(.p-datatable-thead > tr > th) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-secondary);
+  background: var(--surface-ground);
+  border-bottom: 0.5px solid var(--surface-border);
+}
+
+.sl-table :deep(.p-datatable-tbody > tr > td) {
+  font-size: 13px;
+  border-bottom: 0.5px solid var(--surface-border);
+  padding: 0.65rem 1rem;
+}
+
+.sl-table :deep(.p-datatable-tbody > tr) {
+  transition: background 0.12s;
+}
+
+/* Error bar */
+.sl-error-bar {
+  font-size: 13px;
+  color: #A32D2D;
+}
+
+/* Server error banner */
+.sl-server-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  background: #FCEBEB;
+  border: 0.5px solid #F09595;
+  color: #A32D2D;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* Field hints */
+.sl-field-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--text-color-secondary);
+  opacity: 0.7;
+  margin-top: 4px;
+}
+.sl-field-hint--error {
+  color: #A32D2D;
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Map */
+.sl-map-section {
+  height: 400px;
+  width: 100%;
+  margin-top: 0.5rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 0.5px solid var(--surface-border);
+}
 </style>
