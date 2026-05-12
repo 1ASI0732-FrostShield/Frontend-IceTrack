@@ -1,6 +1,6 @@
 <script setup>
 
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useI18n } from "vue-i18n";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
