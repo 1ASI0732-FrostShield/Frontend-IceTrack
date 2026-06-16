@@ -1,4 +1,5 @@
 <script setup>
+
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore} from "@/iam/application/auth.store.js";
@@ -7,11 +8,17 @@ const { locale, t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
-function setLang(lang) { locale.value = lang }
+function setLang(lang) {
+  locale.value = lang
+}
 
 function handleSignOut() {
   authStore.logout()
   router.push({ name: 'auth-login' })
+}
+
+function refreshPage() {
+  window.location.reload()
 }
 
 </script>
@@ -26,6 +33,14 @@ function handleSignOut() {
     <div class="spacer"></div>
 
     <div class="actions">
+      <pv-button
+          icon="pi pi-refresh"
+          severity="secondary"
+          rounded
+          text
+          aria-label="Refresh"
+          @click="refreshPage" />
+
       <pv-button text @click="setLang('es')" label="ES" />
       <pv-button text @click="setLang('en')" label="EN" />
       <pv-divider layout="vertical" />
