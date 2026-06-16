@@ -10,17 +10,22 @@ const authStore = useAuthStore()
 const dashboardConfigStore = useDashboardConfigStore()
 const dashboardDataStore = useDashboardDataStore()
 
-watch( () => authStore.currentUserId, async (currentUserId, previousUserId) => {
-      if (currentUserId === previousUserId) return
-      
-      dashboardConfigStore.$reset()
-      dashboardDataStore.$reset()
-      
-      if (currentUserId && route.path === '/dashboard') {
-        await dashboardConfigStore.loadConfigForCurrentUser()
+watch(
+  () => authStore.currentUserId,
+  (currentUserId, previousUserId) => {
+    if (currentUserId === previousUserId) return
+
+    dashboardConfigStore.$reset()
+    dashboardDataStore.$reset()
+
+    if (!currentUserId) return
+
+    if (route.path === '/dashboard') {
+      dashboardConfigStore.loadConfigForCurrentUser().then(() => {
         dashboardDataStore.loadAll(dashboardConfigStore.defaultSiteId)
-      }
+      })
     }
+  }
 )
 </script>
 
