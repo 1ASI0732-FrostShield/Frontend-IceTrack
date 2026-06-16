@@ -17,10 +17,6 @@ function handleSignOut() {
   router.push({ name: 'auth-login' })
 }
 
-function refreshPage() {
-  window.location.reload()
-}
-
 </script>
 
 <template>
@@ -33,14 +29,6 @@ function refreshPage() {
     <div class="spacer"></div>
 
     <div class="actions">
-      <pv-button
-          icon="pi pi-refresh"
-          severity="secondary"
-          rounded
-          text
-          aria-label="Refresh"
-          @click="refreshPage" />
-
       <pv-button text @click="setLang('es')" label="ES" />
       <pv-button text @click="setLang('en')" label="EN" />
       <pv-divider layout="vertical" />
