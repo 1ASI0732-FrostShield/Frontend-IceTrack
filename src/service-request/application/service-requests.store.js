@@ -18,12 +18,6 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
     const requestsLoaded = ref(false);
     const errors = ref([]);
 
-    /**
-     * @function fetchContextAndRequests
-     * @description Fetches all necessary context (users, technicians, reviews, sites, equipments) and the service requests for a given requester.
-     * @param {number} requesterId - The ID of the user who made the requests.
-     * @async
-     */
     async function fetchContextAndRequests(requesterId) {
         requestsLoaded.value = false;
         errors.value = [];
@@ -36,15 +30,21 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
                 serviceDeliveryApi.getRequestsByRequesterQuery(requesterId)
             ]);
 
+            const ownerId = authStore.currentUserId;
+
+            const ownerSites = sitesRes.data.filter(site => site.ownerId === ownerId);
+            const ownerEquipments = equipmentsRes.data.filter(equipment => equipment.ownerId === ownerId);
+            const ownerRequests = requestsRes.data.filter(request => request.ownerId === ownerId);
+
             const context = {
                 users: usersRes.data,
                 technicians: [],
                 reviews: reviewsRes.data,
-                sites: sitesRes.data,
-                equipments: equipmentsRes.data
+                sites: ownerSites,
+                equipments: ownerEquipments
             };
 
-            requests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
+            requests.value = ServiceRequestAssembler.toEntitiesFromResponse(ownerRequests, context);
             requestsLoaded.value = true;
         } catch (error) {
             errors.value.push(error);
@@ -52,12 +52,6 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
         }
     }
 
-    /**
-     * @function cancelRequest
-     * @description Sends a command to cancel a service request and updates its status locally.
-     * @param {number} id - The ID of the service request to cancel.
-     * @async
-     */
     async function cancelRequest(id) {
         errors.value = [];
         try {

@@ -1,13 +1,11 @@
 export class Equipments {
-    /**
-     * Creates a new Equipment instance.
-     */
     constructor({
-                    id = null, equipmentId = null, model = '', type = '', serial = '',
-                    status = '',  setPoint = 0, name = '',  siteId = 0,
-                    manufacturer = '', online = false, created = '', updated = ''
+                    id = null, ownerId = null, equipmentId = null, model = '', type = '',
+                    serial = '', status = '', name = '',  siteId = 0,
+                    online = false, created = '', updated = ''
                 }) {
         this.id = id;
+        this.ownerId = ownerId;
         this.equipmentId = equipmentId;
         this.model = model;
         this.type = type;

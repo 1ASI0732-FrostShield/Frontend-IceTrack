@@ -1,17 +1,9 @@
 import { Intervention } from './intervention.entity.js';
 
-/**
- * @class ServiceRequest
- * @description Represents a service request entity, including all its properties and related data.
- * @author Kenyi Ramirez
- */
 export class ServiceRequest {
-    /**
-     * @constructor
-     * @param {object} props - The properties of the service request.
-     */
     constructor({
                     id,
+                    ownerId = null,
                     requesterId,
                     siteId,
                     equipmentId,
@@ -37,6 +29,7 @@ export class ServiceRequest {
                     interventions = []
                 }) {
         this.id = id;
+        this.ownerId = ownerId;
         this.requesterId = requesterId;
         this.siteId = siteId;
         this.equipmentId = equipmentId;

@@ -5,35 +5,19 @@ import {EquipmentAssembler} from "@/monitoring/infrastructure/equipments.assembl
 
 const monitoringApi = new MonitoringApi();
 
-/**
- * Store for Monitoring context.
- */
 const useMonitoringStore = defineStore("monitoring", () => {
-    /**
-     * List of equipment entities.
-     * @type {import('vue').Ref<Category[]>}
-     */
     const equipments = ref([]);
-    /**
-     * List of error entities.
-     * @type {import('vue').Ref<Category[]>}
-     */
+
     const errors = ref([]);
-    /**
-     * Whether equipments have been loaded from the API.
-     * @type {import('vue').Ref<boolean>}
-     */
+
     const equipmentsLoaded = ref(false);
-    /**
-     * Fetches equipments from the API and updates state.
-     * @function
-     * @returns {void}
-     */
+
     function fetchEquipments() {
         monitoringApi
             .getEquipment()
             .then((response) => {
-                equipments.value = EquipmentAssembler.toEntitiesFromResponse(response);
+                const allEquipments = EquipmentAssembler.toEntitiesFromResponse(response);
+                equipments.value = allEquipments.filter(equipment => equipment.ownerId === authStore.currentUserId);
                 equipmentsLoaded.value = true;
                 console.log("Equipment loaded:", equipments.value);
             })
@@ -42,15 +26,14 @@ const useMonitoringStore = defineStore("monitoring", () => {
                 console.error("Error loading equipment:", error);
             });
     }
-    /**
-     * Creates a new site via the API and updates the equipments list.
-     * @param {object} equipmentData - The data for the new site.
-     * @returns {Promise<void>}
-     */
+
     async function createEquipment(equipmentData) {
         errors.value = [];
         try {
-            const response = await monitoringApi.createEquipment(equipmentData);
+            const response = await monitoringApi.createEquipment({
+                ...equipmentData,
+                ownerId: authStore.currentUserId
+            });
             const newEquipment = EquipmentAssembler.toEntityFromResource(response.data);
             equipments.value.push(newEquipment);
         } catch (error) {

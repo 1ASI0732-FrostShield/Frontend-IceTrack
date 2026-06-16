@@ -1,16 +1,11 @@
-/**
- * Represents a Site entity.
- * @class
- */
 export class Sites {
-    /**
-     * Creates a new Site instance.¿
-     */
+
     constructor({
-                    id = null, name = '',  address = '', cantEquipment = null, contactName = '',
+                    id = null, ownerId = null, name = '',  address = '', cantEquipment = null, contactName = '',
                     phone = '', created = '', updated = ''
                 }) {
         this.id = id;
+        this.ownerId = ownerId;
         this.name = name;
         this.address = address;
         this.cantEquipment = cantEquipment;
