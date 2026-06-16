@@ -65,16 +65,33 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
             dashboardDataApi.getAllServiceRequests(userId),
         ])
             .then(([equipmentsResponse, sitesResponse, requestsResponse]) => {
-                equipments.value = Array.isArray(equipmentsResponse?.data) ? equipmentsResponse.data : [];
-                requests.value   = Array.isArray(requestsResponse?.data)   ? requestsResponse.data   : [];
+                const isCurrentOwner = (resource) =>
+                    String(resource?.ownerId) === String(userId);
+
+                const allEquipments = Array.isArray(equipmentsResponse?.data)
+                    ? equipmentsResponse.data
+                    : [];
+
+                const allSites = Array.isArray(sitesResponse?.data)
+                    ? sitesResponse.data
+                    : [];
+
+                const allRequests = Array.isArray(requestsResponse?.data)
+                    ? requestsResponse.data
+                    : [];
+
+                equipments.value = allEquipments.filter(isCurrentOwner);
+                requests.value = allRequests.filter(isCurrentOwner);
+
+                const ownerSites = allSites.filter(isCurrentOwner);
 
                 const activeCount = requests.value.filter(r =>
                     (r.status || '').toLowerCase().trim() === 'inprogress'
                 ).length;
 
                 kpis.value = DashboardDataAssembler.toKpisFromResponses(
-                    equipmentsResponse,
-                    sitesResponse,
+                    { data: equipments.value },
+                    { data: ownerSites },
                     activeCount
                 );
             })
