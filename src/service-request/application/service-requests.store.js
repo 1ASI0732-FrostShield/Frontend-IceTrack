@@ -6,6 +6,7 @@ import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
 import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import {useAuthStore} from "@/iam/application/auth.store.js";
 
 const serviceDeliveryApi = new ServiceRequestsApi();
 const iamApi = new IamApi();
@@ -14,8 +15,12 @@ const assetsManagementApi = new AssetsManagementApi();
 const monitoringApi = new MonitoringApi();
 
 export const useServiceRequestStore = defineStore('service-request-list', () => {
+    const authStore = useAuthStore();
+
     const requests = ref([]);
+
     const requestsLoaded = ref(false);
+
     const errors = ref([]);
 
     async function fetchContextAndRequests(requesterId) {

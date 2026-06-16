@@ -2,10 +2,13 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 import {EquipmentAssembler} from "@/monitoring/infrastructure/equipments.assembler.js";
+import { useAuthStore } from "@/iam/application/auth.store.js";
 
 const monitoringApi = new MonitoringApi();
 
 const useMonitoringStore = defineStore("monitoring", () => {
+    const authStore = useAuthStore();
+
     const equipments = ref([]);
 
     const errors = ref([]);

@@ -2,10 +2,13 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { SitesAssembler } from "@/assets-management/infrastructure/sites.assembler.js";
 import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import {useAuthStore} from "@/iam/application/auth.store.js";
 
 const assetsManagementApi = new AssetsManagementApi();
 
 const useAssetsManagementStore = defineStore('assetsManagement', () => {
+    const authStore = useAuthStore();
+
     const sites = ref([]);
 
     const errors = ref([]);
