@@ -185,8 +185,8 @@ onMounted(async () => {
                 :label="t('reports.actions.downloadPdf')"
                 severity="danger"
                 :loading="downloadingPdf"
-                :disabled="serviceRequest.status !== 'completed'"
-                v-tooltip.top="serviceRequest.status !== 'completed' ? 'Solo disponible para solicitudes completadas' : ''"
+                :disabled="serviceRequest.status !== 'completed' && !interventions.length"
+                v-tooltip.top="serviceRequest.status !== 'completed' && !interventions.length ? 'Debe haber al menos una intervención registrada' : ''"
                 @click="downloadTechnicalPdf"
             />
             <pv-button

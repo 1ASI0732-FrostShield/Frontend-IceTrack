@@ -13,6 +13,11 @@ const { equipments, equipmentsLoaded, errors } = storeToRefs(store);
 const { fetchEquipments, createEquipment } = store;
 const { sites, sitesLoaded } = storeToRefs(assetsStore);
 const { fetchSites } = assetsStore;
+
+const getSiteName = (siteId) => {
+  const site = sites.value.find(s => s.id === siteId);
+  return site ? site.name : siteId;
+};
 const displayNewEquipmentDialog = ref(false);
 const serverError = ref(null);
 const serialError = ref(null);
@@ -148,9 +153,13 @@ const isFormValid = computed(() => {
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
     >
-      <pv-column field="name" :header="t('sites.list.name')" />
+      <pv-column field="siteId" :header="t('sites.list.name')" sortable>
+        <template #body="{ data }">
+          {{ getSiteName(data.siteId) }}
+        </template>
+      </pv-column>
 
-      <pv-column field="model" :header="t('equipments.list.model')">
+      <pv-column field="model" :header="t('equipments.list.model')" sortable>
         <template #body="slotProps">
           <span>{{ slotProps.data.model }}</span>
         </template>

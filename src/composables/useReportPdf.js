@@ -90,25 +90,72 @@ function buildSignatureBlock() {
   `
 }
 
-function buildEquipmentHtml(equipment, siteName) {
+function buildEquipmentHtml(equipment, siteName, recentInterventions = [], observations = '', recommendations = '') {
   const rows = [
     ['Modelo', equipment.model || '—'],
     ['Tipo', equipment.type || '—'],
     ['Serial', equipment.serial || '—'],
     ['Estado', lbl(equipment.status)],
     ['Online', equipment.online ? 'Sí' : 'No'],
-    ['Ubicación', siteName || '—'],
+    ['Local', siteName || '—'],
     ['Creado', formatDate(equipment.created)],
     ['Actualizado', formatDate(equipment.updated)]
   ].map(([label, val]) => buildRow(label, val)).join('')
 
+  const statusNarratives = {
+    ACTIVE: `El equipo <strong>${equipment.name || '—'}</strong> se encuentra actualmente en estado <strong>Activo</strong>, funcionando dentro de los parámetros operativos esperados. No se reportan incidencias críticas en su funcionamiento general.`,
+    MAINTENANCE: `El equipo <strong>${equipment.name || '—'}</strong> se encuentra en estado de <strong>Mantenimiento</strong>. Se han identificado componentes que requieren atención técnica para garantizar su correcto funcionamiento y evitar paradas no programadas.`,
+    REPAIR: `El equipo <strong>${equipment.name || '—'}</strong> se encuentra en estado de <strong>Reparación</strong>. Se están realizando las acciones correctivas necesarias para restablecer su operatividad.`,
+    OFF: `El equipo <strong>${equipment.name || '—'}</strong> se encuentra actualmente <strong>Apagado</strong> fuera de línea. No se está registrando actividad operativa en el momento de la emisión de este reporte.`
+  }
+
+  const currentStatusNarrative = statusNarratives[equipment.status] || statusNarratives.ACTIVE
+
+  const interventionsHtml = recentInterventions.length
+    ? recentInterventions.map((iv, i) => `
+      <div style="margin-bottom: 10px; padding: 10px; border-left: 3px solid #333333; background-color:#fafafa; word-wrap: break-word; overflow-wrap: break-word;">
+        <div style="font-size: 11px; color: #000000; background-color:#fafafa;">
+          <strong>Intervención del ${formatDate(iv.startTime)}</strong>
+          ${iv.endTime ? `— Finalizada el ${formatDateTime(iv.endTime)}` : ''}
+        </div>
+        <div style="font-size: 11px; color: #333333; margin-top: 4px; background-color:#fafafa;">
+          ${iv.summary || 'Sin descripción registrada.'}
+        </div>
+        <div style="font-size: 10px; color: #666666; margin-top: 4px; background-color:#fafafa;">
+          Resultado: <strong>${lbl(iv.status)}</strong>
+          ${iv.technicianName ? `— Técnico: ${iv.technicianName}` : ''}
+        </div>
+      </div>
+    `).join('')
+    : `<p style="font-size: 11px; color: #666666; background-color:#ffffff; font-style: italic;">No se registraron intervenciones recientes para este equipo.</p>`
+
+  const obsText = observations || 'No se registraron observaciones adicionales por parte del técnico durante las últimas intervenciones.'
+  const recText = recommendations || `Se recomienda realizar mantenimiento preventivo periódico al equipo <strong>${equipment.name || '—'}</strong> con el fin de asegurar su disponibilidad operativa, prolongar su vida útil y minimizar el riesgo de fallas imprevistas. Se sugiere establecer un plan de revisiones trimestrales que incluya limpieza de componentes, verificación de conexiones y calibración de sensores.`
+
+  const equipmentTitle = `Modelo ${equipment.model || '—'} del local ${siteName || '—'}`
+
   return `
     <div style="${DOC_STYLE} padding: 48px;">
       ${buildHeader('Reporte de Equipo', null)}
-      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff;">${equipment.name || '—'}</div>
-      <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; box-sizing: border-box;">
+      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff;">${equipmentTitle}</div>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Datos Generales</div>
+      <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; margin-bottom: 26px; box-sizing: border-box;">
         ${rows}
       </table>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Estado Actual del Equipo</div>
+      <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0 0 26px 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${currentStatusNarrative}</p>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Historial de Intervenciones Recientes</div>
+      ${interventionsHtml}
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin: 26px 0 10px 0; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Observaciones del Técnico</div>
+      <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0 0 26px 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${obsText}</p>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Recomendaciones de Mantenimiento Preventivo</div>
+      <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${recText}</p>
+
       ${buildFooter()}
     </div>
   `
@@ -120,7 +167,7 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
     ['Tipo de intervención', lbl(request.type)],
     ['Prioridad', lbl(request.priority)],
     ['Origen', request.origin || '—'],
-    ['Ubicación', siteName || '—'],
+    ['Local', siteName || '—'],
     ['Equipo intervenido', equipmentName || '—'],
     ['Solicitante', request.requesterName || '—'],
     ['Proveedor', request.assignedToName || '—'],
@@ -135,15 +182,34 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
 
   const interHtml = interventions.map((iv, i) => {
     const tech = technicians.find(t => t.id === iv.technicianId)
-    const techName = tech ? tech.name : (iv.technicianId ? '—' : 'sin asignar')
-    const resumen = iv.summary ? iv.summary : 'Sin observaciones adicionales registradas.'
+    const techName = tech ? tech.name : (iv.technicianId ? '—' : 'Sin asignar')
+    const resumen = iv.summary || 'Sin observaciones adicionales registradas.'
     const estadoTexto = lbl(iv.status)
 
     return `
-      <div style="margin-bottom: 12px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
-        <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">
-          <strong>Intervención #${i + 1}</strong> — Con fecha ${formatDate(iv.startTime)}, ${techName !== 'sin asignar' ? `el técnico <strong>${techName}</strong>` : 'el técnico asignado'} llevó a cabo la intervención programada. ${resumen} Estado de la intervención: <strong>${estadoTexto}</strong>${iv.endTime ? `, finalizada el ${formatDateTime(iv.endTime)}` : ''}.
-        </p>
+      <div style="margin-bottom: 14px; padding: 12px; border: 1px solid #d9d9d9; background-color:#fafafa; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px; background-color:#fafafa;">
+          <tr>
+            <td style="padding: 3px 10px 3px 0; font-weight: 700; color: #000000; width: 100px; vertical-align: top; background-color:#fafafa;">Intervención</td>
+            <td style="padding: 3px 0; color: #000000; background-color:#fafafa;"><strong>#${i + 1}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 10px 3px 0; font-weight: 700; color: #000000; width: 100px; vertical-align: top; background-color:#fafafa;">Fecha</td>
+            <td style="padding: 3px 0; color: #000000; background-color:#fafafa;">${formatDate(iv.startTime)}${iv.endTime ? ` — ${formatDateTime(iv.endTime)}` : ''}</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 10px 3px 0; font-weight: 700; color: #000000; width: 100px; vertical-align: top; background-color:#fafafa;">Técnico</td>
+            <td style="padding: 3px 0; color: #000000; background-color:#fafafa;">${techName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 10px 3px 0; font-weight: 700; color: #000000; width: 100px; vertical-align: top; background-color:#fafafa;">Descripción</td>
+            <td style="padding: 3px 0; color: #000000; background-color:#fafafa;">${resumen}</td>
+          </tr>
+          <tr>
+            <td style="padding: 3px 10px 3px 0; font-weight: 700; color: #000000; width: 100px; vertical-align: top; background-color:#fafafa;">Resultado</td>
+            <td style="padding: 3px 0; color: #000000; background-color:#fafafa;"><strong>${estadoTexto}</strong></td>
+          </tr>
+        </table>
       </div>
     `
   }).join('')
@@ -165,7 +231,7 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
       <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0 0 26px 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${descripcionNarrativa}</p>
 
       <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Intervenciones Realizadas</div>
-      ${interventions.length ? interHtml : '<p style="font-size: 12px; color: #666666; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">No se registraron intervenciones para esta solicitud.</p>'}
+      ${interventions.length ? interHtml : '<p style="font-size: 12px; color: #666666; background-color:#ffffff; font-style: italic;">No se registraron intervenciones formales para esta solicitud de servicio. Se recomienda completar el registro de las intervenciones una vez finalizadas las labores técnicas.</p>'}
 
       <div style="font-size: 14px; font-weight: 700; color: #000000; margin: 26px 0 10px 0; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Conclusiones / Observaciones</div>
       <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${conclusion}</p>
@@ -182,7 +248,7 @@ function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
     ['Tipo', equipment.type || '—'],
     ['Serial', equipment.serial || '—'],
     ['Estado', lbl(equipment.status)],
-    ['Ubicación', siteName || '—']
+    ['Local', siteName || '—']
   ].map(([label, val]) => buildRow(label, val)).join('')
 
   const requestsHtml = requests.map((req, i) => {
@@ -201,10 +267,12 @@ function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
     `
   }).join('')
 
+  const equipTitle = `Modelo ${equipment.model || '—'} del local ${siteName || '—'} (${equipment.serial || '—'})`
+
   return `
     <div style="${DOC_STYLE} padding: 48px;">
       ${buildHeader('Historial del Equipo', null)}
-      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${equipment.name || '—'} (${equipment.serial || '—'})</div>
+      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${equipTitle}</div>
       <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; box-sizing: border-box;">
         ${equipRows}
       </table>
@@ -259,8 +327,8 @@ async function downloadPdf(html, filename) {
 }
 
 export function useReportPdf() {
-  function generateEquipmentReport(equipment, siteName) {
-    const html = buildEquipmentHtml(equipment, siteName)
+  function generateEquipmentReport(equipment, siteName, recentInterventions = [], observations = '', recommendations = '') {
+    const html = buildEquipmentHtml(equipment, siteName, recentInterventions, observations, recommendations)
     const name = (equipment.name || equipment.id || '').replace(/[^a-zA-Z0-9]/g, '_')
     return downloadPdf(html, `Reporte_Equipo_${name}_IceTrack.pdf`)
   }

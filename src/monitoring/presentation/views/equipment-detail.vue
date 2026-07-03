@@ -8,6 +8,8 @@ import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useRouter } from 'vue-router';
 import { useReportPdf } from '@/composables/useReportPdf.js';
+import { ServiceRequestsApi } from "@/service-request/infrastructure/service-requests-api.js";
+import { useNotificationStore } from '@/shared/application/notification.store.js';
 
 const { t } = useI18n();
 const store = useMonitoringStore();
@@ -22,6 +24,8 @@ const serverError = ref(null);
 const displayEditDialog = ref(false);
 const selectedEquipment = ref(null);
 const router = useRouter();
+const serviceRequestsApi = new ServiceRequestsApi();
+const notificationStore = useNotificationStore();
 
 const editForm = ref({
   id: null,
@@ -45,16 +49,75 @@ const downloadingHistoryPdf = ref(null);
 async function downloadEquipmentPdf(equipment) {
   downloadingPdf.value = equipment.id;
   const siteName = getSiteName(equipment.siteId);
-  console.log('[PDF] equipment data:', { name: equipment.name, model: equipment.model, serial: equipment.serial, status: equipment.status, siteId: equipment.siteId, siteName });
-  await generateEquipmentReport(equipment, siteName);
+
+  let recentInterventions = []
+  let observations = ''
+  let recommendations = ''
+
+  try {
+    const requestsRes = await serviceRequestsApi.http.get('/service-requests')
+    const allRequests = Array.isArray(requestsRes.data) ? requestsRes.data : []
+    const equipmentRequests = allRequests.filter(r => r.equipmentId === equipment.id)
+
+    for (const req of equipmentRequests) {
+      const ivRes = await serviceRequestsApi.getInterventionsByRequestQuery(req.id)
+      const ivs = Array.isArray(ivRes.data) ? ivRes.data : []
+      ivs.forEach(iv => {
+        recentInterventions.push({
+          ...iv,
+          startTime: iv.startTime || req.createdAt,
+          technicianName: req.technicianName || null
+        })
+      })
+    }
+
+    recentInterventions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
+    recentInterventions = recentInterventions.slice(0, 5)
+
+    if (equipment.status === 'MAINTENANCE') {
+      observations = 'Durante las últimas revisiones se identificaron componentes con desgaste progresivo que motivaron la puesta en mantenimiento del equipo. Se recomienda llevar un registro detallado de las piezas reemplazadas y los ciclos de operación para anticipar futuras intervenciones.'
+      recommendations = 'Programar mantenimiento preventivo cada 3 meses. Verificar niveles de refrigerante, estado de filtros, presión de trabajo y conexiones eléctricas. Realizar limpieza general de condensadores y evaporadores.'
+    } else if (equipment.status === 'REPAIR') {
+      observations = 'El equipo se encuentra en proceso de reparación debido a fallas operativas detectadas. Se están evaluando los componentes críticos para determinar el alcance de las reparaciones necesarias.'
+      recommendations = 'Una vez finalizada la reparación, se recomienda realizar una prueba de funcionamiento continua de 24 horas. Establecer un plan de monitoreo intensivo durante la primera semana posterior a la puesta en marcha.'
+    } else if (equipment.status === 'ACTIVE') {
+      observations = 'El equipo opera dentro de los parámetros normales. No se detectaron anomalías significativas durante las últimas inspecciones.'
+      recommendations = 'Mantener el plan de mantenimiento preventivo vigente. Se sugiere realizar inspecciones visuales mensuales y revisiones técnicas trimestrales para asegurar la continuidad operativa.'
+    } else if (equipment.status === 'OFF') {
+      observations = 'El equipo se encuentra apagado. No se ha registrado actividad operativa reciente.'
+      recommendations = 'Previo a una nueva puesta en marcha, realizar una revisión completa del estado de todos los componentes. Verificar que no haya acumulación de humedad o corrosión en las conexiones eléctricas.'
+    }
+  } catch (err) {
+    console.warn('[PDF] No se pudieron obtener intervenciones relacionadas:', err)
+  }
+
+  await generateEquipmentReport(equipment, siteName, recentInterventions, observations, recommendations)
   downloadingPdf.value = null;
 }
 
 async function downloadHistoryPdf(equipment) {
   downloadingHistoryPdf.value = equipment.id;
   const siteName = getSiteName(equipment.siteId);
-  console.log('[PDF] history data:', { name: equipment.name, serial: equipment.serial, siteName, requests: 0, technicians: 0 });
-  await generateHistoricalReport(equipment, siteName, [], []);
+
+  let relatedRequests = []
+  let allTechnicians = []
+
+  try {
+    const requestsRes = await serviceRequestsApi.http.get('/service-requests')
+    const allRequests = Array.isArray(requestsRes.data) ? requestsRes.data : []
+    relatedRequests = allRequests.filter(r => r.equipmentId === equipment.id)
+
+    const techNames = new Set()
+    relatedRequests.forEach(r => {
+      if (r.technicianName) techNames.add(r.technicianName)
+      if (r.assignedToName) techNames.add(r.assignedToName)
+    })
+    allTechnicians = Array.from(techNames).map((name, i) => ({ id: i + 1, name }))
+  } catch (err) {
+    console.warn('[PDF] No se pudieron obtener solicitudes relacionadas:', err)
+  }
+
+  await generateHistoricalReport(equipment, siteName, relatedRequests, allTechnicians)
   downloadingHistoryPdf.value = null;
 }
 
@@ -110,6 +173,17 @@ const formatDate = (value) => {
   }).format(new Date(value));
 };
 
+const REMINDER_OPTIONS = [
+  { label: 'No configurado', value: null },
+  { label: 'Cada 7 d\u00edas', value: 7 },
+  { label: 'Cada 15 d\u00edas', value: 15 },
+  { label: 'Cada 30 d\u00edas', value: 30 }
+];
+
+function handleReminderChange(equipmentId, intervalDays) {
+  notificationStore.setReminderInterval(equipmentId, intervalDays)
+}
+
 </script>
 
 <template>
@@ -138,10 +212,17 @@ const formatDate = (value) => {
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
     >
-      <!-- Site -->
+      <!-- Site / Local -->
       <pv-column field="siteId" :header="t('sites.list.name')" sortable>
         <template #body="{ data }">
           {{ getSiteName(data.siteId) }}
+        </template>
+      </pv-column>
+
+      <!-- Modelo -->
+      <pv-column field="model" :header="t('equipments.list.model')" sortable>
+        <template #body="{ data }">
+          {{ data.model || '—' }}
         </template>
       </pv-column>
 
@@ -156,6 +237,20 @@ const formatDate = (value) => {
       <pv-column field="updated" :header="t('equipments.detail.updatedAt')">
         <template #body="{ data }">
           {{ formatDate(data.updated) }}
+        </template>
+      </pv-column>
+
+      <!-- Recordatorio -->
+      <pv-column :header="t('equipments.list.maintenanceInterval')" style="width: 160px">
+        <template #body="{ data }">
+          <pv-select
+            :model-value="notificationStore.getReminderInterval(data.id)"
+            :options="REMINDER_OPTIONS"
+            option-label="label"
+            option-value="value"
+            style="width: 100%"
+            @update:model-value="handleReminderChange(data.id, $event)"
+          />
         </template>
       </pv-column>
 
