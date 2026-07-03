@@ -225,7 +225,7 @@ const formatDate = (value) => {
             <i class="pi pi-exclamation-triangle" style="font-size:11px" />
             {{ t('sites.new.phone-invalid') }}
           </small>
-          <small v-else class="sd-field-hint">9 digits only</small>
+          <small v-else class="sd-field-hint">Solo 9 dígitos</small>
         </div>
 
       </div>

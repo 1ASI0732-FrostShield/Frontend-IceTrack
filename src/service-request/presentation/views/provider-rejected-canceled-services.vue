@@ -40,7 +40,7 @@ const fetchData = async () => {
     rejectedCanceledRequests.value = [...rejected, ...canceled];
 
   } catch (e) {
-    error.value = 'Failed to load rejected/canceled infrastructure.';
+    error.value = 'Error al cargar los servicios rechazados o cancelados.';
     console.error(e);
   } finally {
     loading.value = false;

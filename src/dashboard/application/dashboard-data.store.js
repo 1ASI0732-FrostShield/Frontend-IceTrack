@@ -47,10 +47,10 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
         errors.value  = [];
 
         return loadKpis(siteId)
-            .then(() => console.log('Dashboard data loaded. Requests:', requests.value.length, requests.value.map(r => r.status)))
+            .then(() => console.log('Datos del dashboard cargados. Solicitudes:', requests.value.length, requests.value.map(r => r.status)))
             .catch(error => {
-                console.error('Error loading dashboard data:', error);
-                errors.value.push('Error loading dashboard data');
+                console.error('Error al cargar datos del dashboard:', error);
+                errors.value.push('Error al cargar datos del dashboard');
             })
             .finally(() => { loading.value = false; });
     }
@@ -96,7 +96,7 @@ export const useDashboardDataStore = defineStore('dashboardData', () => {
                 );
             })
             .catch(error => {
-                console.error('Error loading KPIs:', error);
+                console.error('Error al cargar KPIs:', error);
                 equipments.value = [];
                 requests.value   = [];
                 kpis.value = new DashboardKpis({

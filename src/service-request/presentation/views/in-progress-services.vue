@@ -56,7 +56,7 @@ const fetchData = async () => {
 
     technicians.value = techsRes.data;
   } catch (e) {
-    error.value = 'Failed to load data.';
+    error.value = 'Error al cargar los datos.';
     console.error(e);
   } finally {
     loading.value = false;

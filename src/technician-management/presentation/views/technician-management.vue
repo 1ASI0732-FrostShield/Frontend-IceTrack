@@ -260,7 +260,7 @@ const getAvatarStyle = (name) => {
                   <i class="pi pi-exclamation-triangle" />
                   {{ t('provider.technicians.phone-duplicate') }}
                 </small>
-                <small v-else class="tm-hint">9 digits only</small>
+                <small v-else class="tm-hint">Solo 9 dígitos</small>
               </div>
 
               <pv-button
@@ -420,7 +420,7 @@ const getAvatarStyle = (name) => {
               <i class="pi pi-exclamation-triangle" />
               {{ t('provider.technicians.phone-duplicate') }}
             </small>
-            <small v-else class="tm-hint">9 digits only</small>
+            <small v-else class="tm-hint">Solo 9 dígitos</small>
           </div>
         </div>
 

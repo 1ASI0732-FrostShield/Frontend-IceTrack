@@ -70,7 +70,7 @@ const fetchData = async () => {
     kpis.value.technicians = techsRes.data.length;
 
   } catch (e) {
-    error.value = 'Failed to load dashboard data.';
+    error.value = 'Error al cargar los datos del dashboard.';
     console.error(e);
   } finally {
     loading.value = false;

@@ -130,27 +130,27 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
   ].map(([label, val]) => buildRow(label, val)).join('')
 
   const descripcionNarrativa = request.description
-    ? `El equipo <strong>${equipmentName || 'reportado'}</strong> presentó la siguiente falla: "${request.description}", afectando su correcto funcionamiento en ${siteName || 'el sitio correspondiente'}.`
-    : `No se registró una descripción detallada del problema para esta solicitud.`
+    ? `El equipo <strong>${equipmentName || 'reportado'}</strong> presentó la siguiente anomalía: "${request.description}", lo que comprometió su funcionamiento normal en las instalaciones de ${siteName || 'el sitio correspondiente'}.`
+    : `No se documentó una descripción detallada de la falla en la solicitud de servicio.`
 
   const interHtml = interventions.map((iv, i) => {
     const tech = technicians.find(t => t.id === iv.technicianId)
     const techName = tech ? tech.name : (iv.technicianId ? '—' : 'sin asignar')
-    const resumen = iv.summary ? iv.summary : 'sin observaciones adicionales registradas'
-    const estadoTexto = lbl(iv.status).toLowerCase()
+    const resumen = iv.summary ? iv.summary : 'Sin observaciones adicionales registradas.'
+    const estadoTexto = lbl(iv.status)
 
     return `
       <div style="margin-bottom: 12px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
         <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">
-          <strong>Intervención #${i + 1}</strong> — El ${formatDate(iv.startTime)}, ${techName !== 'sin asignar' ? `el técnico <strong>${techName}</strong>` : 'el técnico asignado'} realizó la intervención correspondiente. ${resumen}. Estado de la intervención: <strong>${estadoTexto}</strong>${iv.endTime ? `, finalizada el ${formatDateTime(iv.endTime)}` : ''}.
+          <strong>Intervención #${i + 1}</strong> — Con fecha ${formatDate(iv.startTime)}, ${techName !== 'sin asignar' ? `el técnico <strong>${techName}</strong>` : 'el técnico asignado'} llevó a cabo la intervención programada. ${resumen} Estado de la intervención: <strong>${estadoTexto}</strong>${iv.endTime ? `, finalizada el ${formatDateTime(iv.endTime)}` : ''}.
         </p>
       </div>
     `
   }).join('')
 
   const conclusion = request.status === 'completed'
-    ? 'La solicitud fue atendida satisfactoriamente. El equipo se encuentra operativo. Se recomienda realizar seguimiento mediante mantenimiento preventivo en los próximos meses.'
-    : 'La solicitud se encuentra actualmente en proceso de atención. Se recomienda dar seguimiento hasta su cierre definitivo.'
+    ? 'La solicitud de servicio fue atendida de manera satisfactoria. El equipo intervenido se encuentra operativo y en condiciones normales de funcionamiento. Se recomienda programar mantenimiento preventivo periódico para garantizar su continuidad operativa.'
+    : 'La solicitud de servicio se encuentra actualmente en proceso de atención. Se recomienda realizar seguimiento continuo hasta la conclusión y cierre formal de la misma.'
 
   return `
     <div style="${DOC_STYLE} padding: 48px;">

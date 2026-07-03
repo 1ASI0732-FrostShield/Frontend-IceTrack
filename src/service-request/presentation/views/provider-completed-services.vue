@@ -68,7 +68,7 @@ const fetchData = async () => {
     completedRequests.value = ServiceRequestAssembler.toEntitiesFromResponse(requestsRes.data, context);
 
   } catch (e) {
-    error.value = 'Failed to load completed infrastructure.';
+    error.value = 'Error al cargar los servicios completados.';
     console.error(e);
   } finally {
     loading.value = false;

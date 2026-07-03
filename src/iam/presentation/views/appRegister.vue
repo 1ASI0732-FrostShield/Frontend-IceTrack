@@ -131,7 +131,7 @@ async function handleRegister() {
           <!-- Name -->
           <div class="field mb-4">
             <label for="name" class="block mb-2 font-medium">
-              {{ t('admin.users.firstName') }}
+              {{ t('auth.register.name') }}
             </label>
             <pv-input-text
                 id="name"
@@ -145,7 +145,7 @@ async function handleRegister() {
           <!-- Username -->
           <div class="field mb-4">
             <label for="username" class="block mb-2 font-medium">
-              {{ t('auth.login.username') }}
+              {{ t('auth.login.username') }}:
             </label>
             <pv-input-text
                 id="username"

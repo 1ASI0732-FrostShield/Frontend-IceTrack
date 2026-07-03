@@ -53,7 +53,7 @@ export const useServiceRequestStore = defineStore('service-request-list', () => 
             requestsLoaded.value = true;
         } catch (error) {
             errors.value.push(error);
-            console.error("Error loading service requests:", error);
+            console.error("Error al cargar solicitudes de servicio:", error);
         }
     }
 

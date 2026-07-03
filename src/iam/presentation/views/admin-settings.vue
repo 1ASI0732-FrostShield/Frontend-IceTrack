@@ -38,7 +38,7 @@ const alarmOptions = computed(() => [
   <section class="space-y-6">
    <!-- Modo de Luz -->
     <div class="px-7">
-      <p class="text-xl font-semibold text-black"> {{ t('admin.settings.lightMode') }}</p>
+      <p class="text-xl font-semibold text-color"> {{ t('admin.settings.lightMode') }}</p>
 
       <div class="p-3 flex gap-3">
         <button
@@ -57,7 +57,7 @@ const alarmOptions = computed(() => [
 
     <!-- Notificaciones -->
     <div class="px-7">
-      <p class="text-xl font-semibold text-black"> {{ t('admin.settings.notifications') }} </p>
+      <p class="text-xl font-semibold text-color"> {{ t('admin.settings.notifications') }} </p>
 
       <div class="px-4">
         <label class="flex items-center p-2 gap-3">
@@ -97,7 +97,7 @@ const alarmOptions = computed(() => [
 
     <!-- Tipo de Alarma -->
     <div class="px-7">
-      <p class="text-xl font-semibold text-black"> {{ t('admin.settings.alarmType') }} </p>
+      <p class="text-xl font-semibold text-color"> {{ t('admin.settings.alarmType') }} </p>
 
       <div class="p-3 flex gap-3">
         <pv-dropdown

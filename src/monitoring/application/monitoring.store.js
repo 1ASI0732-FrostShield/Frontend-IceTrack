@@ -22,11 +22,11 @@ const useMonitoringStore = defineStore("monitoring", () => {
                 const allEquipments = EquipmentAssembler.toEntitiesFromResponse(response);
                 equipments.value = allEquipments.filter(equipment => equipment.ownerId === authStore.currentUserId);
                 equipmentsLoaded.value = true;
-                console.log("Equipment loaded:", equipments.value);
+                console.log("Equipos cargados:", equipments.value);
             })
             .catch((error) => {
                 errors.value.push(error);
-                console.error("Error loading equipment:", error);
+                console.error("Error al cargar equipos:", error);
             });
     }
 

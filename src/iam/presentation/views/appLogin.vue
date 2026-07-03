@@ -23,7 +23,7 @@ async function handleLogin() {
       router.push({ name: 'dashboard' })
     }
   } catch (error) {
-    console.error('Login failed:', error)
+    console.error('Inicio de sesión fallido:', error)
   } finally {
     loading.value = false
   }

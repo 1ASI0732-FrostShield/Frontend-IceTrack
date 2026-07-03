@@ -129,7 +129,7 @@ function addPhotoUrl() {
 
 async function registerIntervention() {
   if (!newIntervention.value.technicianId || !newIntervention.value.summary) {
-    alert('Please select a technician and provide a summary.');
+    alert('Seleccione un técnico y proporcione un resumen del trabajo.');
     return;
   }
 

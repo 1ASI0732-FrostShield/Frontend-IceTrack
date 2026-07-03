@@ -47,9 +47,9 @@
     },
     "configurations": {
         "title": "Configuraciones",
-        "subtitle": "Ajusta la apariencia visual de la aplicacion.",
+        "subtitle": "Ajusta la apariencia visual de la aplicación.",
         "themeTitle": "Tema de color",
-        "titleSizeTitle": "Tamano global de titulos",
+        "titleSizeTitle": "Tamaño global de títulos",
         "previewTitle": "Vista previa",
         "reset": "Restablecer",
         "themes": {
@@ -60,7 +60,7 @@
             "dark": "Oscuro"
         },
         "titleSizes": {
-            "small": "Pequeno",
+            "small": "Pequeño",
             "medium": "Mediano",
             "large": "Grande"
         }
@@ -78,6 +78,7 @@
         },
         "register": {
             "title": "Crear cuenta",
+            "name": "Nombre completo:",
             "alreadyHaveAccount": "¿Ya tienes una cuenta?",
             "signIn": "Inicia sesión",
             "selectRole": "Selecciona tu rol",
@@ -113,7 +114,7 @@
     },
     "dashboard": {
         "title": "Panel de Control",
-        "subtitle": "Resumen de todos los procesos activos de maquinas registradas",
+        "subtitle": "Resumen de todos los procesos activos de máquinas registradas",
         "loading": "Cargando panel...",
         "loadingData": "Cargando datos...",
         "refresh": "Actualizar Panel",
@@ -144,9 +145,9 @@
             "monitoredEquipment": "Total de Equipos monitoreados",
             "monitoredSites": "Total de Sitios monitoreados",
             "openAlerts": "Alertas que requieren atención",
-            "activeRequests": "Pedidos que estan en espera",
+            "activeRequests": "Pedidos que están en espera",
             "maintenance": "Equipos que necesitan mantenimiento",
-            "repair": "Equipos que necesitan reparacion",
+            "repair": "Equipos que necesitan reparación",
             "default": "Métrica de dashboard"
         },
         "errors": {
@@ -280,7 +281,7 @@
             "id": "Id",
             "name": "Nombre",
             "address": "Dirección",
-            "information": "Mas información"
+            "information": "Más información"
         },
         "detail": {
             "view": "Ver",
@@ -292,7 +293,7 @@
             "updatedAt": "Actualizado",
             "actions": "Acciones",
             "delete": "Eliminar usuario",
-            "askDelete": "Are you sure to delete?"
+            "askDelete": "¿Está seguro de que desea eliminar?"
         },
         "new": {
             "title": "Registrar Nuevo Sitio",
@@ -338,10 +339,11 @@
             "type": "Tipo",
             "status": "Estado",
             "empty": "Aún no hay equipos",
-            "information": "Más información"
+            "information": "Más información",
+            "maintenanceInterval": "Mantenimiento"
         },
         "detail": {
-            "view": "View",
+            "view": "Ver",
             "title": "Detalle del equipo",
             "siteId": "Sitio Id",
             "serial": "Serie",
@@ -368,12 +370,33 @@
             "alert-duplicate-serial": "Ya existe un equipo con el mismo número de serie"
         },
         "controls": {
-            "info": "Informacion",
-            "more": "Mas",
+            "info": "Información",
+            "more": "Más",
             "setpointC": "Punto de ajuste °C",
             "name": "Nombre",
             "manufacturer": "Fabricante",
             "online": "En línea"
+        },
+        "maintenance": {
+            "interval": "Intervalo de mantenimiento",
+            "intervalDays": "Intervalo (días)",
+            "lastMaintenance": "Último mantenimiento",
+            "notConfigured": "No configurado",
+            "due": "Mantenimiento vencido",
+            "dueSoon": "Mantenimiento próximo",
+            "daysOverdue": "{days} día(s) vencido",
+            "daysRemaining": "{days} día(s) restantes",
+            "everyDays": "Cada {days} día(s)",
+            "options": {
+                "none": "No configurado",
+                "7": "Cada 7 días (semanal)",
+                "15": "Cada 15 días (quincenal)",
+                "30": "Cada 30 días (mensual)",
+                "60": "Cada 60 días (bimestral)",
+                "90": "Cada 90 días (trimestral)",
+                "180": "Cada 180 días (semestral)",
+                "365": "Cada 365 días (anual)"
+            }
         }
     },
     "services": {
@@ -641,15 +664,15 @@
     },
     "admin": {
         "users": {
-            "title": "Informacion del Usuario",
+            "title": "Información del Usuario",
             "invite": "Invitar usuario",
-            "firstName": "Nonbres:",
+            "firstName": "Nombres:",
             "lastName": "Apellidos:",
             "user": "Nombre de Usuario:",
-            "email": "Correo Electronico:",
+            "email": "Correo Electrónico:",
             "plans": "Planes:",
             "registerDate": "Fecha de registro:",
-            "lastConnection": "Ultima Coneccion:",
+            "lastConnection": "Última Conexión:",
             "password": "Contraseña:",
             "hide": "Ocultar",
             "show": "Mostrar"
@@ -671,7 +694,7 @@
             "notify": {
                 "sms": "SMS",
                 "email": "Correo electrónico",
-                "calls": "Llamada telefonica",
+                "calls": "Llamada telefónica",
                 "social": "Redes sociales"
             },
             "alarm": {
@@ -679,7 +702,8 @@
                 "chime": "Timbre",
                 "pop": "Pop",
                 "none": "Ninguno"
-            }
+            },
+            "select": "Seleccionar"
         }
     },
     "provider": {
@@ -759,7 +783,11 @@
     "notifications": {
         "title": "Notificaciones",
         "empty": "¡No tienes pendientes!",
-        "markAllRead": "Marcar todo como leído"
+        "markAllRead": "Marcar todo como leído",
+        "maintenanceDue": "Equipos con mantenimiento vencido",
+        "maintenanceSoon": "Equipos con mantenimiento próximo",
+        "dueCount": "{count} equipo(s) vencido(s)",
+        "soonCount": "{count} equipo(s) por vencer"
     },
     "table": {
         "rows": "{count, plural, one {# fila} other {# filas}}"

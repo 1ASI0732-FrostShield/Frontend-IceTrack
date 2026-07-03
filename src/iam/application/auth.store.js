@@ -72,7 +72,7 @@ export const useAuthStore = defineStore("auth", () => {
                 if (typeof serverMessage === 'string' && serverMessage.includes('Invalid username or password')) {
                     errorMessage = t('auth.errors.invalidCredentials');
                 } else {
-                    console.error("SERVER ERROR 500:", serverMessage);
+                    console.error("ERROR DEL SERVIDOR 500:", serverMessage);
                     errorMessage = t('errors.occurred');
                 }
             }
@@ -99,7 +99,7 @@ export const useAuthStore = defineStore("auth", () => {
                 if (typeof serverMessage === 'string' && serverMessage.includes('already taken')) {
                     errorMessage = t('auth.errors.usernameTaken');
                 } else {
-                    console.error("SERVER ERROR 500:", serverMessage);
+                    console.error("ERROR DEL SERVIDOR 500:", serverMessage);
                     errorMessage = t('errors.occurred');
                 }
             }

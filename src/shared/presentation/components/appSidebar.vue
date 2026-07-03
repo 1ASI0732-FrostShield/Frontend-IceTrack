@@ -17,8 +17,8 @@ const items = computed(() => {
         label: t('nav.provider_services'),
         icon: 'pi pi-briefcase',
         items: [
-          { label: 'Services Hub', icon: 'pi pi-sitemap', command: () => router.push({ name: 'provider-services-hub' }) },
-          { label: 'All Services', icon: 'pi pi-list', command: () => router.push({ name: 'provider-services-list' }) },
+          { label: 'Centro de Servicios', icon: 'pi pi-sitemap', command: () => router.push({ name: 'provider-services-hub' }) },
+          { label: 'Todos los Servicios', icon: 'pi pi-list', command: () => router.push({ name: 'provider-services-list' }) },
         ]
       },
       { label: t('nav.technician_management'), icon: 'pi pi-users', command: () => router.push({ name: 'provider-technicians' }) },

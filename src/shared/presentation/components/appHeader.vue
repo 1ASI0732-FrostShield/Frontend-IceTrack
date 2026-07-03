@@ -3,14 +3,11 @@
 import { useI18n } from '@/i18n.js'
 import { useRouter } from 'vue-router'
 import { useAuthStore} from "@/iam/application/auth.store.js";
+import NotificationBell from '@/shared/presentation/components/NotificationBell.vue'
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
-
-function setLang(lang) {
-  locale.value = lang
-}
 
 function handleSignOut() {
   authStore.logout()
@@ -21,7 +18,7 @@ function handleSignOut() {
 
 <template>
   <header class="topbar">
-    <div class="brand" @click="$router.push('/dashboard')" role="button" aria-label="Go to dashboard">
+    <div class="brand" @click="$router.push('/dashboard')" role="button" aria-label="Ir al inicio">
       <i class="pi pi-snowflake"></i>
       <span>{{ t('common.appName') }}</span>
     </div>
@@ -29,6 +26,7 @@ function handleSignOut() {
     <div class="spacer"></div>
 
     <div class="actions">
+      <NotificationBell />
 
       <!-- Mostrar nombre de usuario y botón de cerrar sesión si está autenticado -->
       <template v-if="authStore.isLoggedIn && authStore.user">
@@ -42,7 +40,7 @@ function handleSignOut() {
             severity="danger"
             rounded
             text
-            aria-label="Logout"
+            aria-label="Cerrar sesión"
             @click="handleSignOut" />
       </template>
 
