@@ -2,7 +2,8 @@ export class Equipments {
     constructor({
                     id = null, ownerId = null, equipmentId = null, model = '', type = '',
                     serial = '', status = '', name = '',  siteId = 0,
-                    online = false, created = '', updated = ''
+                    online = false, created = '', updated = '',
+                    reminderIntervalDays = null
                 }) {
         this.id = id;
         this.ownerId = ownerId;
@@ -16,6 +17,7 @@ export class Equipments {
         this.online = online;
         this.created = created;
         this.updated = updated;
+        this.reminderIntervalDays = reminderIntervalDays;
     }
 }
 

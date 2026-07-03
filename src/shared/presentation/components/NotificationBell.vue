@@ -1,34 +1,36 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { useNotificationStore } from '@/shared/application/notification.store.js'
-import useMonitoringStore from '@/monitoring/application/monitoring.store.js'
-import useAssetsManagementStore from '@/assets-management/application/assets-management.store.js'
 import { useI18n } from '@/i18n.js'
 
 const { t } = useI18n()
+const router = useRouter()
 const notificationStore = useNotificationStore()
-const monitoringStore = useMonitoringStore()
-const assetsStore = useAssetsManagementStore()
 
-function handleToggle() {
+function handleToggle () {
   notificationStore.togglePanel()
 }
 
-function handleDismiss(e, equipmentId) {
+function handleDismiss (e, notificationId) {
   e.stopPropagation()
-  notificationStore.dismissAlert(equipmentId)
+  notificationStore.dismissAlert(notificationId)
 }
 
-function handleClickOutside(e) {
+function handleClickOutside (e) {
   const el = document.querySelector('.notification-bell-wrapper')
   if (el && !el.contains(e.target)) {
     notificationStore.closePanel()
   }
 }
 
+function goToNotifications () {
+  notificationStore.closePanel()
+  router.push('/notifications')
+}
+
 onMounted(() => {
-  if (!monitoringStore.equipmentsLoaded) monitoringStore.fetchEquipments()
-  if (!assetsStore.sitesLoaded) assetsStore.fetchSites()
+  notificationStore.fetchNotifications()
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -55,24 +57,29 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="panel-body">
-        <div v-if="notificationStore.alerts.length === 0" class="panel-empty">
+        <div v-if="notificationStore.loading" class="panel-empty">Cargando...</div>
+
+        <div v-else-if="notificationStore.alerts.length === 0" class="panel-empty">
           {{ t('notifications.empty') }}
         </div>
 
         <div
           v-for="alert in notificationStore.alerts"
-          :key="alert.equipmentId"
+          :key="alert.id"
           class="alert-item"
         >
           <div class="alert-content">
-            <div class="alert-title">{{ alert.equipmentName }}</div>
             <div class="alert-message">{{ alert.message }}</div>
-            <div class="alert-date">{{ new Date(alert.dueDate).toLocaleDateString('es-PE') }}</div>
+            <div class="alert-date">{{ new Date(alert.createdAt).toLocaleDateString('es-PE') }}</div>
           </div>
-          <button class="alert-dismiss" @click="handleDismiss($event, alert.equipmentId)" title="Descartar">
+          <button class="alert-dismiss" @click="handleDismiss($event, alert.id)" title="Descartar">
             <i class="pi pi-times"></i>
           </button>
         </div>
+      </div>
+
+      <div class="panel-footer" @click="goToNotifications">
+        Ver todas las notificaciones
       </div>
     </div>
   </div>
@@ -108,8 +115,8 @@ onBeforeUnmount(() => {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 360px;
-  max-height: 400px;
+  width: 380px;
+  max-height: 420px;
   overflow-y: auto;
   background: var(--app-surface, #fff);
   border: 1px solid var(--app-border, #ddd);
@@ -156,20 +163,15 @@ onBeforeUnmount(() => {
   flex: 1;
   min-width: 0;
 }
-.alert-title {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--app-text, #222);
-}
 .alert-message {
   font-size: 12px;
-  color: var(--app-text-muted, #666);
-  margin-top: 2px;
+  color: var(--app-text, #444);
+  line-height: 1.4;
 }
 .alert-date {
   font-size: 11px;
   color: var(--app-text-muted, #999);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 .alert-dismiss {
   background: none;
@@ -184,5 +186,17 @@ onBeforeUnmount(() => {
 .alert-dismiss:hover {
   background: var(--app-surface-muted, #f0f0f0);
   color: var(--app-text, #333);
+}
+.panel-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--app-border, #eee);
+  text-align: center;
+  font-size: 13px;
+  color: var(--app-primary, #0891b2);
+  cursor: pointer;
+  font-weight: 600;
+}
+.panel-footer:hover {
+  background: var(--app-surface-muted, #f8f8f8);
 }
 </style>

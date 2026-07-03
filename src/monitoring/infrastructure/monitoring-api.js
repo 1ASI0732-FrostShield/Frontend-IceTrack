@@ -39,6 +39,13 @@ export class MonitoringApi extends BaseApi {
     }
 
     /**
+     * Updates only the reminder interval for an equipment.
+     */
+    updateReminderInterval(equipmentId, reminderIntervalDays) {
+        return this.http.patch(`${equipmentsEndpointPath}/${equipmentId}/reminder-interval`, { reminderIntervalDays });
+    }
+
+    /**
      * Delete equipment.
      */
     deleteEquipment(id) {

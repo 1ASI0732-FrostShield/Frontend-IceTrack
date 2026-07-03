@@ -58,6 +58,7 @@ const routes = [
             { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' }},
             { path: 'services/:requestId/interventions/:interventionId', name: 'intervention-detail', component: InterventionDetailPage, meta: { titleKey: 'services.interventions.detail' }},
             { path: 'configurations', name: 'configurations', component: ConfigurationsPage, meta: { titleKey: 'configurations.title' } },
+            { path: 'notifications', name: 'notifications', component: () => import('@/shared/presentation/views/notification-list.vue'), meta: { titleKey: 'notifications.title' } },
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'Provider' } },

@@ -9,6 +9,7 @@ import useAssetsManagementStore from "@/assets-management/application/assets-man
 import { useRouter } from 'vue-router';
 import { useReportPdf } from '@/composables/useReportPdf.js';
 import { ServiceRequestsApi } from "@/service-request/infrastructure/service-requests-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 import { useNotificationStore } from '@/shared/application/notification.store.js';
 
 const { t } = useI18n();
@@ -25,6 +26,7 @@ const displayEditDialog = ref(false);
 const selectedEquipment = ref(null);
 const router = useRouter();
 const serviceRequestsApi = new ServiceRequestsApi();
+const monitoringApi = new MonitoringApi();
 const notificationStore = useNotificationStore();
 
 const editForm = ref({
@@ -188,8 +190,12 @@ const REMINDER_OPTIONS = [
   { label: 'Cada 30 d\u00edas', value: 30 }
 ];
 
-function handleReminderChange(equipmentId, intervalDays) {
-  notificationStore.setReminderInterval(equipmentId, intervalDays)
+async function handleReminderChange(equipmentId, intervalDays) {
+  const eq = equipments.value.find(e => e.id === equipmentId)
+  if (eq) {
+    eq.reminderIntervalDays = intervalDays
+    monitoringApi.updateReminderInterval(equipmentId, intervalDays)
+  }
 }
 
 </script>
@@ -252,7 +258,7 @@ function handleReminderChange(equipmentId, intervalDays) {
       <pv-column :header="t('equipments.list.maintenanceInterval')" style="width: 160px">
         <template #body="{ data }">
           <pv-select
-            :model-value="notificationStore.getReminderInterval(data.id)"
+            :model-value="data.reminderIntervalDays ?? null"
             :options="REMINDER_OPTIONS"
             option-label="label"
             option-value="value"
@@ -401,45 +407,45 @@ function handleReminderChange(equipmentId, intervalDays) {
     <!-- Show details -->
     <div v-if="selectedEquipment" class="flex flex-row justify-content-center gap-6 mt-3">
       <!-- Show Owner -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.controls.name') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.name }}
         </h3>
       </div>
 
       <!-- Show Online -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.controls.online') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.online }}
         </h3>
       </div>
 
       <!-- Show Serial -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.detail.serial') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.serial }}
         </h3>
       </div>
 
       <!-- Show Type -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.new.type') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.type }}
         </h3>
       </div>
@@ -458,6 +464,23 @@ function handleReminderChange(equipmentId, intervalDays) {
 }
 .custom-alert-btn:hover {
   background-color: #ebf4ff;
+}
+
+.detail-card {
+  background: var(--app-surface-muted);
+  box-shadow: var(--app-card-shadow);
+  border-radius: 8px;
+}
+
+.detail-card__label {
+  color: var(--app-primary);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-card__value {
+  color: var(--app-text);
+  font-weight: 700;
 }
 
 </style>
