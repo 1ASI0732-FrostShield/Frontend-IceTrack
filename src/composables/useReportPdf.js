@@ -27,129 +27,233 @@ function lbl(val) {
   return STATUS_LABELS[val] || val
 }
 
-function buildEquipmentHtml(equipment, siteName) {
+const DOC_STYLE = 'background-color:#ffffff; color:#000000; font-family: \'Calibri\', \'Segoe UI\', Arial, sans-serif; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;'
+const LABEL_STYLE = 'padding: 5px 12px 5px 0; font-weight: 700; font-size: 11px; color: #000000; width: 140px; vertical-align: top; background-color:#ffffff; border: 0; border-bottom: 1px solid #cccccc; box-sizing: border-box;'
+const VALUE_STYLE = 'padding: 5px 0; font-size: 11px; color: #000000; background-color:#ffffff; border: 0; border-bottom: 1px solid #cccccc; box-sizing: border-box; word-wrap: break-word; overflow-wrap: break-word;'
+
+const PDF_RESET_CSS = `<style>
+.pdf-report{background-color:#ffffff!important;font-family:'Calibri','Segoe UI',Arial,sans-serif!important}
+.pdf-report table,.pdf-report thead,.pdf-report tbody,.pdf-report tr,.pdf-report td,.pdf-report th{color:#000000!important;background-color:#ffffff!important}
+.pdf-report p,.pdf-report div,.pdf-report span,.pdf-report strong{background-color:#ffffff!important}
+.pdf-report table{border-collapse:collapse!important}
+.pdf-report td,.pdf-report th{border:0}
+</style>`
+
+function buildRow(label, val) {
+  return `<tr style="background-color:#ffffff;"><td style="${LABEL_STYLE}">${label}</td><td style="${VALUE_STYLE}">${val}</td></tr>`
+}
+
+function buildRowNoBorder(label, val) {
+  return `<tr><td style="padding: 4px 12px 4px 0; font-weight: 700; font-size: 11px; color: #000000; width: 100px; vertical-align: top; background-color:#ffffff;">${label}</td><td style="padding: 4px 0; font-size: 11px; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${val}</td></tr>`
+}
+
+function buildHeader(title, requestId) {
   return `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a1a2e;">
-      <div style="border-bottom: 3px solid #0d6efd; padding-bottom: 12px; margin-bottom: 28px;">
-        <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
-        <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Reporte de Equipo</p>
-      </div>
-      <h2 style="font-size: 18px; margin: 0 0 16px;">${equipment.name || '—'}</h2>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Modelo</td><td style="padding: 6px 12px;">${equipment.model || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${equipment.type || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Serial</td><td style="padding: 6px 12px;">${equipment.serial || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Estado</td><td style="padding: 6px 12px;">${lbl(equipment.status)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Online</td><td style="padding: 6px 12px;">${equipment.online ? 'Sí' : 'No'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Sitio</td><td style="padding: 6px 12px;">${siteName || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Creado</td><td style="padding: 6px 12px;">${formatDate(equipment.created)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Actualizado</td><td style="padding: 6px 12px;">${formatDate(equipment.updated)}</td></tr>
+    <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; box-sizing: border-box;">
+      <tr>
+        <td style="padding: 0 0 14px 0; vertical-align: top; background-color:#ffffff;">
+          <div style="font-size: 22px; font-weight: 700; color: #000000; letter-spacing: 1.5px; background-color:#ffffff;">ICETRACK</div>
+          <div style="font-size: 13px; color: #333333; margin-top: 6px; font-weight: 600; background-color:#ffffff;">${title}</div>
+        </td>
+        ${requestId ? `<td style="padding: 0 0 14px 0; vertical-align: top; text-align: right; background-color:#ffffff; width: 130px;">
+          <div style="font-size: 11px; color: #666666; background-color:#ffffff; white-space: nowrap;">N.º de Solicitud</div>
+          <div style="font-size: 18px; font-weight: 700; color: #000000; background-color:#ffffff;">#${requestId}</div>
+        </td>` : ''}
+      </tr>
+    </table>
+    <div style="border-bottom: 2px solid #000000; margin-bottom: 10px;"></div>
+    <div style="font-size: 10px; color: #888888; background-color:#ffffff; margin-bottom: 26px;">Fecha y hora de emisión: ${formatDateTime(new Date().toISOString())}</div>
+  `
+}
+
+function buildFooter() {
+  return `
+    <div style="margin-top: 36px; padding-top: 12px; border-top: 1px solid #e5e5e5; background-color:#ffffff; font-size: 9px; color: #888888; text-align: center;">
+      IceTrack — Documento generado el ${formatDateTime(new Date().toISOString())}
+    </div>
+  `
+}
+
+function buildSignatureBlock() {
+  return `
+    <table style="width: 100%; border-collapse: collapse; margin-top: 40px; background-color:#ffffff; box-sizing: border-box;">
+      <tr>
+        <td style="width: 45%; text-align:center; padding: 0; background-color:#ffffff;">
+          <div style="border-top: 1px solid #000000; padding-top: 6px; font-size: 11px; color: #000000; background-color:#ffffff;">Firma del Técnico</div>
+        </td>
+        <td style="width: 10%; background-color:#ffffff;"></td>
+        <td style="width: 45%; text-align:center; padding: 0; background-color:#ffffff;">
+          <div style="border-top: 1px solid #000000; padding-top: 6px; font-size: 11px; color: #000000; background-color:#ffffff;">Firma del Supervisor</div>
+        </td>
+      </tr>
+    </table>
+  `
+}
+
+function buildEquipmentHtml(equipment, siteName) {
+  const rows = [
+    ['Modelo', equipment.model || '—'],
+    ['Tipo', equipment.type || '—'],
+    ['Serial', equipment.serial || '—'],
+    ['Estado', lbl(equipment.status)],
+    ['Online', equipment.online ? 'Sí' : 'No'],
+    ['Ubicación', siteName || '—'],
+    ['Creado', formatDate(equipment.created)],
+    ['Actualizado', formatDate(equipment.updated)]
+  ].map(([label, val]) => buildRow(label, val)).join('')
+
+  return `
+    <div style="${DOC_STYLE} padding: 48px;">
+      ${buildHeader('Reporte de Equipo', null)}
+      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff;">${equipment.name || '—'}</div>
+      <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; box-sizing: border-box;">
+        ${rows}
       </table>
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
+      ${buildFooter()}
     </div>
   `
 }
 
 function buildTechnicalHtml(request, interventions, technicians, siteName, equipmentName) {
+  const mainRows = [
+    ['Estado', lbl(request.status)],
+    ['Tipo de intervención', lbl(request.type)],
+    ['Prioridad', lbl(request.priority)],
+    ['Origen', request.origin || '—'],
+    ['Ubicación', siteName || '—'],
+    ['Equipo intervenido', equipmentName || '—'],
+    ['Solicitante', request.requesterName || '—'],
+    ['Proveedor', request.assignedToName || '—'],
+    ['Técnico responsable', request.technicianName || '—'],
+    ['Creado', formatDateTime(request.createdAt)],
+    ['Completado', formatDateTime(request.completedAt)]
+  ].map(([label, val]) => buildRow(label, val)).join('')
+
+  const descripcionNarrativa = request.description
+    ? `El equipo <strong>${equipmentName || 'reportado'}</strong> presentó la siguiente falla: "${request.description}", afectando su correcto funcionamiento en ${siteName || 'el sitio correspondiente'}.`
+    : `No se registró una descripción detallada del problema para esta solicitud.`
+
   const interHtml = interventions.map((iv, i) => {
     const tech = technicians.find(t => t.id === iv.technicianId)
-    const techName = tech ? tech.name : (iv.technicianId || '—')
+    const techName = tech ? tech.name : (iv.technicianId ? '—' : 'sin asignar')
+    const resumen = iv.summary ? iv.summary : 'sin observaciones adicionales registradas'
+    const estadoTexto = lbl(iv.status).toLowerCase()
+
     return `
-      <div style="margin-bottom: 14px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-        <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">Intervención #${i + 1} — ${lbl(iv.status)} — ${formatDate(iv.startTime)}</div>
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-          <tr><td style="padding: 2px 8px; font-weight: 600; width: 100px;">Técnico</td><td style="padding: 2px 8px;">${techName}</td></tr>
-          <tr><td style="padding: 2px 8px; font-weight: 600;">Inicio</td><td style="padding: 2px 8px;">${formatDateTime(iv.startTime)}</td></tr>
-          <tr><td style="padding: 2px 8px; font-weight: 600;">Fin</td><td style="padding: 2px 8px;">${formatDateTime(iv.endTime)}</td></tr>
-          <tr><td style="padding: 2px 8px; font-weight: 600;">Resumen</td><td style="padding: 2px 8px;">${iv.summary || '—'}</td></tr>
-          <tr><td style="padding: 2px 8px; font-weight: 600;">Fotos</td><td style="padding: 2px 8px;">${(iv.photoUrls && iv.photoUrls.length) ? iv.photoUrls.length + ' foto(s)' : 'Sin fotos'}</td></tr>
+      <div style="margin-bottom: 12px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+        <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">
+          <strong>Intervención #${i + 1}</strong> — El ${formatDate(iv.startTime)}, ${techName !== 'sin asignar' ? `el técnico <strong>${techName}</strong>` : 'el técnico asignado'} realizó la intervención correspondiente. ${resumen}. Estado de la intervención: <strong>${estadoTexto}</strong>${iv.endTime ? `, finalizada el ${formatDateTime(iv.endTime)}` : ''}.
+        </p>
+      </div>
+    `
+  }).join('')
+
+  const conclusion = request.status === 'completed'
+    ? 'La solicitud fue atendida satisfactoriamente. El equipo se encuentra operativo. Se recomienda realizar seguimiento mediante mantenimiento preventivo en los próximos meses.'
+    : 'La solicitud se encuentra actualmente en proceso de atención. Se recomienda dar seguimiento hasta su cierre definitivo.'
+
+  return `
+    <div style="${DOC_STYLE} padding: 48px;">
+      ${buildHeader('Informe Técnico', request.id)}
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 12px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Datos Generales</div>
+      <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; margin-bottom: 26px; box-sizing: border-box;">
+        ${mainRows}
+      </table>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Descripción del Problema</div>
+      <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0 0 26px 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${descripcionNarrativa}</p>
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 10px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Intervenciones Realizadas</div>
+      ${interventions.length ? interHtml : '<p style="font-size: 12px; color: #666666; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">No se registraron intervenciones para esta solicitud.</p>'}
+
+      <div style="font-size: 14px; font-weight: 700; color: #000000; margin: 26px 0 10px 0; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Conclusiones / Observaciones</div>
+      <p style="font-size: 12px; color: #000000; line-height: 1.5; margin: 0; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${conclusion}</p>
+
+      ${buildSignatureBlock()}
+      ${buildFooter()}
+    </div>
+  `
+}
+
+function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
+  const equipRows = [
+    ['Modelo', equipment.model || '—'],
+    ['Tipo', equipment.type || '—'],
+    ['Serial', equipment.serial || '—'],
+    ['Estado', lbl(equipment.status)],
+    ['Ubicación', siteName || '—']
+  ].map(([label, val]) => buildRow(label, val)).join('')
+
+  const requestsHtml = requests.map((req, i) => {
+    const techName = req.technicianName || (allTechnicians.find(t => t.id === req.technicianId)?.name) || '—'
+    return `
+      <div style="border: 1px solid #d9d9d9; padding: 14px; margin-bottom: 12px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+        <div style="font-weight: 700; font-size: 12px; color: #000000; margin-bottom: 6px; background-color:#ffffff;">
+          #${i + 1} — ${lbl(req.type)} — ${lbl(req.status)} — ${formatDate(req.createdAt)}
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px; background-color:#ffffff; box-sizing: border-box;">
+          <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Proveedor</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${req.assignedToName || '—'}</td></tr>
+          <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Técnico</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${techName}</td></tr>
+          <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Descripción</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${req.description || '—'}</td></tr>
         </table>
       </div>
     `
   }).join('')
 
   return `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a1a2e;">
-      <div style="border-bottom: 3px solid #0d6efd; padding-bottom: 12px; margin-bottom: 28px;">
-        <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
-        <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Reporte Técnico — Solicitud #${request.id}</p>
-      </div>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Estado</td><td style="padding: 6px 12px;">${lbl(request.status)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${lbl(request.type)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Prioridad</td><td style="padding: 6px 12px;">${lbl(request.priority)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Descripción</td><td style="padding: 6px 12px;">${request.description || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Sitio</td><td style="padding: 6px 12px;">${siteName}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Equipo</td><td style="padding: 6px 12px;">${equipmentName}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Proveedor</td><td style="padding: 6px 12px;">${request.assignedToName || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Técnico</td><td style="padding: 6px 12px;">${request.technicianName || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Creado</td><td style="padding: 6px 12px;">${formatDateTime(request.createdAt)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Completado</td><td style="padding: 6px 12px;">${formatDateTime(request.completedAt)}</td></tr>
+    <div style="${DOC_STYLE} padding: 48px;">
+      ${buildHeader('Historial del Equipo', null)}
+      <div style="font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 16px; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${equipment.name || '—'} (${equipment.serial || '—'})</div>
+      <table style="width: 100%; border-collapse: collapse; background-color:#ffffff; box-sizing: border-box;">
+        ${equipRows}
       </table>
-      <h3 style="font-size: 15px; margin: 20px 0 10px; color: #0d6efd;">Intervenciones</h3>
-      ${interventions.length ? interHtml : '<p style="font-size: 13px; color: #666;">No se registraron intervenciones.</p>'}
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
-    </div>
-  `
-}
-
-function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
-  const requestsHtml = requests.map((req, i) => {
-    const techName = req.technicianName || (allTechnicians.find(t => t.id === req.technicianId)?.name) || '—'
-    return `
-      <div style="margin-bottom: 10px; padding: 8px 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
-        <div style="font-weight: 600;">#${i + 1} — ${lbl(req.type)} — ${lbl(req.status)} — ${formatDate(req.createdAt)}</div>
-        <div style="margin-top: 4px;">Proveedor: ${req.assignedToName || '—'} | Técnico: ${techName}</div>
-        <div style="margin-top: 2px; color: #555;">${req.description || '—'}</div>
+      <div style="margin-top: 26px; background-color:#ffffff;">
+        <div style="font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 12px; border-bottom: 2px solid #000000; padding-bottom: 6px; background-color:#ffffff;">Solicitudes de Servicio</div>
+        ${requests.length ? requestsHtml : '<div style="font-size: 12px; color: #666666; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">No hay solicitudes asociadas a este equipo.</div>'}
       </div>
-    `
-  }).join('')
-
-  return `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a1a2e;">
-      <div style="border-bottom: 3px solid #0d6efd; padding-bottom: 12px; margin-bottom: 28px;">
-        <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
-        <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Historial del Equipo</p>
-      </div>
-      <h2 style="font-size: 16px; margin: 0 0 12px;">${equipment.name || '—'} (${equipment.serial || '—'})</h2>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Modelo</td><td style="padding: 6px 12px;">${equipment.model || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${equipment.type || '—'}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Estado</td><td style="padding: 6px 12px;">${lbl(equipment.status)}</td></tr>
-        <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Sitio</td><td style="padding: 6px 12px;">${siteName || '—'}</td></tr>
-      </table>
-      <h3 style="font-size: 15px; margin: 20px 0 10px; color: #0d6efd;">Solicitudes de Servicio</h3>
-      ${requests.length ? requestsHtml : '<p style="font-size: 13px; color: #666;">No hay solicitudes asociadas a este equipo.</p>'}
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
+      ${buildFooter()}
     </div>
   `
 }
 
 async function downloadPdf(html, filename) {
+  const wrapper = document.createElement('div')
+  wrapper.style.position = 'fixed'
+  wrapper.style.top = '0'
+  wrapper.style.left = '0'
+  wrapper.style.width = '0'
+  wrapper.style.height = '0'
+  wrapper.style.overflow = 'hidden'
+
   const container = document.createElement('div')
-  container.innerHTML = html
-  container.style.position = 'fixed'
-  container.style.top = '0'
-  container.style.left = '0'
-  container.style.opacity = '0'
-  container.style.pointerEvents = 'none'
-  container.style.zIndex = '-1'
-  container.style.width = '210mm'
-  document.body.appendChild(container)
+  container.innerHTML = `<div class="pdf-report">${PDF_RESET_CSS}${html}</div>`
+  container.style.backgroundColor = '#ffffff'
+  container.style.boxSizing = 'border-box'
+  container.style.wordWrap = 'break-word'
+  container.style.overflowWrap = 'break-word'
+
+  wrapper.appendChild(container)
+  document.body.appendChild(wrapper)
 
   try {
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready
+    }
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
     await html2pdf(container, {
       margin: 0.5,
       filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     })
   } catch (err) {
-    console.error('PDF generation error:', err)
+    console.error('[PDF] generation error:', err)
   } finally {
-    if (container.parentNode) {
-      document.body.removeChild(container)
+    if (wrapper.parentNode) {
+      document.body.removeChild(wrapper)
     }
   }
 }
@@ -157,17 +261,19 @@ async function downloadPdf(html, filename) {
 export function useReportPdf() {
   function generateEquipmentReport(equipment, siteName) {
     const html = buildEquipmentHtml(equipment, siteName)
-    return downloadPdf(html, `equipo-${(equipment.name || equipment.id).replace(/[^a-zA-Z0-9]/g, '_')}.pdf`)
+    const name = (equipment.name || equipment.id || '').replace(/[^a-zA-Z0-9]/g, '_')
+    return downloadPdf(html, `Reporte_Equipo_${name}_IceTrack.pdf`)
   }
 
   function generateTechnicalReport(request, interventions, technicians, siteName, equipmentName) {
     const html = buildTechnicalHtml(request, interventions, technicians, siteName, equipmentName)
-    return downloadPdf(html, `solicitud-${request.id}.pdf`)
+    return downloadPdf(html, `Informe_Tecnico_Solicitud_N${request.id}_IceTrack.pdf`)
   }
 
   function generateHistoricalReport(equipment, siteName, requests, allTechnicians) {
     const html = buildHistoricalHtml(equipment, siteName, requests, allTechnicians)
-    return downloadPdf(html, `historial-${(equipment.name || equipment.id).replace(/[^a-zA-Z0-9]/g, '_')}.pdf`)
+    const name = (equipment.name || equipment.id || '').replace(/[^a-zA-Z0-9]/g, '_')
+    return downloadPdf(html, `Historial_Equipo_${name}_IceTrack.pdf`)
   }
 
   return { generateEquipmentReport, generateTechnicalReport, generateHistoricalReport }

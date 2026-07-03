@@ -36,6 +36,7 @@ const downloadingPdf = ref(false);
 
 async function downloadTechnicalPdf() {
   if (!serviceRequest.value) return;
+  console.log('[DEBUG] serviceRequest:', JSON.stringify(serviceRequest.value, null, 2));
   downloadingPdf.value = true;
   await generateTechnicalReport(
     serviceRequest.value,
@@ -205,7 +206,7 @@ onMounted(async () => {
             <div class="grid">
               <div class="col-12 md:col-6">
                 <p><strong>{{ t('common.status.title') }}:</strong> {{ getStatusTranslation(serviceRequest.status) }}</p>
-                <p><strong>{{ t('services.requests.priority') }}:</strong> {{ serviceRequest.priority }}</p>
+                <p><strong>Prioridad:</strong> {{ serviceRequest.priority }}</p>
                 <p><strong>{{ t('services.detail.description') }}</strong> {{ serviceRequest.description }}</p>
               </div>
               <div class="col-12 md:col-6">

@@ -45,6 +45,7 @@ const downloadingHistoryPdf = ref(null);
 async function downloadEquipmentPdf(equipment) {
   downloadingPdf.value = equipment.id;
   const siteName = getSiteName(equipment.siteId);
+  console.log('[PDF] equipment data:', { name: equipment.name, model: equipment.model, serial: equipment.serial, status: equipment.status, siteId: equipment.siteId, siteName });
   await generateEquipmentReport(equipment, siteName);
   downloadingPdf.value = null;
 }
@@ -52,6 +53,7 @@ async function downloadEquipmentPdf(equipment) {
 async function downloadHistoryPdf(equipment) {
   downloadingHistoryPdf.value = equipment.id;
   const siteName = getSiteName(equipment.siteId);
+  console.log('[PDF] history data:', { name: equipment.name, serial: equipment.serial, siteName, requests: 0, technicians: 0 });
   await generateHistoricalReport(equipment, siteName, [], []);
   downloadingHistoryPdf.value = null;
 }
