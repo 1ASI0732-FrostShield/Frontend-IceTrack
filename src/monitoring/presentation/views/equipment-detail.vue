@@ -100,22 +100,30 @@ async function downloadHistoryPdf(equipment) {
   const siteName = getSiteName(equipment.siteId);
 
   let relatedRequests = []
-  let allTechnicians = []
+  let allInterventions = []
+  const techNameMap = {}
 
   try {
-    const requestsRes = await serviceRequestsApi.http.get('/service-requests')
-    const allRequests = Array.isArray(requestsRes.data) ? requestsRes.data : []
-    relatedRequests = allRequests.filter(r => r.equipmentId === equipment.id)
+    const res = await serviceRequestsApi.getMaintenanceHistoryQuery(equipment.id)
+    const data = res.data
+    relatedRequests = Array.isArray(data.serviceRequests) ? data.serviceRequests : []
+    allInterventions = Array.isArray(data.interventions) ? data.interventions : []
 
-    const techNames = new Set()
-    relatedRequests.forEach(r => {
-      if (r.technicianName) techNames.add(r.technicianName)
-      if (r.assignedToName) techNames.add(r.assignedToName)
+    data.serviceRequests?.forEach(sr => {
+      if (sr.technicianName) techNameMap[sr.technicianId] = sr.technicianName
+      if (sr.providerName) techNameMap[`provider_${sr.assignedTo}`] = sr.providerName
     })
-    allTechnicians = Array.from(techNames).map((name, i) => ({ id: i + 1, name }))
+    data.interventions?.forEach(iv => {
+      if (iv.technicianName) techNameMap[iv.technicianId] = iv.technicianName
+    })
   } catch (err) {
     console.warn('[PDF] No se pudieron obtener solicitudes relacionadas:', err)
   }
+
+  const allTechnicians = Object.entries(techNameMap).map(([key, name]) => {
+    const id = key.startsWith('provider_') ? parseInt(key.replace('provider_', '')) : parseInt(key)
+    return { id, name }
+  })
 
   await generateHistoricalReport(equipment, siteName, relatedRequests, allTechnicians)
   downloadingHistoryPdf.value = null;

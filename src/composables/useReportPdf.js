@@ -170,7 +170,7 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
     ['Local', siteName || '—'],
     ['Equipo intervenido', equipmentName || '—'],
     ['Solicitante', request.requesterName || '—'],
-    ['Proveedor', request.assignedToName || '—'],
+    ['Proveedor', request.providerName || request.assignedToName || '—'],
     ['Técnico responsable', request.technicianName || '—'],
     ['Creado', formatDateTime(request.createdAt)],
     ['Completado', formatDateTime(request.completedAt)]
@@ -259,7 +259,7 @@ function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
           #${i + 1} — ${lbl(req.type)} — ${lbl(req.status)} — ${formatDate(req.createdAt)}
         </div>
         <table style="width: 100%; border-collapse: collapse; font-size: 11px; background-color:#ffffff; box-sizing: border-box;">
-          <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Proveedor</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${req.assignedToName || '—'}</td></tr>
+          <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Proveedor</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${req.providerName || req.assignedToName || '—'}</td></tr>
           <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Técnico</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${techName}</td></tr>
           <tr><td style="padding: 3px 12px 3px 0; font-weight: 700; color: #000000; width: 90px; vertical-align: top; background-color:#ffffff;">Descripción</td><td style="padding: 3px 0; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${req.description || '—'}</td></tr>
         </table>
