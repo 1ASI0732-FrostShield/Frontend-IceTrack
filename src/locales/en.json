@@ -42,7 +42,28 @@
         "help": "Help",
         "provider_dashboard": "Provider Dashboard",
         "provider_services": "Provider Services",
-        "technician_management": "Technician Management"
+        "technician_management": "Technician Management",
+        "configurations": "Configurations"
+    },
+    "configurations": {
+        "title": "Configurations",
+        "subtitle": "Adjust the visual appearance of the application.",
+        "themeTitle": "Color theme",
+        "titleSizeTitle": "Global title size",
+        "previewTitle": "Preview",
+        "reset": "Reset",
+        "themes": {
+            "default": "Default",
+            "blue": "Blue",
+            "green": "Green",
+            "purple": "Purple",
+            "dark": "Dark"
+        },
+        "titleSizes": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+        }
     },
     "auth": {
         "login": {
@@ -105,7 +126,7 @@
         "demoBanner": "Demo mode: using tenant {id}",
         "chartTitle": "Temperature Trend",
         "recentAlerts": "Recent Alerts",
-        "filteredBySite": "Filtered by Site ID: {id}",
+        "filteredBySite": "Filtered by site: {siteName}",
         "showingAllSites": "Showing all sites",
         "kpis": {
           "sites": "Number of Sites locations",

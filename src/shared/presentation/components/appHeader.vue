@@ -61,13 +61,14 @@ function handleSignOut() {
   align-items: center;
   padding: 0 16px;
   gap: 12px;
-  background: var(--p-surface-0);
-  border-bottom: 1px solid var(--p-surface-200);
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  color: var(--app-text);
 }
-.brand { display:flex; gap:8px; align-items:center; cursor:pointer; font-weight:600; }
+.brand { display:flex; gap:8px; align-items:center; cursor:pointer; font-weight:600; color: var(--app-primary); }
 .spacer { flex: 1; }
 .actions { display:flex; gap:8px; align-items:center; }
 </style>

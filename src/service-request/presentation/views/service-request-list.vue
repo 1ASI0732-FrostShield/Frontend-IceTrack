@@ -7,7 +7,10 @@ import { useConfirm } from "primevue/useconfirm";
 import { useServiceRequestStore} from "@/service-request/application/service-requests.store.js";
 import { useAuthStore } from "@/iam/application/auth.store.js";
 import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { storeToRefs } from "pinia";
+import { useReportPdf } from '@/composables/useReportPdf.js';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -15,6 +18,31 @@ const confirm = useConfirm();
 const requestsStore = useServiceRequestStore();
 const authStore = useAuthStore();
 const reviewsApi = new ReviewsApi();
+const serviceRequestApi = new ServiceRequestsApi();
+const techniciansApi = new TechniciansApi();
+const { generateTechnicalReport } = useReportPdf();
+const downloadingPdf = ref(null);
+
+async function downloadRequestPdf(request) {
+  downloadingPdf.value = request.id;
+  try {
+    const [interventionsRes, techsRes] = await Promise.all([
+      serviceRequestApi.getInterventionsByRequestQuery(request.id),
+      techniciansApi.getTechniciansByProvider(authStore.currentUserId)
+    ]);
+    await generateTechnicalReport(
+      request,
+      interventionsRes.data,
+      techsRes.data,
+      request.siteName,
+      request.equipmentName
+    );
+  } catch (e) {
+    console.error('Failed to generate PDF:', e);
+  } finally {
+    downloadingPdf.value = null;
+  }
+}
 
 const { requests, requestsLoaded, errors } = storeToRefs(requestsStore);
 const { fetchContextAndRequests, cancelRequest } = requestsStore;
@@ -109,7 +137,7 @@ const submitReview = async () => {
   <div class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('services.requests.my-requests') }}</h1>
-      <pv-button :label="t('services.requests.new')" icon="pi pi-plus" severity="success" @click="navigateToNew" />
+      <pv-button :label="t('services.requests.new')" icon="pi pi-plus" @click="navigateToNew" />
     </div>
 
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
@@ -155,8 +183,18 @@ const submitReview = async () => {
       </pv-column>
 
       <!-- Actions -->
-      <pv-column :header="t('services.requests.actions')" style="width: 220px;">
+      <pv-column :header="t('services.requests.actions')" style="width: 280px;">
         <template #body="{ data }">
+          <!-- PDF Download -->
+          <pv-button
+              v-if="data.status === 'completed'"
+              icon="pi pi-file-pdf"
+              text rounded severity="danger"
+              :loading="downloadingPdf === data.id"
+              v-tooltip.top="t('reports.actions.downloadPdf')"
+              @click="downloadRequestPdf(data)"
+          />
+
           <!-- Details -->
           <pv-button
               icon="pi pi-eye"

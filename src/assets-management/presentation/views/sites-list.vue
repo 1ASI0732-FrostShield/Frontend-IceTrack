@@ -165,7 +165,7 @@ const onTextInput = (event, field) => {
   <section class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="sl-page-title">{{ t('sites.list.title') }}</h1>
-      <pv-button :label="t('sites.new.title')" icon="pi pi-plus" severity="success" @click="openNewSiteDialog" />
+      <pv-button :label="t('sites.new.title')" icon="pi pi-plus" @click="openNewSiteDialog" />
     </div>
 
     <pv-data-table
@@ -282,10 +282,10 @@ const onTextInput = (event, field) => {
 
 <style scoped>
 .sl-page-title {
-  font-size: 1.5rem;
+  font-size: var(--app-title-size);
   font-weight: 500;
-  color: var(--text-color);
-  letter-spacing: -0.01em;
+  color: var(--app-text);
+  letter-spacing: 0;
   margin: 0;
 }
 
@@ -295,14 +295,14 @@ const onTextInput = (event, field) => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-color-secondary);
-  background: var(--surface-ground);
-  border-bottom: 0.5px solid var(--surface-border);
+  color: var(--app-text-muted);
+  background: var(--app-surface-muted);
+  border-bottom: 0.5px solid var(--app-border);
 }
 
 .sl-table :deep(.p-datatable-tbody > tr > td) {
   font-size: 13px;
-  border-bottom: 0.5px solid var(--surface-border);
+  border-bottom: 0.5px solid var(--app-border);
   padding: 0.65rem 1rem;
 }
 
@@ -333,7 +333,7 @@ const onTextInput = (event, field) => {
 .sl-field-hint {
   display: block;
   font-size: 11px;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   opacity: 0.7;
   margin-top: 4px;
 }
@@ -352,6 +352,6 @@ const onTextInput = (event, field) => {
   margin-top: 0.5rem;
   border-radius: 10px;
   overflow: hidden;
-  border: 0.5px solid var(--surface-border);
+  border: 0.5px solid var(--app-border);
 }
 </style>

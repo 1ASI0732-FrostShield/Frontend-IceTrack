@@ -143,7 +143,6 @@ const showPassword = ref(false)
         />
         <pv-button
             :label="t('admin.settings.save')"
-            severity="success"
             @click="saveProfile"
         />
       </div>

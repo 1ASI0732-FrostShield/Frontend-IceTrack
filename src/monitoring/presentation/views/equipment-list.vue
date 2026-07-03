@@ -136,7 +136,7 @@ const isFormValid = computed(() => {
   <section class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('equipments.list.title') }}</h1>
-      <pv-button :label="t('equipments.new.title')" icon="pi pi-plus" severity="success" @click="openNewEquipmentDialog" />
+      <pv-button :label="t('equipments.new.title')" icon="pi pi-plus" @click="openNewEquipmentDialog" />
     </div>
 
     <pv-data-table

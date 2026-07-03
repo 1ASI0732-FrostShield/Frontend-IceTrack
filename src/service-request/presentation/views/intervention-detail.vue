@@ -82,7 +82,7 @@ onMounted(fetchData);
 
     <div v-else-if="intervention">
       <div class="flex justify-content-between align-items-center mb-4">
-        <h1 class="text-3xl font-bold m-0">{{ t('services.intervention.title') }} #{{ intervention.id }}</h1>
+        <h1 class="text-3xl font-bold m-0">{{ t('services.intervention.title') }}</h1>
         <pv-button icon="pi pi-arrow-left" :label="t('services.intervention.back-to-request')" @click="goBack" />
       </div>
 

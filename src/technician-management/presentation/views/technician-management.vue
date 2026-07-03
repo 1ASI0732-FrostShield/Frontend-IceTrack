@@ -450,10 +450,10 @@ const getAvatarStyle = (name) => {
 <style scoped>
 /* Page */
 .tm-page-title {
-  font-size: 1.5rem;
+  font-size: var(--app-title-size);
   font-weight: 500;
   margin-bottom: 1.5rem;
-  color: var(--text-color);
+  color: var(--app-text);
 }
 
 /* Card */
@@ -551,7 +551,7 @@ const getAvatarStyle = (name) => {
 }
 
 /* Action buttons */
-.tm-actions { display: flex; gap: 2px; }
+.tm-actions { display: flex; gap: 0.25rem; }
 
 .tm-action-btn :deep(.p-button-icon) { font-size: 13px; }
 

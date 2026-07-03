@@ -42,7 +42,28 @@
         "help": "Ayuda",
         "provider_dashboard": "Dashboard",
         "provider_services": "Servicios",
+        "configurations": "Configuraciones",
         "technician_management": "Técnicos"
+    },
+    "configurations": {
+        "title": "Configuraciones",
+        "subtitle": "Ajusta la apariencia visual de la aplicacion.",
+        "themeTitle": "Tema de color",
+        "titleSizeTitle": "Tamano global de titulos",
+        "previewTitle": "Vista previa",
+        "reset": "Restablecer",
+        "themes": {
+            "default": "Default",
+            "blue": "Azul",
+            "green": "Verde",
+            "purple": "Morado",
+            "dark": "Oscuro"
+        },
+        "titleSizes": {
+            "small": "Pequeno",
+            "medium": "Mediano",
+            "large": "Grande"
+        }
     },
     "auth": {
         "login": {
@@ -105,7 +126,7 @@
         "demoBanner": "Modo demo: usando tenant {id}",
         "chartTitle": "Tendencia de Temperatura",
         "recentAlerts": "Alertas recientes",
-        "filteredBySite": "Filtrado por ID de sitio: {id}",
+        "filteredBySite": "Filtrado por sitio: {siteName}",
         "showingAllSites": "Mostrando todos los sitios",
         "kpis": {
             "sites": "Lugares de Equipos",

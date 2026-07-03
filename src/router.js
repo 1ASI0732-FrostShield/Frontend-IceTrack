@@ -7,6 +7,7 @@ const Layout = () => import('@/shared/presentation/components/appLayout.vue')
 
 // General Views
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
+const ConfigurationsPage = () => import('@/shared/presentation/views/configurations.vue')
 const DashboardPage = () => import('@/dashboard/presentation/views/appDashboard.vue')
 
 // IAM
@@ -56,6 +57,7 @@ const routes = [
             { path: 'services/new', name: 'service-requests-new', component: ServiceRequestFormPage, meta: { titleKey: 'services.requests.new', roleRequired: 'Owner' }},
             { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' }},
             { path: 'services/:requestId/interventions/:interventionId', name: 'intervention-detail', component: InterventionDetailPage, meta: { titleKey: 'services.interventions.detail' }},
+            { path: 'configurations', name: 'configurations', component: ConfigurationsPage, meta: { titleKey: 'configurations.title' } },
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'Provider' } },

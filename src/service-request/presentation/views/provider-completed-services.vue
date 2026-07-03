@@ -10,6 +10,7 @@ import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import { useReportPdf } from '@/composables/useReportPdf.js';
 
 const assetsManagementApi = new AssetsManagementApi();
 const monitoringApi = new MonitoringApi();
@@ -22,11 +23,33 @@ const loading = ref(false);
 const error = ref(null);
 const completedRequests = ref([]);
 const currentProviderId = computed(() => authStore.currentUserId);
-const router = useRouter();  // <-- agrega esto
+const router = useRouter();
+const { generateTechnicalReport } = useReportPdf();
 
 const navigateToDetail = (request) => {
   router.push({ name: 'service-request-detail', params: { requestId: request.id } });
 };
+
+const downloadingPdf = ref(null);
+
+async function downloadCompletedPdf(request) {
+  downloadingPdf.value = request.id;
+  try {
+    const interventionsRes = await serviceRequestApi.getInterventionsByRequestQuery(request.id);
+    const techsRes = await techniciansApi.getTechniciansByProvider(currentProviderId.value);
+    await generateTechnicalReport(
+      request,
+      interventionsRes.data,
+      techsRes.data,
+      request.siteName,
+      request.equipmentName
+    );
+  } catch (e) {
+    console.error('Failed to generate PDF:', e);
+  } finally {
+    downloadingPdf.value = null;
+  }
+}
 
 const fetchData = async () => {
   if (!currentProviderId.value) return;
@@ -75,12 +98,21 @@ onMounted(fetchData);
 
           <pv-column :header="t('provider.services.list.details')">
             <template #body="{ data }">
-              <pv-button
-                  icon="pi pi-eye"
-                  text rounded severity="info"
-                  @click="navigateToDetail(data)"
-                  v-tooltip.top="t('provider.services.list.create-details')"
-              />
+              <div class="flex gap-2">
+                <pv-button
+                    icon="pi pi-file-pdf"
+                    text rounded severity="danger"
+                    :loading="downloadingPdf === data.id"
+                    @click="downloadCompletedPdf(data)"
+                    v-tooltip.top="t('reports.actions.downloadPdf')"
+                />
+                <pv-button
+                    icon="pi pi-eye"
+                    text rounded severity="info"
+                    @click="navigateToDetail(data)"
+                    v-tooltip.top="t('provider.services.list.create-details')"
+                />
+              </div>
             </template>
           </pv-column>
           <template #empty>

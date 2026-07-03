@@ -5,11 +5,17 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useConfirm } from "primevue/useconfirm";
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
+import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useRouter } from 'vue-router';
+import { useReportPdf } from '@/composables/useReportPdf.js';
 
 const { t } = useI18n();
 const store = useMonitoringStore();
+const assetsStore = useAssetsManagementStore();
 const { equipments, equipmentsLoaded, errors } = storeToRefs(store);
+const { sites, sitesLoaded } = storeToRefs(assetsStore);
+const { fetchSites } = assetsStore;
+const { generateEquipmentReport, generateHistoricalReport } = useReportPdf();
 const { fetchEquipments, updateEquipment, deleteEquipment } = store;
 const confirm = useConfirm();
 const serverError = ref(null);
@@ -28,8 +34,31 @@ const editForm = ref({
   siteId: null
 });
 
+const getSiteName = (siteId) => {
+  const site = sites.value.find(s => s.id === siteId);
+  return site ? site.name : siteId;
+};
+
+const downloadingPdf = ref(null);
+const downloadingHistoryPdf = ref(null);
+
+async function downloadEquipmentPdf(equipment) {
+  downloadingPdf.value = equipment.id;
+  const siteName = getSiteName(equipment.siteId);
+  await generateEquipmentReport(equipment, siteName);
+  downloadingPdf.value = null;
+}
+
+async function downloadHistoryPdf(equipment) {
+  downloadingHistoryPdf.value = equipment.id;
+  const siteName = getSiteName(equipment.siteId);
+  await generateHistoricalReport(equipment, siteName, [], []);
+  downloadingHistoryPdf.value = null;
+}
+
 onMounted(() => {
   if (!equipmentsLoaded.value) fetchEquipments();
+  if (!sitesLoaded.value) fetchSites();
 });
 
 const openEditDialog = (equipment) => {
@@ -107,8 +136,11 @@ const formatDate = (value) => {
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
     >
-      <!-- Id -->
-      <pv-column field="siteId" :header="t('equipments.detail.siteId')" sortable >
+      <!-- Site -->
+      <pv-column field="siteId" :header="t('sites.list.name')" sortable>
+        <template #body="{ data }">
+          {{ getSiteName(data.siteId) }}
+        </template>
       </pv-column>
 
       <!-- Created At -->
@@ -122,6 +154,36 @@ const formatDate = (value) => {
       <pv-column field="updated" :header="t('equipments.detail.updatedAt')">
         <template #body="{ data }">
           {{ formatDate(data.updated) }}
+        </template>
+      </pv-column>
+
+      <!-- PDF Report -->
+      <pv-column :header="t('reports.actions.downloadPdf')" style="width: 100px">
+        <template #body="{ data }">
+          <pv-button
+              icon="pi pi-file-pdf"
+              text
+              rounded
+              severity="danger"
+              v-tooltip.top="t('reports.actions.downloadPdf')"
+              :loading="downloadingPdf === data.id"
+              @click="downloadEquipmentPdf(data)"
+          />
+        </template>
+      </pv-column>
+
+      <!-- History PDF -->
+      <pv-column :header="t('reports.types.equipmentHistory')" style="width: 100px">
+        <template #body="{ data }">
+          <pv-button
+              icon="pi pi-history"
+              text
+              rounded
+              severity="info"
+              v-tooltip.top="t('reports.types.equipmentHistory')"
+              :loading="downloadingHistoryPdf === data.id"
+              @click="downloadHistoryPdf(data)"
+          />
         </template>
       </pv-column>
 
@@ -223,7 +285,7 @@ const formatDate = (value) => {
         <pv-button label="Cancel" icon="pi pi-times"
                    class="p-button-text" @click="displayEditDialog = false" />
         <pv-button label="Save" icon="pi pi-check"
-                   severity="success" @click="saveEditEquipment" />
+                   @click="saveEditEquipment" />
       </template>
     </pv-dialog>
 

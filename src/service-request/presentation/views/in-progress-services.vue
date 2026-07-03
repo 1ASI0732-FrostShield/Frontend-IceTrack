@@ -143,7 +143,6 @@ onMounted(fetchData);
                   <!-- Accept -->
                   <pv-button
                       icon="pi pi-check"
-                      severity="success"
                       text
                       rounded
                       @click="reassignTechnician(data.id)"

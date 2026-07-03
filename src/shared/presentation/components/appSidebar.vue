@@ -22,6 +22,7 @@ const items = computed(() => {
         ]
       },
       { label: t('nav.technician_management'), icon: 'pi pi-users', command: () => router.push({ name: 'provider-technicians' }) },
+      { label: t('nav.configurations'), icon: 'pi pi-cog', command: () => router.push({ name: 'configurations' }) },
     ];
   }
 
@@ -31,6 +32,7 @@ const items = computed(() => {
     { label: t('nav.sites'), icon: 'pi pi-building', command: () => router.push({ name: 'sites' }) },
     { label: t('nav.equipments'), icon: 'pi pi-server', command: () => router.push({ name: 'equipments' }) },
     { label: t('nav.services'), icon: 'pi pi-briefcase', command: () => router.push({ name: 'service-requests-list' }) },
+    { label: t('nav.configurations'), icon: 'pi pi-cog', command: () => router.push({ name: 'configurations' }) },
   ];
 });
 </script>
@@ -44,9 +46,10 @@ const items = computed(() => {
 <style scoped>
 .sidebar{
   padding:8px;
-  border-right:1px solid var(--p-surface-200);
-  background: var(--p-surface-0);
+  border-right:1px solid var(--app-border);
+  background: var(--app-surface);
   height: calc(100vh - 64px);
   overflow:auto;
+  color: var(--app-text);
 }
 </style>
