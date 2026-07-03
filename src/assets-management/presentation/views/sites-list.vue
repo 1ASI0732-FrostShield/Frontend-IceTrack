@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useI18n } from '@/i18n.js';
 import MapLocationPicker from "@/shared/presentation/components/MapLocationPicker.vue";
+import SitesMap from "@/assets-management/presentation/components/SitesMap.vue";
 import { useAuthStore } from "@/iam/application/auth.store.js";
 
 const { t } = useI18n();
@@ -167,6 +168,8 @@ const onTextInput = (event, field) => {
       <h1 class="sl-page-title">{{ t('sites.list.title') }}</h1>
       <pv-button :label="t('sites.new.title')" icon="pi pi-plus" @click="openNewSiteDialog" />
     </div>
+
+    <SitesMap :sites="sites" />
 
     <pv-data-table
         :value="sites"
