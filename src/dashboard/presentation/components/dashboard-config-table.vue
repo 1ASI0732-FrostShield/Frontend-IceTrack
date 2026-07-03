@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'

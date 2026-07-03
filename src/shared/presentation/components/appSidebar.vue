@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useRouter } from 'vue-router'
 import PanelMenu from 'primevue/panelmenu'
 import { useAuthStore } from '@/iam/application/auth.store.js'

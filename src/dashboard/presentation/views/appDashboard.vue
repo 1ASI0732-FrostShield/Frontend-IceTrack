@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { storeToRefs } from 'pinia'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import { useDashboardDataStore }   from '@/dashboard/application/dashboard-data.store.js'

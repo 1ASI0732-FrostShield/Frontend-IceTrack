@@ -1,13 +1,21 @@
-import en from './locales/en.json';
-import es from './locales/es.json';
+import es from './locales/es.json'
 
-import {createI18n} from "vue-i18n";
+const messages = es
 
-const i18n = createI18n({
-    legacy: false,
-    fallbackLocale: 'en',
-    locale: en,
-    messages: {en, es}
-});
+export function t(key, params = {}) {
+  const value = key.split('.').reduce((obj, k) => (obj != null ? obj[k] : undefined), messages)
+  if (typeof value === 'string') {
+    return value.replace(/\{(\w+)\}/g, (_, k) => params[k] != null ? params[k] : `{${k}}`)
+  }
+  return key
+}
 
-export default i18n;
+export function useI18n() {
+  return { t }
+}
+
+export default {
+  install(app) {
+    app.config.globalProperties.$t = t
+  }
+}

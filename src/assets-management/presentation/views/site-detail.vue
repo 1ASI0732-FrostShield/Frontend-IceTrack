@@ -2,7 +2,7 @@
 
 import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useConfirm } from "primevue/useconfirm";
 import { useRouter } from 'vue-router';

@@ -1,6 +1,6 @@
 <script setup>
 
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import { useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { useConfirm } from "primevue/useconfirm";

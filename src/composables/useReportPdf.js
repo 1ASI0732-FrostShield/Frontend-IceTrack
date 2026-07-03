@@ -1,4 +1,4 @@
-import html2pdf from 'html2pdf.js'
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js'
 
 function formatDate(value) {
   if (!value) return '—'
@@ -34,9 +34,7 @@ function buildEquipmentHtml(equipment, siteName) {
         <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
         <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Reporte de Equipo</p>
       </div>
-
       <h2 style="font-size: 18px; margin: 0 0 16px;">${equipment.name || '—'}</h2>
-
       <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Modelo</td><td style="padding: 6px 12px;">${equipment.model || '—'}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${equipment.type || '—'}</td></tr>
@@ -47,10 +45,7 @@ function buildEquipmentHtml(equipment, siteName) {
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Creado</td><td style="padding: 6px 12px;">${formatDate(equipment.created)}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Actualizado</td><td style="padding: 6px 12px;">${formatDate(equipment.updated)}</td></tr>
       </table>
-
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">
-        IceTrack — Generado el ${formatDateTime(new Date().toISOString())}
-      </div>
+      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
     </div>
   `
 }
@@ -79,7 +74,6 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
         <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
         <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Reporte Técnico — Solicitud #${request.id}</p>
       </div>
-
       <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Estado</td><td style="padding: 6px 12px;">${lbl(request.status)}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${lbl(request.type)}</td></tr>
@@ -92,13 +86,9 @@ function buildTechnicalHtml(request, interventions, technicians, siteName, equip
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Creado</td><td style="padding: 6px 12px;">${formatDateTime(request.createdAt)}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Completado</td><td style="padding: 6px 12px;">${formatDateTime(request.completedAt)}</td></tr>
       </table>
-
       <h3 style="font-size: 15px; margin: 20px 0 10px; color: #0d6efd;">Intervenciones</h3>
       ${interventions.length ? interHtml : '<p style="font-size: 13px; color: #666;">No se registraron intervenciones.</p>'}
-
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">
-        IceTrack — Generado el ${formatDateTime(new Date().toISOString())}
-      </div>
+      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
     </div>
   `
 }
@@ -121,50 +111,47 @@ function buildHistoricalHtml(equipment, siteName, requests, allTechnicians) {
         <h1 style="margin: 0; font-size: 22px; color: #0d6efd;">IceTrack</h1>
         <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Historial del Equipo</p>
       </div>
-
       <h2 style="font-size: 16px; margin: 0 0 12px;">${equipment.name || '—'} (${equipment.serial || '—'})</h2>
-
       <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600; width: 140px;">Modelo</td><td style="padding: 6px 12px;">${equipment.model || '—'}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Tipo</td><td style="padding: 6px 12px;">${equipment.type || '—'}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Estado</td><td style="padding: 6px 12px;">${lbl(equipment.status)}</td></tr>
         <tr><td style="padding: 6px 12px; background: #f8f9fa; font-weight: 600;">Sitio</td><td style="padding: 6px 12px;">${siteName || '—'}</td></tr>
       </table>
-
       <h3 style="font-size: 15px; margin: 20px 0 10px; color: #0d6efd;">Solicitudes de Servicio</h3>
       ${requests.length ? requestsHtml : '<p style="font-size: 13px; color: #666;">No hay solicitudes asociadas a este equipo.</p>'}
-
-      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">
-        IceTrack — Generado el ${formatDateTime(new Date().toISOString())}
-      </div>
+      <div style="margin-top: 30px; padding-top: 12px; border-top: 1px solid #dee2e6; font-size: 10px; color: #999; text-align: center;">IceTrack — Generado el ${formatDateTime(new Date().toISOString())}</div>
     </div>
   `
 }
 
-function downloadPdf(html, filename) {
+async function downloadPdf(html, filename) {
   const container = document.createElement('div')
   container.innerHTML = html
-  container.style.position = 'absolute'
-  container.style.left = '-9999px'
+  container.style.position = 'fixed'
   container.style.top = '0'
+  container.style.left = '0'
+  container.style.opacity = '0'
+  container.style.pointerEvents = 'none'
+  container.style.zIndex = '-1'
+  container.style.width = '210mm'
   document.body.appendChild(container)
-  return html2pdf()
-    .set({
+
+  try {
+    await html2pdf(container, {
       margin: 0.5,
       filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     })
-    .from(container)
-    .save()
-    .then(() => {
+  } catch (err) {
+    console.error('PDF generation error:', err)
+  } finally {
+    if (container.parentNode) {
       document.body.removeChild(container)
-    })
-    .catch((err) => {
-      document.body.removeChild(container)
-      console.error('PDF generation error:', err)
-    })
+    }
+  }
 }
 
 export function useReportPdf() {

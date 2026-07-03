@@ -1,6 +1,6 @@
 <script setup>
 
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useConfirm } from "primevue/useconfirm";

@@ -1,6 +1,6 @@
 <script setup>
 
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useRouter } from 'vue-router'
 import { useAuthStore} from "@/iam/application/auth.store.js";
 
@@ -29,9 +29,6 @@ function handleSignOut() {
     <div class="spacer"></div>
 
     <div class="actions">
-      <pv-button text @click="setLang('es')" label="ES" />
-      <pv-button text @click="setLang('en')" label="EN" />
-      <pv-divider layout="vertical" />
 
       <!-- Mostrar nombre de usuario y botón de cerrar sesión si está autenticado -->
       <template v-if="authStore.isLoggedIn && authStore.user">

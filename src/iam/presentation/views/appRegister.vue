@@ -2,7 +2,7 @@
 
 import {computed, ref} from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
 const { t } = useI18n()

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useVisualPreferencesStore } from '@/shared/application/visual-preferences.store.js'
 
 const { t } = useI18n()

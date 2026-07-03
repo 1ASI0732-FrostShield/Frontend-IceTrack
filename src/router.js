@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import i18n from '@/i18n.js'
+import { t as i18nT } from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
 // Layout
@@ -100,8 +100,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const base = 'IceTrack';
-    const t = i18n.global?.t ?? ((k) => k);
-    const title = to.meta?.titleKey ? t(String(to.meta.titleKey)) : (to.meta?.title || '');
+    const title = to.meta?.titleKey ? i18nT(String(to.meta.titleKey)) : (to.meta?.title || '');
     document.title = title ? `${base} — ${title}` : base;
 
     next();

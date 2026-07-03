@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";

@@ -1,6 +1,6 @@
 <script setup>
 import {useRouter} from "vue-router";
-import {useI18n} from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 
 const router = useRouter();
 const unavailableRoute = router.currentRoute.value.fullPath;

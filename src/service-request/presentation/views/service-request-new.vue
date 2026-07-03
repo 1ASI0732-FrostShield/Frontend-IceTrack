@@ -1,6 +1,6 @@
 <script setup>
 
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import { useServiceRequestStore} from "@/service-request/application/service-requests.store.js";

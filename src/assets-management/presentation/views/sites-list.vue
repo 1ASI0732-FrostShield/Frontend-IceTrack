@@ -3,7 +3,7 @@
 import { onMounted, ref, computed } from "vue";
 import { storeToRefs } from 'pinia';
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import MapLocationPicker from "@/shared/presentation/components/MapLocationPicker.vue";
 import { useAuthStore } from "@/iam/application/auth.store.js";
 

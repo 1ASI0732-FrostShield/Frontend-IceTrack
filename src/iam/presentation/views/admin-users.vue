@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 const { t } = useI18n()
 
 const user = ref({

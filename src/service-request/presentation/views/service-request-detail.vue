@@ -2,7 +2,7 @@
 
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';

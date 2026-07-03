@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 
 const { t } = useI18n();
 const store = useMonitoringStore();

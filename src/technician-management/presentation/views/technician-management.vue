@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { ReviewsApi } from '@/feedback/infrastructure/reviews.api.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
