@@ -1,15 +1,16 @@
 {
-    "common": {
-        "appName": "IceTrack",
-        "ok": "Aceptar",
-        "cancel": "Cancelar",
-        "save": "Guardar",
-        "search": "Buscar",
-        "edit": "Editar",
-        "delete": "Eliminar",
-        "more": "Ver",
-        "back": "Regresar",
-        "submit": "Enviar",
+        "common": {
+            "appName": "IceTrack",
+            "ok": "Aceptar",
+            "cancel": "Cancelar",
+            "save": "Guardar",
+            "search": "Buscar",
+            "edit": "Editar",
+            "delete": "Eliminar",
+            "more": "Ver",
+            "back": "Regresar",
+            "loading": "Cargando...",
+            "submit": "Enviar",
         "status": {
             "title": "Estado",
             "open": "Abierta",
@@ -103,7 +104,9 @@
         },
         "errors": {
             "invalidCredentials": "Correo o contraseña incorrectos",
+            "invalidResponse": "Respuesta inválida del servidor",
             "occurred": "Ocurrió un error",
+            "registrationFailed": "Error al registrar usuario",
             "usernameTaken": "Este nombre de usuario ya está en uso"
         }
     },
@@ -139,6 +142,7 @@
             "openAlerts": "Alertas abiertas",
             "energyThisWeek": "Energía (esta semana)",
             "maintenance": "Cantidad de Mantenimientos",
+            "repair": "Reparaciones",
             "repairs": "Cantidad de Reparaciones"
         },
         "configCardSubtitles": {
@@ -427,6 +431,10 @@
             "view-review-header": "Ver Reseña",
             "submit-review-header": "Enviar Reseña",
             "rating": "Calificación:",
+            "review-comunicacion": "Comunicación:",
+            "review-eficiencia": "Eficiencia:",
+            "review-profesionalidad": "Profesionalidad:",
+            "review-average": "Promedio:",
             "comment": "Comentario:",
             "submit": "Enviar"
         },
@@ -527,6 +535,11 @@
         "types": {
             "corrective": "Correctivo",
             "preventive": "Preventivo"
+        },
+        "priorities": {
+            "high": "Alta",
+            "medium": "Media",
+            "low": "Baja"
         }
     },
     "alerts": {
@@ -759,6 +772,10 @@
             "register": "Registrar",
             "my-technicians": "Mis Técnicos",
             "average-rating": "Calificación Promedio",
+            "comunicacion": "Comunicación",
+            "eficiencia": "Eficiencia",
+            "profesionalidad": "Profesionalidad",
+            "average": "Promedio",
             "actions": "Acciones",
             "no-technicians": "No se encontraron técnicos. Registre uno para comenzar",
             "edit-technician": "Editar Técnico",

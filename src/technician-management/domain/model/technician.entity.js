@@ -14,12 +14,15 @@ export class Technician {
      * @param {number} props.providerId - The ID of the provider associated with the technician.
      * @param {number} [props.averageRating=0] - The technician's average rating.
      */
-    constructor({ id, name, specialty, phone, providerId, averageRating = 0 }) {
+    constructor({ id, name, specialty, phone, providerId, averageRating = 0, avgComunicacion = 0, avgEficiencia = 0, avgProfesionalidad = 0 }) {
         this.id = id;
         this.name = name;
         this.specialty = specialty;
         this.phone = phone;
         this.providerId = providerId;
         this.averageRating = averageRating;
+        this.avgComunicacion = avgComunicacion;
+        this.avgEficiencia = avgEficiencia;
+        this.avgProfesionalidad = avgProfesionalidad;
     }
 }
