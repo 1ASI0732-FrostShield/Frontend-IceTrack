@@ -1,13 +1,16 @@
 <script setup>
 
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import { useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 import { useServiceRequestStore} from "@/service-request/application/service-requests.store.js";
 import { useAuthStore } from "@/iam/application/auth.store.js";
 import { ReviewsApi } from "@/feedback/infrastructure/reviews.api.js";
+import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
+import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { storeToRefs } from "pinia";
+import { useReportPdf } from '@/composables/useReportPdf.js';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -15,6 +18,31 @@ const confirm = useConfirm();
 const requestsStore = useServiceRequestStore();
 const authStore = useAuthStore();
 const reviewsApi = new ReviewsApi();
+const serviceRequestApi = new ServiceRequestsApi();
+const techniciansApi = new TechniciansApi();
+const { generateTechnicalReport } = useReportPdf();
+const downloadingPdf = ref(null);
+
+async function downloadRequestPdf(request) {
+  downloadingPdf.value = request.id;
+  try {
+    const [interventionsRes, techsRes] = await Promise.all([
+      serviceRequestApi.getInterventionsByRequestQuery(request.id),
+      techniciansApi.getTechniciansByProvider(authStore.currentUserId)
+    ]);
+    await generateTechnicalReport(
+      request,
+      interventionsRes.data,
+      techsRes.data,
+      request.siteName,
+      request.equipmentName
+    );
+  } catch (e) {
+    console.error('Failed to generate PDF:', e);
+  } finally {
+    downloadingPdf.value = null;
+  }
+}
 
 const { requests, requestsLoaded, errors } = storeToRefs(requestsStore);
 const { fetchContextAndRequests, cancelRequest } = requestsStore;
@@ -66,19 +94,31 @@ const confirmCancel = (request) => {
 // Review Logic
 const displayReviewDialog = ref(false);
 const currentServiceRequest = ref(null);
-const reviewForm = ref({ rating: 0, comment: '' });
+const reviewForm = ref({ comunicacion: 0, eficiencia: 0, profesionalidad: 0, comment: '' });
 const existingReview = ref(null);
+const reviewAverage = computed(() => {
+  const f = reviewForm.value;
+  return (f.comunicacion + f.eficiencia + f.profesionalidad) / 3;
+});
+
+const ratingFields = [
+  { key: 'comunicacion', question: '¿Qué tan clara y efectiva fue la comunicación del técnico?' },
+  { key: 'eficiencia', question: '¿Qué tan eficiente fue el técnico al resolver el trabajo?' },
+  { key: 'profesionalidad', question: '¿Qué tan profesional fue el trato del técnico?' }
+];
 
 const openReviewDialog = async (request) => {
   currentServiceRequest.value = request;
-  reviewForm.value = { rating: 0, comment: '' };
+  reviewForm.value = { comunicacion: 0, eficiencia: 0, profesionalidad: 0, comment: '' };
   existingReview.value = null;
 
   if (request.hasReview) {
     try {
       const response = await reviewsApi.getReviewById(request.reviewId);
       existingReview.value = response.data;
-      reviewForm.value.rating = existingReview.value.rating;
+      reviewForm.value.comunicacion = existingReview.value.comunicacion;
+      reviewForm.value.eficiencia = existingReview.value.eficiencia;
+      reviewForm.value.profesionalidad = existingReview.value.profesionalidad;
       reviewForm.value.comment = existingReview.value.comment;
     } catch (e) { console.error("Failed to load existing review:", e); }
   }
@@ -86,13 +126,15 @@ const openReviewDialog = async (request) => {
 };
 
 const submitReview = async () => {
-  if (!currentServiceRequest.value || reviewForm.value.rating === 0) return;
+  if (!currentServiceRequest.value || reviewForm.value.comunicacion === 0 || reviewForm.value.eficiencia === 0 || reviewForm.value.profesionalidad === 0) return;
   try {
     const reviewData = {
       serviceRequestId: currentServiceRequest.value.id,
       ownerId: currentOwnerId.value,
       technicianId: currentServiceRequest.value.technicianId,
-      rating: reviewForm.value.rating,
+      comunicacion: reviewForm.value.comunicacion,
+      eficiencia: reviewForm.value.eficiencia,
+      profesionalidad: reviewForm.value.profesionalidad,
       comment: reviewForm.value.comment,
       createdAt: new Date().toISOString()
     };
@@ -109,7 +151,7 @@ const submitReview = async () => {
   <div class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('services.requests.my-requests') }}</h1>
-      <pv-button :label="t('services.requests.new')" icon="pi pi-plus" severity="success" @click="navigateToNew" />
+      <pv-button :label="t('services.requests.new')" icon="pi pi-plus" @click="navigateToNew" />
     </div>
 
     <div class="bg-white p-4 rounded-xl shadow-md mb-6 flex flex-wrap gap-3 items-center">
@@ -155,8 +197,18 @@ const submitReview = async () => {
       </pv-column>
 
       <!-- Actions -->
-      <pv-column :header="t('services.requests.actions')" style="width: 220px;">
+      <pv-column :header="t('services.requests.actions')" style="width: 280px;">
         <template #body="{ data }">
+          <!-- PDF Download -->
+          <pv-button
+              v-if="data.status === 'completed'"
+              icon="pi pi-file-pdf"
+              text rounded severity="danger"
+              :loading="downloadingPdf === data.id"
+              v-tooltip.top="t('reports.actions.downloadPdf')"
+              @click="downloadRequestPdf(data)"
+          />
+
           <!-- Details -->
           <pv-button
               icon="pi pi-eye"
@@ -194,10 +246,30 @@ const submitReview = async () => {
 
     <!-- technician Rating -->
     <pv-dialog v-model:visible="displayReviewDialog" :header="currentServiceRequest && currentServiceRequest.hasReview ? t('services.requests.view-review-header') : t('services.requests.submit-review-header')" :modal="true" class="p-fluid">
-      <div class="field">
-        <label for="rating">{{ t('services.requests.rating') }}</label>
-        <div class="mt-2">
-          <pv-rating v-model="reviewForm.rating" :cancel="false" :readonly="currentServiceRequest && currentServiceRequest.hasReview" />
+      <div v-for="field in ratingFields" :key="field.key" class="field mt-3">
+        <label>{{ field.question }}</label>
+        <div class="rating-slider-container mt-2">
+          <div class="rating-slider">
+            <div
+              v-for="n in 5"
+              :key="n"
+              class="slider-segment"
+              :class="{
+                active: n <= reviewForm[field.key],
+                readonly: currentServiceRequest?.hasReview
+              }"
+              @click="!currentServiceRequest?.hasReview && (reviewForm[field.key] = n)"
+            >
+              <span class="segment-number">{{ n }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="currentServiceRequest && currentServiceRequest.hasReview" class="field mt-3">
+        <label>{{ t('services.requests.review-average') }}</label>
+        <div class="mt-2 font-bold text-xl">
+          {{ reviewAverage.toFixed(1) }}
         </div>
       </div>
 
@@ -214,3 +286,46 @@ const submitReview = async () => {
   </div>
 
 </template>
+
+<style scoped>
+.rating-slider-container {
+  display: flex;
+  align-items: center;
+}
+.rating-slider {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  flex: 1;
+  max-width: 300px;
+}
+.slider-segment {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  cursor: pointer;
+  background: var(--app-surface-muted);
+  border-right: 1px solid var(--app-border);
+  transition: background-color 0.15s;
+  user-select: none;
+}
+.slider-segment:last-child {
+  border-right: none;
+}
+.slider-segment:hover:not(.readonly) {
+  background: var(--app-primary-soft);
+}
+.slider-segment.active {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+.slider-segment.readonly {
+  cursor: default;
+}
+.segment-number {
+  font-weight: 600;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+</style>

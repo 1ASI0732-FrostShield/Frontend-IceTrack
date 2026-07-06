@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import i18n from '@/i18n.js'
+import { t as i18nT } from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
 // Layout
@@ -7,6 +7,7 @@ const Layout = () => import('@/shared/presentation/components/appLayout.vue')
 
 // General Views
 const PageNotFound = () => import('@/shared/presentation/views/page-not-found.vue')
+const ConfigurationsPage = () => import('@/shared/presentation/views/configurations.vue')
 const DashboardPage = () => import('@/dashboard/presentation/views/appDashboard.vue')
 
 // IAM
@@ -56,6 +57,8 @@ const routes = [
             { path: 'services/new', name: 'service-requests-new', component: ServiceRequestFormPage, meta: { titleKey: 'services.requests.new', roleRequired: 'Owner' }},
             { path: 'services/:requestId', name: 'service-request-detail', component: ServiceRequestDetailPage, meta: { titleKey: 'services.requests.detail' }},
             { path: 'services/:requestId/interventions/:interventionId', name: 'intervention-detail', component: InterventionDetailPage, meta: { titleKey: 'services.interventions.detail' }},
+            { path: 'configurations', name: 'configurations', component: ConfigurationsPage, meta: { titleKey: 'configurations.title' } },
+            { path: 'notifications', name: 'notifications', component: () => import('@/shared/presentation/views/notification-list.vue'), meta: { titleKey: 'notifications.title' } },
 
             // --- Provider Routes ---
             { path: 'provider/dashboard', name: 'provider-dashboard', component: ProviderDashboard, meta: { titleKey: 'provider.dashboard.title', roleRequired: 'Provider' } },
@@ -98,8 +101,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const base = 'IceTrack';
-    const t = i18n.global?.t ?? ((k) => k);
-    const title = to.meta?.titleKey ? t(String(to.meta.titleKey)) : (to.meta?.title || '');
+    const title = to.meta?.titleKey ? i18nT(String(to.meta.titleKey)) : (to.meta?.title || '');
     document.title = title ? `${base} — ${title}` : base;
 
     next();

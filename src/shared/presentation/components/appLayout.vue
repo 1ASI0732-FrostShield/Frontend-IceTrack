@@ -29,8 +29,8 @@ import Sidebar from './appSidebar.vue'
 .content{
   grid-area: content;
   padding: 24px;
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
-  border-left: 1px solid var(--p-surface-200);
+  background: var(--app-bg);
+  color: var(--app-text);
+  border-left: 1px solid var(--app-border);
 }
 </style>

@@ -2,12 +2,13 @@
 
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
 import { AssetsManagementApi } from "@/assets-management/infrastructure/assets-management-api.js";
+import { useReportPdf } from '@/composables/useReportPdf.js';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -23,6 +24,29 @@ const displayEquipmentDialog = ref(false);
 const assetsManagementApi = new AssetsManagementApi();
 const siteName = ref('');
 const equipmentName = ref('');
+
+const { generateTechnicalReport } = useReportPdf();
+
+const getTechnicianName = (technicianId) => {
+  const tech = technicians.value.find(t => t.id === technicianId);
+  return tech ? tech.name : t('services.in-progress.not-assigned');
+};
+
+const downloadingPdf = ref(false);
+
+async function downloadTechnicalPdf() {
+  if (!serviceRequest.value) return;
+  console.log('[DEBUG] serviceRequest:', JSON.stringify(serviceRequest.value, null, 2));
+  downloadingPdf.value = true;
+  await generateTechnicalReport(
+    serviceRequest.value,
+    interventions.value,
+    technicians.value,
+    siteName.value,
+    equipmentName.value
+  );
+  downloadingPdf.value = false;
+}
 
 const newIntervention = ref({
   technicianId: null,
@@ -105,7 +129,7 @@ function addPhotoUrl() {
 
 async function registerIntervention() {
   if (!newIntervention.value.technicianId || !newIntervention.value.summary) {
-    alert('Please select a technician and provide a summary.');
+    alert('Seleccione un técnico y proporcione un resumen del trabajo.');
     return;
   }
 
@@ -155,13 +179,24 @@ onMounted(async () => {
       <div v-else-if="serviceRequest">
         <div class="flex justify-content-between align-items-center mb-4">
           <h1 class="text-3xl font-bold">{{ t('services.requests.detail') }} #{{ serviceRequest.id }}</h1>
-          <pv-button
-              icon="pi pi-arrow-left"
-              :label="t('common.back')"
-              text
-              severity="secondary"
-              @click="router.back()"
-          />
+          <div class="flex gap-2">
+            <pv-button
+                icon="pi pi-file-pdf"
+                :label="t('reports.actions.downloadPdf')"
+                severity="danger"
+                :loading="downloadingPdf"
+                :disabled="serviceRequest.status !== 'completed' && !interventions.length"
+                v-tooltip.top="serviceRequest.status !== 'completed' && !interventions.length ? 'Debe haber al menos una intervención registrada' : ''"
+                @click="downloadTechnicalPdf"
+            />
+            <pv-button
+                icon="pi pi-arrow-left"
+                :label="t('common.back')"
+                text
+                severity="secondary"
+                @click="router.back()"
+            />
+          </div>
         </div>
 
         <!-- Request Details -->
@@ -171,7 +206,7 @@ onMounted(async () => {
             <div class="grid">
               <div class="col-12 md:col-6">
                 <p><strong>{{ t('common.status.title') }}:</strong> {{ getStatusTranslation(serviceRequest.status) }}</p>
-                <p><strong>{{ t('services.requests.priority') }}:</strong> {{ serviceRequest.priority }}</p>
+                <p><strong>Prioridad:</strong> {{ serviceRequest.priority }}</p>
                 <p><strong>{{ t('services.detail.description') }}</strong> {{ serviceRequest.description }}</p>
               </div>
               <div class="col-12 md:col-6">
@@ -201,7 +236,7 @@ onMounted(async () => {
                     {{ getStatusTranslation(slotProps.item.status) }} - {{ new Date(slotProps.item.startTime).toLocaleDateString() }}
                   </template>
                   <template #subtitle>
-                    {{ t('services.detail.technician-id') }} {{ slotProps.item.technicianId }}
+                    {{ t('services.intervention.technician') }} {{ getTechnicianName(slotProps.item.technicianId) }}
                   </template>
                   <template #content>
                     <p class="line-clamp-2">{{ slotProps.item.summary }}</p>
@@ -224,7 +259,7 @@ onMounted(async () => {
                 <label for="technician">{{ t('services.detail.select-technician') }}</label>
                 <pv-input-text
                     v-if="serviceRequest.technicianId"
-                    :value="technicians.find(t => t.id === serviceRequest.technicianId)?.name || serviceRequest.technicianId"
+                    :value="technicians.find(t => t.id === serviceRequest.technicianId)?.name || t('services.in-progress.not-assigned')"
                     readonly
                     class="w-fit"
                     style="min-width: 150px"

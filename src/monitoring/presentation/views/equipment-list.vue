@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 
 const { t } = useI18n();
 const store = useMonitoringStore();
@@ -13,6 +13,11 @@ const { equipments, equipmentsLoaded, errors } = storeToRefs(store);
 const { fetchEquipments, createEquipment } = store;
 const { sites, sitesLoaded } = storeToRefs(assetsStore);
 const { fetchSites } = assetsStore;
+
+const getSiteName = (siteId) => {
+  const site = sites.value.find(s => s.id === siteId);
+  return site ? site.name : siteId;
+};
 const displayNewEquipmentDialog = ref(false);
 const serverError = ref(null);
 const serialError = ref(null);
@@ -136,7 +141,7 @@ const isFormValid = computed(() => {
   <section class="p-4">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="text-3xl font-bold">{{ t('equipments.list.title') }}</h1>
-      <pv-button :label="t('equipments.new.title')" icon="pi pi-plus" severity="success" @click="openNewEquipmentDialog" />
+      <pv-button :label="t('equipments.new.title')" icon="pi pi-plus" @click="openNewEquipmentDialog" />
     </div>
 
     <pv-data-table
@@ -148,9 +153,13 @@ const isFormValid = computed(() => {
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
     >
-      <pv-column field="name" :header="t('sites.list.name')" />
+      <pv-column field="siteId" :header="t('sites.list.name')" sortable>
+        <template #body="{ data }">
+          {{ getSiteName(data.siteId) }}
+        </template>
+      </pv-column>
 
-      <pv-column field="model" :header="t('equipments.list.model')">
+      <pv-column field="model" :header="t('equipments.list.model')" sortable>
         <template #body="slotProps">
           <span>{{ slotProps.data.model }}</span>
         </template>

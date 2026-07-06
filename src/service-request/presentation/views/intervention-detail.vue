@@ -6,7 +6,7 @@
  */
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { IamApi } from '@/iam/infrastructure/iam.api.js';
 
@@ -82,7 +82,7 @@ onMounted(fetchData);
 
     <div v-else-if="intervention">
       <div class="flex justify-content-between align-items-center mb-4">
-        <h1 class="text-3xl font-bold m-0">{{ t('services.intervention.title') }} #{{ intervention.id }}</h1>
+        <h1 class="text-3xl font-bold m-0">{{ t('services.intervention.title') }}</h1>
         <pv-button icon="pi pi-arrow-left" :label="t('services.intervention.back-to-request')" @click="goBack" />
       </div>
 

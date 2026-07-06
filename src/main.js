@@ -1,5 +1,3 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router.js'
@@ -9,9 +7,11 @@ import PrimeVue from 'primevue/config'
 import { useAuthStore} from "@/iam/application/auth.store.js"; // Importar store aquí
 import Material from '@primeuix/themes/material'
 import { definePreset } from '@primeuix/themes'
-import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
+import 'primeflex/primeflex.css';
+import './assets/main.css'
 import Chart from 'primevue/chart'
+import { useVisualPreferencesStore } from '@/shared/application/visual-preferences.store.js'
 
 import {
     Avatar, Button, Card, Checkbox, Column, ConfirmationService, ConfirmDialog,
@@ -48,8 +48,10 @@ app.use(i18n)
     .use(pinia)
 
 const initializeAuthAndRun = async () => {
+    const visualPreferencesStore = useVisualPreferencesStore();
     const authStore = useAuthStore();
 
+    visualPreferencesStore.loadPreferences();
     await authStore.loadUserFromToken();
 
     app.use(router)

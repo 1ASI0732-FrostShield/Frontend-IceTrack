@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 
 const { t } = useI18n();
 

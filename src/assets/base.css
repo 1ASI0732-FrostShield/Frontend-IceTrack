@@ -1,14 +1,460 @@
 /* src/assets/base.css */
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+  --app-primary: #2563eb;
+  --app-primary-contrast: #ffffff;
+  --app-primary-soft: #dbeafe;
+  --app-primary-muted: #bfdbfe;
+  --app-primary-strong: #1d4ed8;
+  --app-accent: #0f766e;
+  --app-accent-soft: #ccfbf1;
+  --app-bg: #f8fafc;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f1f5f9;
+  --app-text: #0f172a;
+  --app-text-muted: #64748b;
+  --app-border: #e2e8f0;
+  --app-title-size: 1.6rem;
+  --app-section-title-size: 1.25rem;
+  --app-card-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+:root[data-app-theme='default'] {
+  --app-primary: #0891b2;
+  --app-primary-soft: #cffafe;
+  --app-primary-muted: #a5f3fc;
+  --app-primary-strong: #0e7490;
+  --app-accent: #2563eb;
+  --app-accent-soft: #dbeafe;
+}
+
+:root[data-app-theme='blue'] {
+  --app-primary: #2563eb;
+  --app-primary-soft: #dbeafe;
+  --app-primary-muted: #bfdbfe;
+  --app-primary-strong: #1d4ed8;
+  --app-accent: #0f766e;
+  --app-accent-soft: #ccfbf1;
+}
+
+:root[data-app-theme='green'] {
+  --app-primary: #16a34a;
+  --app-primary-soft: #dcfce7;
+  --app-primary-muted: #bbf7d0;
+  --app-primary-strong: #15803d;
+  --app-accent: #0f766e;
+  --app-accent-soft: #ccfbf1;
+}
+
+:root[data-app-theme='purple'] {
+  --app-primary: #7c3aed;
+  --app-primary-soft: #ede9fe;
+  --app-primary-muted: #ddd6fe;
+  --app-primary-strong: #6d28d9;
+  --app-accent: #2563eb;
+  --app-accent-soft: #dbeafe;
+}
+
+:root[data-app-theme='dark'] {
+  color-scheme: dark;
+  --app-primary: #60a5fa;
+  --app-primary-contrast: #0f172a;
+  --app-primary-soft: #1e3a5f;
+  --app-primary-muted: #1d4ed8;
+  --app-primary-strong: #93c5fd;
+  --app-accent: #22d3ee;
+  --app-accent-soft: #164e63;
+  --app-bg: #0f172a;
+  --app-surface: #111827;
+  --app-surface-muted: #1f2937;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
+  --app-border: #334155;
+  --app-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+:root {
+  --p-primary-50: var(--app-primary-soft);
+  --p-primary-100: var(--app-primary-soft);
+  --p-primary-200: var(--app-primary-muted);
+  --p-primary-300: var(--app-primary-muted);
+  --p-primary-400: var(--app-primary);
+  --p-primary-500: var(--app-primary);
+  --p-primary-600: var(--app-primary-strong);
+  --p-primary-700: var(--app-primary-strong);
+  --p-primary-color: var(--app-primary);
+  --p-primary-hover-color: var(--app-primary-strong);
+  --p-primary-active-color: var(--app-primary-strong);
+  --p-primary-contrast-color: var(--app-primary-contrast);
+  --p-highlight-background: var(--app-primary-soft);
+  --p-highlight-color: var(--app-primary-strong);
+  --p-surface-0: var(--app-surface);
+  --p-surface-50: var(--app-bg);
+  --p-surface-100: var(--app-surface-muted);
+  --p-surface-200: var(--app-border);
+  --p-content-background: var(--app-surface);
+  --p-content-color: var(--app-text);
+  --p-text-color: var(--app-text);
+  --p-text-muted-color: var(--app-text-muted);
+  --primary-color: var(--app-primary);
+  --primary-50: var(--app-primary-soft);
+  --primary-100: var(--app-primary-soft);
+  --surface-ground: var(--app-bg);
+  --surface-card: var(--app-surface);
+  --surface-border: var(--app-border);
+  --text-color: var(--app-text);
+  --text-color-secondary: var(--app-text-muted);
+}
+
+:root[data-title-size='small'] {
+  --app-title-size: 1.35rem;
+  --app-section-title-size: 1.1rem;
+}
+
+:root[data-title-size='medium'] {
+  --app-title-size: 1.6rem;
+  --app-section-title-size: 1.25rem;
+}
+
+:root[data-title-size='large'] {
+  --app-title-size: 2rem;
+  --app-section-title-size: 1.5rem;
+}
 
 html, body, #app { height: 100%; width: 100%; }
 
 body {
   margin: 0;
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
+  background: var(--app-bg) !important;
+  color: var(--app-text) !important;
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
   Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 15px;
   line-height: 1.6;
+}
+
+h1 {
+  font-size: var(--app-title-size) !important;
+  color: var(--app-text) !important;
+}
+
+h2 {
+  font-size: var(--app-section-title-size) !important;
+  color: var(--app-text) !important;
+}
+
+#app,
+.layout,
+.content,
+main,
+section {
+  color: var(--app-text);
+}
+
+a {
+  color: var(--app-primary);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button:not(.p-button):not(.p-link) {
+  background: var(--app-primary) !important;
+  border: 1px solid var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
+  border-radius: 8px;
+}
+
+button:not(.p-button):not(.p-link):hover {
+  background: var(--app-primary-strong) !important;
+  border-color: var(--app-primary-strong) !important;
+}
+
+.p-card,
+.p-dialog,
+.p-datatable,
+.p-menu,
+.p-panelmenu,
+.p-inputtext,
+.p-select,
+.p-dropdown,
+.p-selectbutton {
+  color: var(--app-text) !important;
+}
+
+.p-card,
+.p-dialog,
+.p-dialog-content,
+.p-dialog-header,
+.p-dialog-footer,
+.p-popover,
+.p-menu,
+.p-select-overlay,
+.p-dropdown-panel,
+.p-datepicker,
+.p-toast-message,
+.p-toolbar,
+.p-panel,
+.p-panel-content,
+.p-timeline-event-content {
+  background: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+.p-card {
+  box-shadow: var(--app-card-shadow) !important;
+}
+
+.p-card-title,
+.p-dialog-title,
+.p-panel-title,
+.p-card-subtitle,
+.p-datatable-column-title {
+  color: var(--app-text) !important;
+}
+
+.p-inputtext,
+.p-select,
+.p-dropdown,
+.p-textarea,
+.p-inputnumber-input {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border: 1px solid var(--app-border) !important;
+}
+
+.p-checkbox-box,
+.p-radiobutton-box {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.p-inputtext:enabled:focus,
+.p-select:not(.p-disabled).p-focus,
+.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--app-primary) !important;
+  box-shadow: 0 0 0 1px var(--app-primary-soft) !important;
+}
+
+.p-button:not(.p-button-danger):not(.p-button-success):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary) {
+  background: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
+}
+
+.p-button.p-button-outlined:not(.p-button-danger):not(.p-button-success):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary) {
+  background: transparent !important;
+  color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+}
+
+.p-button.p-button-text:not(.p-button-danger):not(.p-button-success):not(.p-button-warning):not(.p-button-info):not(.p-button-secondary) {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--app-primary) !important;
+}
+
+.p-button {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-selectbutton {
+  gap: 0.25rem !important;
+}
+
+.p-selectbutton .p-togglebutton {
+  background: var(--app-surface) !important;
+  border: 1px solid var(--app-border) !important;
+  color: var(--app-text) !important;
+  border-radius: 6px !important;
+}
+
+.p-selectbutton .p-togglebutton:not(.p-togglebutton-checked):hover {
+  background: var(--app-primary-soft) !important;
+  border-color: var(--app-primary-muted) !important;
+}
+
+.p-selectbutton .p-togglebutton.p-togglebutton-checked,
+.p-selectbutton .p-togglebutton-checked {
+  background: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
+}
+
+.p-datatable,
+.p-datatable-table,
+.p-datatable-wrapper,
+.p-datatable-header,
+.p-datatable-footer {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--app-surface-muted) !important;
+  color: var(--app-text-muted) !important;
+  border-color: var(--app-border) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td,
+.p-datatable .p-datatable-tbody > tr.p-row-odd > td {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover > td {
+  background: var(--app-primary-soft) !important;
+}
+
+.p-paginator {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.p-paginator-page,
+.p-paginator-next,
+.p-paginator-prev,
+.p-paginator-first,
+.p-paginator-last {
+  background: var(--app-surface-muted) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+  border-radius: 6px !important;
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.p-paginator-page:not(.p-highlight):hover,
+.p-paginator-next:not(.p-disabled):hover,
+.p-paginator-prev:not(.p-disabled):hover,
+.p-paginator-first:not(.p-disabled):hover,
+.p-paginator-last:not(.p-disabled):hover {
+  background: var(--app-primary-soft) !important;
+  border-color: var(--app-primary-muted) !important;
+}
+
+.p-paginator-page.p-paginator-page-selected,
+.p-paginator .p-highlight {
+  background: var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
+}
+
+.p-panelmenu-panel,
+.p-panelmenu-header-content,
+.p-panelmenu-content {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.p-panelmenu-item-content:hover {
+  background: var(--app-primary-soft) !important;
+}
+
+.p-panelmenu-item-label,
+.p-menu-item-label,
+.p-select-option,
+.p-dropdown-item {
+  color: var(--app-text) !important;
+}
+
+.text-primary,
+.text-primary-500 {
+  color: var(--app-primary) !important;
+}
+
+.text-blue-500,
+.text-blue-600,
+.text-blue-700,
+.text-blue-900,
+.text-teal-500,
+.text-teal-700,
+.text-teal-900,
+.text-purple-500,
+.text-purple-700,
+.text-purple-900,
+.text-green-500,
+.text-green-600,
+.text-green-700 {
+  color: var(--app-primary) !important;
+}
+
+.bg-blue-100,
+.bg-teal-100,
+.bg-purple-100,
+.bg-green-100,
+.surface-100,
+.surface-ground {
+  background: var(--app-primary-soft) !important;
+}
+
+.bg-orange-100,
+.bg-yellow-100,
+.bg-red-100 {
+  background: var(--app-accent-soft) !important;
+}
+
+.text-orange-500,
+.text-orange-900,
+.text-red-500,
+.text-red-600,
+.text-red-700 {
+  color: var(--app-accent) !important;
+}
+
+.bg-white,
+.surface-card,
+.surface-0 {
+  background: var(--app-surface) !important;
+}
+
+.border-surface-300,
+.surface-border {
+  border-color: var(--app-border) !important;
+}
+
+table {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+}
+
+thead,
+th {
+  background: var(--app-surface-muted) !important;
+  color: var(--app-text-muted) !important;
+}
+
+tbody,
+tr,
+td {
+  background-color: inherit;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.shadow-md,
+.shadow-2 {
+  box-shadow: var(--app-card-shadow) !important;
+}
+
+.border-1,
+.border-bottom-1,
+.border-top-1 {
+  border-color: var(--app-border) !important;
+}
+
+:root[data-app-theme='dark'] .text-color-secondary,
+:root[data-app-theme='dark'] .text-500,
+:root[data-app-theme='dark'] .text-600 {
+  color: var(--app-text-muted) !important;
 }

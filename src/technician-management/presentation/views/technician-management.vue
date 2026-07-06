@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { TechniciansApi } from '@/technician-management/infrastructure/technicians.api.js';
 import { ReviewsApi } from '@/feedback/infrastructure/reviews.api.js';
 import { useAuthStore } from '@/iam/application/auth.store.js';
@@ -48,9 +48,21 @@ const fetchTechnicians = async () => {
     const allReviews = reviewsResponse.data;
     technicians.value = allTechnicians.map(techData => {
       const techReviews = allReviews.filter(review => review.technicianId === techData.id);
-      const totalRating = techReviews.reduce((sum, review) => sum + review.rating, 0);
-      const averageRating = techReviews.length > 0 ? totalRating / techReviews.length : 0;
-      return new Technician({ ...techData, averageRating });
+      const count = techReviews.length;
+      if (count === 0) {
+        return new Technician({ ...techData, averageRating: 0, avgComunicacion: 0, avgEficiencia: 0, avgProfesionalidad: 0 });
+      }
+      const sumCom = techReviews.reduce((s, r) => s + (r.comunicacion || 0), 0);
+      const sumEfi = techReviews.reduce((s, r) => s + (r.eficiencia || 0), 0);
+      const sumPro = techReviews.reduce((s, r) => s + (r.profesionalidad || 0), 0);
+      const totalSum = sumCom + sumEfi + sumPro;
+      return new Technician({
+        ...techData,
+        averageRating: totalSum / (count * 3),
+        avgComunicacion: sumCom / count,
+        avgEficiencia: sumEfi / count,
+        avgProfesionalidad: sumPro / count
+      });
     });
   } catch (e) {
     console.error('Failed to load technicians.', e);
@@ -260,7 +272,7 @@ const getAvatarStyle = (name) => {
                   <i class="pi pi-exclamation-triangle" />
                   {{ t('provider.technicians.phone-duplicate') }}
                 </small>
-                <small v-else class="tm-hint">9 digits only</small>
+                <small v-else class="tm-hint">Solo 9 dígitos</small>
               </div>
 
               <pv-button
@@ -305,13 +317,35 @@ const getAvatarStyle = (name) => {
               <pv-column field="specialty" :header="t('provider.technicians.specialty')" sortable />
               <pv-column field="phone" :header="t('provider.technicians.phone')" />
 
-              <pv-column :header="t('provider.technicians.average-rating')" sortable field="averageRating">
+              <pv-column :header="t('provider.technicians.comunicacion')" sortable field="avgComunicacion">
+                <template #body="{ data }">
+                  <div class="tm-rating-cell">
+                    <pv-rating :modelValue="data.avgComunicacion" :readonly="true" :cancel="false" :stars="5" />
+                    <span class="tm-rating-val">({{ data.avgComunicacion ? data.avgComunicacion.toFixed(1) : 'N/A' }})</span>
+                  </div>
+                </template>
+              </pv-column>
+              <pv-column :header="t('provider.technicians.eficiencia')" sortable field="avgEficiencia">
+                <template #body="{ data }">
+                  <div class="tm-rating-cell">
+                    <pv-rating :modelValue="data.avgEficiencia" :readonly="true" :cancel="false" :stars="5" />
+                    <span class="tm-rating-val">({{ data.avgEficiencia ? data.avgEficiencia.toFixed(1) : 'N/A' }})</span>
+                  </div>
+                </template>
+              </pv-column>
+              <pv-column :header="t('provider.technicians.profesionalidad')" sortable field="avgProfesionalidad">
+                <template #body="{ data }">
+                  <div class="tm-rating-cell">
+                    <pv-rating :modelValue="data.avgProfesionalidad" :readonly="true" :cancel="false" :stars="5" />
+                    <span class="tm-rating-val">({{ data.avgProfesionalidad ? data.avgProfesionalidad.toFixed(1) : 'N/A' }})</span>
+                  </div>
+                </template>
+              </pv-column>
+              <pv-column :header="t('provider.technicians.average')" sortable field="averageRating">
                 <template #body="{ data }">
                   <div class="tm-rating-cell">
                     <pv-rating :modelValue="data.averageRating" :readonly="true" :cancel="false" :stars="5" />
-                    <span class="tm-rating-val">
-                      ({{ data.averageRating ? data.averageRating.toFixed(1) : 'N/A' }})
-                    </span>
+                    <span class="tm-rating-val">({{ data.averageRating ? data.averageRating.toFixed(1) : 'N/A' }})</span>
                   </div>
                 </template>
               </pv-column>
@@ -420,7 +454,7 @@ const getAvatarStyle = (name) => {
               <i class="pi pi-exclamation-triangle" />
               {{ t('provider.technicians.phone-duplicate') }}
             </small>
-            <small v-else class="tm-hint">9 digits only</small>
+            <small v-else class="tm-hint">Solo 9 dígitos</small>
           </div>
         </div>
 
@@ -450,10 +484,10 @@ const getAvatarStyle = (name) => {
 <style scoped>
 /* Page */
 .tm-page-title {
-  font-size: 1.5rem;
+  font-size: var(--app-title-size);
   font-weight: 500;
   margin-bottom: 1.5rem;
-  color: var(--text-color);
+  color: var(--app-text);
 }
 
 /* Card */
@@ -551,7 +585,7 @@ const getAvatarStyle = (name) => {
 }
 
 /* Action buttons */
-.tm-actions { display: flex; gap: 2px; }
+.tm-actions { display: flex; gap: 0.25rem; }
 
 .tm-action-btn :deep(.p-button-icon) { font-size: 13px; }
 

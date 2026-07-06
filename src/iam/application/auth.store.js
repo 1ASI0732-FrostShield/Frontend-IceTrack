@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { IamApi } from "@/iam/infrastructure/iam.api.js";
 import { UserAssembler } from "@/iam/infrastructure/user.assembler.js";
-import i18n from '@/i18n.js';
+import { t as i18nT } from '@/i18n.js';
 
 const iamApi = new IamApi();
 
@@ -20,7 +20,7 @@ const getRoleAsString = (role) => {
 
 
 export const useAuthStore = defineStore("auth", () => {
-    const t = (key) => i18n.global.t(key);
+    const t = i18nT;
 
     const tokenKey = 'token';
     const user = ref(null);
@@ -72,7 +72,7 @@ export const useAuthStore = defineStore("auth", () => {
                 if (typeof serverMessage === 'string' && serverMessage.includes('Invalid username or password')) {
                     errorMessage = t('auth.errors.invalidCredentials');
                 } else {
-                    console.error("SERVER ERROR 500:", serverMessage);
+                    console.error("ERROR DEL SERVIDOR 500:", serverMessage);
                     errorMessage = t('errors.occurred');
                 }
             }
@@ -99,7 +99,7 @@ export const useAuthStore = defineStore("auth", () => {
                 if (typeof serverMessage === 'string' && serverMessage.includes('already taken')) {
                     errorMessage = t('auth.errors.usernameTaken');
                 } else {
-                    console.error("SERVER ERROR 500:", serverMessage);
+                    console.error("ERROR DEL SERVIDOR 500:", serverMessage);
                     errorMessage = t('errors.occurred');
                 }
             }

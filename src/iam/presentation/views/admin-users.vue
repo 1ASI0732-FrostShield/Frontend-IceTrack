@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 const { t } = useI18n()
 
 const user = ref({
@@ -44,10 +44,10 @@ const showPassword = ref(false)
   <section>
     <div class="grid gap-6">
       <!-- Información de Usuario -->
-      <div class="md:col-span-2 bg-[#123e31] px-8 rounded-2xl shadow-md grid gap-5">
+      <div class="md:col-span-2 surface-card px-8 rounded-2xl shadow-md grid gap-5">
         <!-- Nombres -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.firstName') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.firstName') }} </p>
           <pv-input-text
               v-model="user.name"
           />
@@ -55,7 +55,7 @@ const showPassword = ref(false)
 
         <!-- Apellidos -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.lastName') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.lastName') }} </p>
           <pv-input-text
               v-model="user.lastName"
           />
@@ -63,7 +63,7 @@ const showPassword = ref(false)
 
         <!-- Usuario -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.user') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.user') }} </p>
           <pv-input-text
               v-model="user.user"
           />
@@ -73,10 +73,10 @@ const showPassword = ref(false)
 
     <div class="py-7 grid gap-6">
       <!-- Información de Registro -->
-      <div class="md:col-span-2 bg-[#123e31] px-8 rounded-2xl shadow-md grid gap-5">
+      <div class="md:col-span-2 surface-card px-8 rounded-2xl shadow-md grid gap-5">
         <!-- Correo -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.email') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.email') }} </p>
           <pv-input-text
               v-model="user.email"
               disabled/>
@@ -84,7 +84,7 @@ const showPassword = ref(false)
 
         <!-- Fecha de inscripción -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.registerDate') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.registerDate') }} </p>
           <pv-input-text
               v-model="user.registrationDate"
               disabled
@@ -93,17 +93,16 @@ const showPassword = ref(false)
 
         <!-- Última conexión -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.lastConnection') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.lastConnection') }} </p>
           <pv-input-text
               v-model="user.lastConnection"
               disabled
-              class="w-[9000px]"
           />
         </div>
 
         <!-- Contraseña -->
         <div>
-          <p class="text-xl font-semibold text-black"> {{ t('admin.users.password') }} </p>
+          <p class="text-xl font-semibold text-color"> {{ t('admin.users.password') }} </p>
           <div class="flex items-center gap-3">
             <pv-input-text
                 v-model="user.password"
@@ -123,11 +122,10 @@ const showPassword = ref(false)
 
     <!-- Planes -->
     <div class="px-7">
-      <p class="text-xl font-semibold text-black"> {{ t('admin.users.plans') }} </p>
+      <p class="text-xl font-semibold text-color"> {{ t('admin.users.plans') }} </p>
       <pv-input-text
           v-model="user.plan"
           disabled
-          class="w-[9000px]"
       />
     </div>
   </section>
@@ -143,7 +141,6 @@ const showPassword = ref(false)
         />
         <pv-button
             :label="t('admin.settings.save')"
-            severity="success"
             @click="saveProfile"
         />
       </div>

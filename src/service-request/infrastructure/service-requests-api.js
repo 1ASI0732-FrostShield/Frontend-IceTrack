@@ -131,4 +131,13 @@ export class ServiceRequestsApi extends BaseApi {
     getInterventionDetailsQuery(interventionId) {
         return this.http.get(`${interventionsPath}/${interventionId}`);
     }
+
+    /**
+     * @description Get maintenance history for an equipment, with provider and technician names resolved.
+     * @param {number} equipmentId - The ID of the equipment.
+     * @returns {Promise<object>}
+     */
+    getMaintenanceHistoryQuery(equipmentId) {
+        return this.http.get(`/equipments/${equipmentId}/maintenance-history`);
+    }
 }

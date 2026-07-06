@@ -2,7 +2,7 @@
 
 import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
-import { useI18n } from "vue-i18n";
+import { useI18n } from '@/i18n.js';
 import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useConfirm } from "primevue/useconfirm";
 import { useRouter } from 'vue-router';
@@ -225,14 +225,14 @@ const formatDate = (value) => {
             <i class="pi pi-exclamation-triangle" style="font-size:11px" />
             {{ t('sites.new.phone-invalid') }}
           </small>
-          <small v-else class="sd-field-hint">9 digits only</small>
+          <small v-else class="sd-field-hint">Solo 9 dígitos</small>
         </div>
 
       </div>
 
       <template #footer>
         <pv-button :label="t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="displayEditDialog = false" />
-        <pv-button :label="t('common.save')" icon="pi pi-check" severity="success" @click="saveEditSite" />
+        <pv-button :label="t('common.save')" icon="pi pi-check" @click="saveEditSite" />
       </template>
     </pv-dialog>
 
@@ -244,10 +244,10 @@ const formatDate = (value) => {
 
 <style scoped>
 .sd-page-title {
-  font-size: 1.5rem;
+  font-size: var(--app-title-size);
   font-weight: 500;
-  color: var(--text-color);
-  letter-spacing: -0.01em;
+  color: var(--app-text);
+  letter-spacing: 0;
   margin: 0;
 }
 
@@ -282,7 +282,7 @@ const formatDate = (value) => {
 }
 
 /* Actions */
-.sd-actions { display: flex; gap: 2px; }
+.sd-actions { display: flex; gap: 0.25rem; }
 
 .sd-action-btn :deep(.p-button-icon) { font-size: 13px; }
 .sd-action-btn--danger:hover :deep(.p-button-icon) { color: #A32D2D; }

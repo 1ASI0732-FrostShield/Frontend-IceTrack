@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import useAssetsManagementStore from '@/assets-management/application/assets-management.store.js'
 

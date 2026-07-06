@@ -1,21 +1,33 @@
 <script setup>
 
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { onMounted, ref } from "vue";
 import { storeToRefs } from 'pinia';
 import { useConfirm } from "primevue/useconfirm";
 import useMonitoringStore from "@/monitoring/application/monitoring.store.js";
+import useAssetsManagementStore from "@/assets-management/application/assets-management.store.js";
 import { useRouter } from 'vue-router';
+import { useReportPdf } from '@/composables/useReportPdf.js';
+import { ServiceRequestsApi } from "@/service-request/infrastructure/service-requests-api.js";
+import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
+import { useNotificationStore } from '@/shared/application/notification.store.js';
 
 const { t } = useI18n();
 const store = useMonitoringStore();
+const assetsStore = useAssetsManagementStore();
 const { equipments, equipmentsLoaded, errors } = storeToRefs(store);
+const { sites, sitesLoaded } = storeToRefs(assetsStore);
+const { fetchSites } = assetsStore;
+const { generateEquipmentReport, generateHistoricalReport } = useReportPdf();
 const { fetchEquipments, updateEquipment, deleteEquipment } = store;
 const confirm = useConfirm();
 const serverError = ref(null);
 const displayEditDialog = ref(false);
 const selectedEquipment = ref(null);
 const router = useRouter();
+const serviceRequestsApi = new ServiceRequestsApi();
+const monitoringApi = new MonitoringApi();
+const notificationStore = useNotificationStore();
 
 const editForm = ref({
   id: null,
@@ -28,8 +40,100 @@ const editForm = ref({
   siteId: null
 });
 
+const getSiteName = (siteId) => {
+  const site = sites.value.find(s => s.id === siteId);
+  return site ? site.name : siteId;
+};
+
+const downloadingPdf = ref(null);
+const downloadingHistoryPdf = ref(null);
+
+async function downloadEquipmentPdf(equipment) {
+  downloadingPdf.value = equipment.id;
+  const siteName = getSiteName(equipment.siteId);
+
+  let recentInterventions = []
+  let observations = ''
+  let recommendations = ''
+
+  try {
+    const requestsRes = await serviceRequestsApi.http.get('/service-requests')
+    const allRequests = Array.isArray(requestsRes.data) ? requestsRes.data : []
+    const equipmentRequests = allRequests.filter(r => r.equipmentId === equipment.id)
+
+    for (const req of equipmentRequests) {
+      const ivRes = await serviceRequestsApi.getInterventionsByRequestQuery(req.id)
+      const ivs = Array.isArray(ivRes.data) ? ivRes.data : []
+      ivs.forEach(iv => {
+        recentInterventions.push({
+          ...iv,
+          startTime: iv.startTime || req.createdAt,
+          technicianName: req.technicianName || null
+        })
+      })
+    }
+
+    recentInterventions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
+    recentInterventions = recentInterventions.slice(0, 5)
+
+    if (equipment.status === 'MAINTENANCE') {
+      observations = 'Durante las últimas revisiones se identificaron componentes con desgaste progresivo que motivaron la puesta en mantenimiento del equipo. Se recomienda llevar un registro detallado de las piezas reemplazadas y los ciclos de operación para anticipar futuras intervenciones.'
+      recommendations = 'Programar mantenimiento preventivo cada 3 meses. Verificar niveles de refrigerante, estado de filtros, presión de trabajo y conexiones eléctricas. Realizar limpieza general de condensadores y evaporadores.'
+    } else if (equipment.status === 'REPAIR') {
+      observations = 'El equipo se encuentra en proceso de reparación debido a fallas operativas detectadas. Se están evaluando los componentes críticos para determinar el alcance de las reparaciones necesarias.'
+      recommendations = 'Una vez finalizada la reparación, se recomienda realizar una prueba de funcionamiento continua de 24 horas. Establecer un plan de monitoreo intensivo durante la primera semana posterior a la puesta en marcha.'
+    } else if (equipment.status === 'ACTIVE') {
+      observations = 'El equipo opera dentro de los parámetros normales. No se detectaron anomalías significativas durante las últimas inspecciones.'
+      recommendations = 'Mantener el plan de mantenimiento preventivo vigente. Se sugiere realizar inspecciones visuales mensuales y revisiones técnicas trimestrales para asegurar la continuidad operativa.'
+    } else if (equipment.status === 'OFF') {
+      observations = 'El equipo se encuentra apagado. No se ha registrado actividad operativa reciente.'
+      recommendations = 'Previo a una nueva puesta en marcha, realizar una revisión completa del estado de todos los componentes. Verificar que no haya acumulación de humedad o corrosión en las conexiones eléctricas.'
+    }
+  } catch (err) {
+    console.warn('[PDF] No se pudieron obtener intervenciones relacionadas:', err)
+  }
+
+  await generateEquipmentReport(equipment, siteName, recentInterventions, observations, recommendations)
+  downloadingPdf.value = null;
+}
+
+async function downloadHistoryPdf(equipment) {
+  downloadingHistoryPdf.value = equipment.id;
+  const siteName = getSiteName(equipment.siteId);
+
+  let relatedRequests = []
+  let allInterventions = []
+  const techNameMap = {}
+
+  try {
+    const res = await serviceRequestsApi.getMaintenanceHistoryQuery(equipment.id)
+    const data = res.data
+    relatedRequests = Array.isArray(data.serviceRequests) ? data.serviceRequests : []
+    allInterventions = Array.isArray(data.interventions) ? data.interventions : []
+
+    data.serviceRequests?.forEach(sr => {
+      if (sr.technicianName) techNameMap[sr.technicianId] = sr.technicianName
+      if (sr.providerName) techNameMap[`provider_${sr.assignedTo}`] = sr.providerName
+    })
+    data.interventions?.forEach(iv => {
+      if (iv.technicianName) techNameMap[iv.technicianId] = iv.technicianName
+    })
+  } catch (err) {
+    console.warn('[PDF] No se pudieron obtener solicitudes relacionadas:', err)
+  }
+
+  const allTechnicians = Object.entries(techNameMap).map(([key, name]) => {
+    const id = key.startsWith('provider_') ? parseInt(key.replace('provider_', '')) : parseInt(key)
+    return { id, name }
+  })
+
+  await generateHistoricalReport(equipment, siteName, relatedRequests, allTechnicians)
+  downloadingHistoryPdf.value = null;
+}
+
 onMounted(() => {
   if (!equipmentsLoaded.value) fetchEquipments();
+  if (!sitesLoaded.value) fetchSites();
 });
 
 const openEditDialog = (equipment) => {
@@ -79,6 +183,21 @@ const formatDate = (value) => {
   }).format(new Date(value));
 };
 
+const REMINDER_OPTIONS = [
+  { label: 'No configurado', value: null },
+  { label: 'Cada 7 d\u00edas', value: 7 },
+  { label: 'Cada 15 d\u00edas', value: 15 },
+  { label: 'Cada 30 d\u00edas', value: 30 }
+];
+
+async function handleReminderChange(equipmentId, intervalDays) {
+  const eq = equipments.value.find(e => e.id === equipmentId)
+  if (eq) {
+    eq.reminderIntervalDays = intervalDays
+    monitoringApi.updateReminderInterval(equipmentId, intervalDays)
+  }
+}
+
 </script>
 
 <template>
@@ -107,8 +226,18 @@ const formatDate = (value) => {
         :rows="5"
         :rows-per-page-options="[5, 10, 20]"
     >
-      <!-- Id -->
-      <pv-column field="siteId" :header="t('equipments.detail.siteId')" sortable >
+      <!-- Site / Local -->
+      <pv-column field="siteId" :header="t('sites.list.name')" sortable>
+        <template #body="{ data }">
+          {{ getSiteName(data.siteId) }}
+        </template>
+      </pv-column>
+
+      <!-- Modelo -->
+      <pv-column field="model" :header="t('equipments.list.model')" sortable>
+        <template #body="{ data }">
+          {{ data.model || '—' }}
+        </template>
       </pv-column>
 
       <!-- Created At -->
@@ -122,6 +251,50 @@ const formatDate = (value) => {
       <pv-column field="updated" :header="t('equipments.detail.updatedAt')">
         <template #body="{ data }">
           {{ formatDate(data.updated) }}
+        </template>
+      </pv-column>
+
+      <!-- Recordatorio -->
+      <pv-column :header="t('equipments.list.maintenanceInterval')" style="width: 160px">
+        <template #body="{ data }">
+          <pv-select
+            :model-value="data.reminderIntervalDays ?? null"
+            :options="REMINDER_OPTIONS"
+            option-label="label"
+            option-value="value"
+            style="width: 100%"
+            @update:model-value="handleReminderChange(data.id, $event)"
+          />
+        </template>
+      </pv-column>
+
+      <!-- PDF Report -->
+      <pv-column :header="t('reports.actions.downloadPdf')" style="width: 100px">
+        <template #body="{ data }">
+          <pv-button
+              icon="pi pi-file-pdf"
+              text
+              rounded
+              severity="danger"
+              v-tooltip.top="t('reports.actions.downloadPdf')"
+              :loading="downloadingPdf === data.id"
+              @click="downloadEquipmentPdf(data)"
+          />
+        </template>
+      </pv-column>
+
+      <!-- History PDF -->
+      <pv-column :header="t('reports.types.equipmentHistory')" style="width: 100px">
+        <template #body="{ data }">
+          <pv-button
+              icon="pi pi-history"
+              text
+              rounded
+              severity="info"
+              v-tooltip.top="t('reports.types.equipmentHistory')"
+              :loading="downloadingHistoryPdf === data.id"
+              @click="downloadHistoryPdf(data)"
+          />
         </template>
       </pv-column>
 
@@ -223,7 +396,7 @@ const formatDate = (value) => {
         <pv-button label="Cancel" icon="pi pi-times"
                    class="p-button-text" @click="displayEditDialog = false" />
         <pv-button label="Save" icon="pi pi-check"
-                   severity="success" @click="saveEditEquipment" />
+                   @click="saveEditEquipment" />
       </template>
     </pv-dialog>
 
@@ -234,45 +407,45 @@ const formatDate = (value) => {
     <!-- Show details -->
     <div v-if="selectedEquipment" class="flex flex-row justify-content-center gap-6 mt-3">
       <!-- Show Owner -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.controls.name') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.name }}
         </h3>
       </div>
 
       <!-- Show Online -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.controls.online') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.online }}
         </h3>
       </div>
 
       <!-- Show Serial -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.detail.serial') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.serial }}
         </h3>
       </div>
 
       <!-- Show Type -->
-      <div class="p-6 border shadow bg-gray-50 text-center" style="width: 400px">
-        <h2 class="text-blue-700">
+      <div class="detail-card p-6 border text-center" style="width: 400px">
+        <h2 class="detail-card__label">
           {{ t('equipments.new.type') }}
         </h2>
 
-        <h3 class="font-bold">
+        <h3 class="detail-card__value">
           {{ selectedEquipment.type }}
         </h3>
       </div>
@@ -291,6 +464,23 @@ const formatDate = (value) => {
 }
 .custom-alert-btn:hover {
   background-color: #ebf4ff;
+}
+
+.detail-card {
+  background: var(--app-surface-muted);
+  box-shadow: var(--app-card-shadow);
+  border-radius: 8px;
+}
+
+.detail-card__label {
+  color: var(--app-primary);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-card__value {
+  color: var(--app-text);
+  font-weight: 700;
 }
 
 </style>

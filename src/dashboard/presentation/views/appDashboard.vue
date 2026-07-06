@@ -1,16 +1,27 @@
 <script setup>
 import { onMounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
+import { storeToRefs } from 'pinia'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import { useDashboardDataStore }   from '@/dashboard/application/dashboard-data.store.js'
+import useAssetsManagementStore from '@/assets-management/application/assets-management.store.js'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { t }       = useI18n()
 const configStore = useDashboardConfigStore()
 const dataStore   = useDashboardDataStore()
+const sitesStore  = useAssetsManagementStore()
+const { sites, sitesLoaded } = storeToRefs(sitesStore)
+
+const defaultSiteName = computed(() => {
+  if (!configStore.defaultSiteId) return ''
+  const site = sites.value.find(s => s.id === configStore.defaultSiteId)
+  return site ? site.name : configStore.defaultSiteId
+})
 
 onMounted(() => {
+  if (!sitesStore.sitesLoaded) sitesStore.fetchSites()
   configStore.loadConfigForCurrentUser().then(() => {
     dataStore.loadAll(configStore.defaultSiteId).then(() => {
       console.log('requests raw:', dataStore.requests.map(r => r.status))
@@ -131,7 +142,7 @@ const chartOptions = {
         <h1 class="dash-title m-0">{{ t('dashboard.title') }}</h1>
         <p class="dash-subtitle mt-1 mb-0">{{ t('dashboard.subtitle') }}</p>
         <small v-if="configStore.defaultSiteId" class="dash-site-filter">
-          {{ t('dashboard.filteredBySite', { id: configStore.defaultSiteId }) }}
+          {{ t('dashboard.filteredBySite', { siteName: defaultSiteName }) }}
         </small>
       </div>
       <pv-button
@@ -250,20 +261,20 @@ const chartOptions = {
 }
 
 .dash-title {
-  font-size: 1.6rem;
+  font-size: var(--app-title-size);
   font-weight: 500;
-  color: var(--text-color);
-  letter-spacing: -0.01em;
+  color: var(--app-text);
+  letter-spacing: 0;
 }
 
 .dash-subtitle {
   font-size: 0.875rem;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
 }
 
 .dash-site-filter {
   font-size: 0.75rem;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   opacity: 0.7;
 }
 
@@ -272,13 +283,13 @@ const chartOptions = {
   align-items: center;
   justify-content: center;
   min-height: 300px;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
 }
 
 /* ── KPI Cards ── */
 .dash-kpi-card {
   transition: transform 0.15s, box-shadow 0.15s;
-  border: 0.5px solid var(--surface-border) !important;
+  border: 0.5px solid var(--app-border) !important;
 }
 
 .dash-kpi-card:hover {
@@ -293,7 +304,7 @@ const chartOptions = {
 .dash-kpi-label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -306,7 +317,7 @@ const chartOptions = {
 
 .dash-kpi-sublabel {
   font-size: 0.78rem;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   opacity: 0.75;
 }
 
@@ -323,18 +334,18 @@ const chartOptions = {
 }
 
 .dash-icon--sites      { background: #E1F5EE; color: #0F6E56; }
-.dash-icon--equipments { background: #E6F1FB; color: #185FA5; }
+.dash-icon--equipments { background: var(--app-primary-soft); color: var(--app-primary); }
 .dash-icon--requests   { background: #EAF3DE; color: #3B6D11; }
 
 /* KPI value colors */
 .dash-value--sites      { color: #0F6E56; }
-.dash-value--equipments { color: #185FA5; }
+.dash-value--equipments { color: var(--app-primary); }
 .dash-value--requests   { color: #3B6D11; }
 
 /* ── Equipment Status Cards ── */
 .dash-status-card {
   transition: transform 0.15s, box-shadow 0.15s;
-  border: 0.5px solid var(--surface-border) !important;
+  border: 0.5px solid var(--app-border) !important;
 }
 
 .dash-status-card:hover {
@@ -349,14 +360,14 @@ const chartOptions = {
 .dash-status-label {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .dash-status-sublabel {
   font-size: 0.75rem;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   opacity: 0.65;
   font-weight: 400;
 }
@@ -386,7 +397,7 @@ const chartOptions = {
 
 /* ── Chart Card ── */
 .dash-chart-card {
-  border: 0.5px solid var(--surface-border) !important;
+  border: 0.5px solid var(--app-border) !important;
 }
 
 .dash-chart-card :deep(.p-card-body)   { padding: 1.25rem; }
@@ -396,7 +407,7 @@ const chartOptions = {
 .dash-chart-title {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -405,8 +416,8 @@ const chartOptions = {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: #E6F1FB;
-  color: #185FA5;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,6 +430,6 @@ const chartOptions = {
   align-items: center;
   justify-content: center;
   height: 260px;
-  color: var(--text-color-secondary);
+  color: var(--app-text-muted);
 }
 </style>

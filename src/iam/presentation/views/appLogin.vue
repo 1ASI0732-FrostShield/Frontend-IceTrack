@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useAuthStore } from '@/iam/application/auth.store.js'
 
 const { t } = useI18n()
@@ -23,7 +23,7 @@ async function handleLogin() {
       router.push({ name: 'dashboard' })
     }
   } catch (error) {
-    console.error('Login failed:', error)
+    console.error('Inicio de sesión fallido:', error)
   } finally {
     loading.value = false
   }

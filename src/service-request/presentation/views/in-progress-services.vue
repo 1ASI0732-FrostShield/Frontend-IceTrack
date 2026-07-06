@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useI18n } from '@/i18n.js';
 import { ServiceRequestsApi} from "@/service-request/infrastructure/service-requests-api.js";
 import { useAuthStore } from '@/iam/application/auth.store.js';
 import { ServiceRequestAssembler} from "@/service-request/infrastructure/service-request.assembler.js";
@@ -56,7 +56,7 @@ const fetchData = async () => {
 
     technicians.value = techsRes.data;
   } catch (e) {
-    error.value = 'Failed to load data.';
+    error.value = 'Error al cargar los datos.';
     console.error(e);
   } finally {
     loading.value = false;
@@ -143,7 +143,6 @@ onMounted(fetchData);
                   <!-- Accept -->
                   <pv-button
                       icon="pi pi-check"
-                      severity="success"
                       text
                       rounded
                       @click="reassignTechnician(data.id)"

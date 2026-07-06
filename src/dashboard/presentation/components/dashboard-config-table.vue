@@ -1,16 +1,18 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from '@/i18n.js'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { useDashboardConfigStore } from '@/dashboard/application/dashboard-config.store.js'
 import useAssetsManagementStore from '@/assets-management/application/assets-management.store.js'
+import { useUserStore } from '@/iam/application/user.store.js'
 
 const { t } = useI18n()
 const confirm = useConfirm()
 const toast = useToast()
 const configStore = useDashboardConfigStore()
 const sitesStore = useAssetsManagementStore()
+const userStore = useUserStore()
 
 const props = defineProps({
   config: {
@@ -43,6 +45,10 @@ onMounted(() => {
     } catch (err) {
       console.warn('Sites not available:', err)
     }
+  }
+
+  if (!userStore.usersLoaded) {
+    userStore.fetchUsers()
   }
 
   if (props.config) {
@@ -196,6 +202,12 @@ function getSiteName(siteId) {
   const site = sitesStore.sites.find(s => s.id === siteId)
   return site?.name || t('dashboard.config.unnamedSite', { id: siteId })
 }
+
+function getUserDisplayName(userId) {
+  if (!userId) return '—'
+  const user = userStore.users.find(u => u.id === userId)
+  return user?.name || user?.username || userId
+}
 </script>
 
 <template>
@@ -214,7 +226,6 @@ function getSiteName(siteId) {
               :label="t('dashboard.config.actions.addCard')"
               icon="pi pi-plus"
               @click="openCardSelector"
-              severity="success"
           />
         </div>
       </div>
@@ -225,7 +236,7 @@ function getSiteName(siteId) {
         <div class="col-12 md:col-4">
           <div class="surface-100 border-round p-3">
             <div class="text-sm text-500 mb-1">{{ t('dashboard.config.fields.userId') }}</div>
-            <div class="text-xl font-semibold">{{ config.userId }}</div>
+            <div class="text-xl font-semibold">{{ getUserDisplayName(config.userId) }}</div>
           </div>
         </div>
         <div class="col-12 md:col-4">
@@ -265,7 +276,7 @@ function getSiteName(siteId) {
 
         <pv-column :field="'id'" :header="t('dashboard.config.table.id')" sortable style="width: 10%">
           <template #body="{ data }">
-            <pv-tag :value="data.id" severity="info" />
+            <pv-tag :value="t(`dashboard.cardTypes.${data.cardType}`) || data.cardType" severity="info" />
           </template>
         </pv-column>
 

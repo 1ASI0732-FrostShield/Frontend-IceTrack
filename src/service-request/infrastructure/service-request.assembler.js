@@ -27,8 +27,8 @@ export class ServiceRequestAssembler {
             siteName: site ? site.name : 'N/A',
             equipmentName: equipment ? `${equipment.model} (${equipment.serial})` : 'N/A',
             requesterName: requester ? requester.username : 'N/A',
-            assignedToName: provider ? provider.username : 'N/A',
-            technicianName: technician ? technician.name : null,
+            assignedToName: provider ? provider.username : (dto.providerName || 'N/A'),
+            technicianName: technician ? technician.name : (dto.technicianName || null),
             hasReview: !!serviceReview,
             reviewId: serviceReview ? serviceReview.id : null
         });
