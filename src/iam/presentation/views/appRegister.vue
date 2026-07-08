@@ -69,7 +69,7 @@ async function handleRegister() {
       errors.value = authStore.errors.map(e => e)
     }
 
-  } catch (error) {
+  } catch {
     errors.value.push({ message: t('errors.occurred') });
   } finally {
     loading.value = false

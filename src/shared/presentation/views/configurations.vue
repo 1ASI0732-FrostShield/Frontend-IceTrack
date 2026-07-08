@@ -1,4 +1,6 @@
 <script setup>
+defineOptions({ name: 'ConfigurationsPage' })
+
 import { computed } from 'vue'
 import { useI18n } from '@/i18n.js'
 import { useVisualPreferencesStore } from '@/shared/application/visual-preferences.store.js'

@@ -12,7 +12,7 @@ const { t }       = useI18n()
 const configStore = useDashboardConfigStore()
 const dataStore   = useDashboardDataStore()
 const sitesStore  = useAssetsManagementStore()
-const { sites, sitesLoaded } = storeToRefs(sitesStore)
+const { sites } = storeToRefs(sitesStore)
 
 const defaultSiteName = computed(() => {
   if (!configStore.defaultSiteId) return ''

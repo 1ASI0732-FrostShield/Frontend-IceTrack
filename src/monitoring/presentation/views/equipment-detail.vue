@@ -10,8 +10,6 @@ import { useRouter } from 'vue-router';
 import { useReportPdf } from '@/composables/useReportPdf.js';
 import { ServiceRequestsApi } from "@/service-request/infrastructure/service-requests-api.js";
 import { MonitoringApi } from "@/monitoring/infrastructure/monitoring-api.js";
-import { useNotificationStore } from '@/shared/application/notification.store.js';
-
 const { t } = useI18n();
 const store = useMonitoringStore();
 const assetsStore = useAssetsManagementStore();
@@ -27,8 +25,6 @@ const selectedEquipment = ref(null);
 const router = useRouter();
 const serviceRequestsApi = new ServiceRequestsApi();
 const monitoringApi = new MonitoringApi();
-const notificationStore = useNotificationStore();
-
 const editForm = ref({
   id: null,
   name: '',
@@ -102,14 +98,12 @@ async function downloadHistoryPdf(equipment) {
   const siteName = getSiteName(equipment.siteId);
 
   let relatedRequests = []
-  let allInterventions = []
   const techNameMap = {}
 
   try {
     const res = await serviceRequestsApi.getMaintenanceHistoryQuery(equipment.id)
     const data = res.data
     relatedRequests = Array.isArray(data.serviceRequests) ? data.serviceRequests : []
-    allInterventions = Array.isArray(data.interventions) ? data.interventions : []
 
     data.serviceRequests?.forEach(sr => {
       if (sr.technicianName) techNameMap[sr.technicianId] = sr.technicianName

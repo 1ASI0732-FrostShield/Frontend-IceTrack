@@ -43,9 +43,6 @@ function buildRow(label, val) {
   return `<tr style="background-color:#ffffff;"><td style="${LABEL_STYLE}">${label}</td><td style="${VALUE_STYLE}">${val}</td></tr>`
 }
 
-function buildRowNoBorder(label, val) {
-  return `<tr><td style="padding: 4px 12px 4px 0; font-weight: 700; font-size: 11px; color: #000000; width: 100px; vertical-align: top; background-color:#ffffff;">${label}</td><td style="padding: 4px 0; font-size: 11px; color: #000000; background-color:#ffffff; word-wrap: break-word; overflow-wrap: break-word;">${val}</td></tr>`
-}
 
 function buildHeader(title, requestId) {
   return `
@@ -112,7 +109,7 @@ function buildEquipmentHtml(equipment, siteName, recentInterventions = [], obser
   const currentStatusNarrative = statusNarratives[equipment.status] || statusNarratives.ACTIVE
 
   const interventionsHtml = recentInterventions.length
-    ? recentInterventions.map((iv, i) => `
+    ? recentInterventions.map((iv) => `
       <div style="margin-bottom: 10px; padding: 10px; border-left: 3px solid #333333; background-color:#fafafa; word-wrap: break-word; overflow-wrap: break-word;">
         <div style="font-size: 11px; color: #000000; background-color:#fafafa;">
           <strong>Intervención del ${formatDate(iv.startTime)}</strong>
